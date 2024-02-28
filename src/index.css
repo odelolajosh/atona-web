@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Clash';
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url('./assets/Clash/ClashDisplay-Extralight.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Clash';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('./assets/Clash/ClashDisplay-Light.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Clash';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./assets/Clash/ClashDisplay-Regular.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Clash';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('./assets/Clash/ClashDisplay-Medium.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Clash';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./assets/Clash/ClashDisplay-Semibold.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Clash';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./assets/Clash/ClashDisplay-Bold.otf') format('opentype');
+}
+
+:root {
+  font-family: 'Clash', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #505350;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #929292;
+  border-radius: 0.325rem;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #fff;
+}
