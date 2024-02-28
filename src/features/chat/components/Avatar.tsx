@@ -23,7 +23,7 @@ export const Avatar = ({ conversation: c, ...props }: AvatarProps) => {
   }, [c])
 
   return (
-    <div {...props} className={cn("flex-shrink-0 w-10 h-10 rounded-full bg-primary-700 text-white flex items-center justify-center", props.className)}>
+    <div {...props} className={cn("flex-shrink-0 w-10 h-10 rounded-full bg-secondary text-white flex items-center justify-center", props.className)}>
       {avatar ? <img src={avatar} alt="avatar" className="w-full h-full rounded-full" /> : initials}
     </div>
   )

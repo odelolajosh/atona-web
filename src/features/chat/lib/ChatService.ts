@@ -1,115 +1,136 @@
 import SturdyWebSocket from "@/lib/ws";
-import { ChatEvent, ChatEventHandler, ChatEventType, ChatMessage, ConnectionState, ConnectionStateChangedEvent, IChatService, IStorage, MessageContentType, MessageDirection, MessageEvent, SendMessageServiceParams, SendTypingServiceParams, UpdateState } from "@chatscope/use-chat";
+import { ChatEvent, ChatEventType as BaseChatEventType, ConnectionState, ConnectionStateChangedEvent, IChatService, IStorage, MessageContentType, MessageDirection, MessageEvent, MessageStatus, SendMessageServiceParams, SendTypingServiceParams, UpdateState, Conversation, Participant } from "@chatscope/use-chat";
+import { ChatEventHandler, ChatEventType, ConversationJoinedEvent } from "./events";
 
 type EventHandlers = {
-  onMessage: ChatEventHandler<
-    ChatEventType.Message,
-    ChatEvent<ChatEventType.Message>
-  >;
-  onConnectionStateChanged: ChatEventHandler<
-    ChatEventType.ConnectionStateChanged,
-    ChatEvent<ChatEventType.ConnectionStateChanged>
-  >;
-  onUserConnected: ChatEventHandler<
-    ChatEventType.UserConnected,
-    ChatEvent<ChatEventType.UserConnected>
-  >;
-  onUserDisconnected: ChatEventHandler<
-    ChatEventType.UserDisconnected,
-    ChatEvent<ChatEventType.UserDisconnected>
-  >;
-  onUserPresenceChanged: ChatEventHandler<
-    ChatEventType.UserPresenceChanged,
-    ChatEvent<ChatEventType.UserPresenceChanged>
-  >;
-  onUserTyping: ChatEventHandler<
-    ChatEventType.UserTyping,
-    ChatEvent<ChatEventType.UserTyping>
-  >;
-  [key: string]: any;
+  onMessage: Array<ChatEventHandler<
+    BaseChatEventType.Message,
+    ChatEvent<BaseChatEventType.Message>
+  >>;
+  onConnectionStateChanged: Array<ChatEventHandler<
+    BaseChatEventType.ConnectionStateChanged,
+    ChatEvent<BaseChatEventType.ConnectionStateChanged>
+  >>;
+  onUserConnected: Array<ChatEventHandler<
+    BaseChatEventType.UserConnected,
+    ChatEvent<BaseChatEventType.UserConnected>
+  >>;
+  onUserDisconnected: Array<ChatEventHandler<
+    BaseChatEventType.UserDisconnected,
+    ChatEvent<BaseChatEventType.UserDisconnected>
+  >>;
+  onUserPresenceChanged: Array<ChatEventHandler<
+    BaseChatEventType.UserPresenceChanged,
+    ChatEvent<BaseChatEventType.UserPresenceChanged>
+  >>;
+  onUserTyping: Array<ChatEventHandler<
+    BaseChatEventType.UserTyping,
+    ChatEvent<BaseChatEventType.UserTyping>
+  >>;
+  onConversationJoined: Array<ChatEventHandler<
+    "conversationJoined",
+    ChatEvent<"conversationJoined">
+  >>;
+  [key: string]: Array<any>;
 };
 
 export class ChatService<ConversationData = any, UserData = any> implements IChatService {
   storage?: IStorage<ConversationData, UserData>;
   updateState: UpdateState;
-  ws: SturdyWebSocket;
+  ws?: SturdyWebSocket;
 
   eventHandlers: EventHandlers = {
-    onMessage: () => {},
-    onConnectionStateChanged: () => {},
-    onUserConnected: () => {},
-    onUserDisconnected: () => {},
-    onUserPresenceChanged: () => {},
-    onUserTyping: () => {},
+    onMessage: [],
+    onConnectionStateChanged: [],
+    onUserConnected: [],
+    onUserDisconnected: [],
+    onUserPresenceChanged: [],
+    onUserTyping: [],
+    onConversationJoined: [],
   };
 
   constructor(storage: IStorage<ConversationData, UserData>, update: UpdateState) {
     this.storage = storage;
     this.updateState = update;
+  }
 
-    // For communication we use CustomEvent dispatched to the window object.
-    // It allows you to simulate sending and receiving data from the server.
-    // In a real application, instead of adding a listener to the window,
-    // you will implement here receiving data from your chat server.
-
-    // TODO: here !
-
-    this.ws = new SturdyWebSocket("ws://localhost:8080/ws", {
+  /**
+   * Establishes connection with the websocket
+   * @param userId authenticates websocket connection
+   */
+  connect(userId: string) {
+    this.ws = new SturdyWebSocket(`ws://localhost:3232/ws/${userId}`, {
       connectTimeout: 1000,
       debug: true,
       minReconnectDelay: 1000,
       maxReconnectDelay: 10000,
       maxReconnectAttempts: 5
-    });
+    })
 
     this.ws.onopen = () => {
-      this.eventHandlers.onConnectionStateChanged(
-        new ConnectionStateChangedEvent(ConnectionState.Connected)
-      );
+      this.ws?.send(JSON.stringify({
+        type: "on_connect",
+      }))
+      this.emit("connectionStateChanged", new ConnectionStateChangedEvent(ConnectionState.Connected))
     }
 
     this.ws.onreopen = () => {
-      this.eventHandlers.onConnectionStateChanged(
-        new ConnectionStateChangedEvent(ConnectionState.Connected)
-      );
+      this.emit("connectionStateChanged", new ConnectionStateChangedEvent(ConnectionState.Connected))
     }
 
     this.ws.ondown = () => {
-      this.eventHandlers.onConnectionStateChanged(
-        new ConnectionStateChangedEvent(ConnectionState.Connected)
-      );  
+      this.emit("connectionStateChanged", new ConnectionStateChangedEvent(ConnectionState.Disconnected))
     }
 
     this.ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      const message = data.message as ChatMessage<MessageContentType>;
-      const conversationId = data.conversationId as string;
-      message.direction = MessageDirection.Incoming;
-
-      this.eventHandlers.onMessage(
-        new MessageEvent({ message, conversationId })
-      );
+      const data = JSON.parse(event.data)
+      if (!data.event) return
+      this.dispatchEventOfType(data.event, data.payload)
     }
 
     this.ws.onclose = () => {
-      this.eventHandlers.onConnectionStateChanged(
-        new ConnectionStateChangedEvent(ConnectionState.Disconnected)
-      );
+      this.emit("connectionStateChanged", new ConnectionStateChangedEvent(ConnectionState.Disconnected))
     }
 
-    this.ws.onerror = () => {
-      this.eventHandlers.onConnectionStateChanged?.(
-        new ConnectionStateChangedEvent(ConnectionState.Connected)
-      );
+    this.ws.onerror = (err: any) => {
+      console.error("Socket encountered error: ", err.message, "Closing socket");
+      this.emit("connectionStateChanged", new ConnectionStateChangedEvent(ConnectionState.Disconnected))
     }
   }
 
+  /**
+   * Join a conversation
+   * @param conversationId 
+   */
+  joinConversation(conversationId: string) {
+    this.ws?.send(JSON.stringify({
+      type: "on_join",
+      payload: conversationId
+    }))
+  }
+
+  /**
+   * Creates a new conversation
+   * @param userIds an array of user Ids to add to a conversation
+   */
+  createConversation(userIds: string[] = []) {
+    if (userIds.length === 0) return;
+    this.ws?.send(JSON.stringify({
+      type: "on_join",
+      payload: {
+        users: userIds
+      }
+    }))
+  }
+
   sendMessage({ message, conversationId }: SendMessageServiceParams) {
-    // this.ws.send(JSON.stringify({
-    //   type: "message",
-    //   content: message,
-    //   conversationId: conversationId
-    // }));
+    this.ws?.send(JSON.stringify({
+      type: "on_message",
+      payload: {
+        body: message.content?.content,
+        to_id: conversationId,
+      }
+    }))
 
     return message;
   }
@@ -138,12 +159,6 @@ export class ChatService<ConversationData = any, UserData = any> implements ICha
     window.dispatchEvent(typingEvent);
   }
 
-  // The ChatProvider registers callbacks with the service.
-  // These callbacks are necessary to notify the provider of the changes.
-  // For example, when your service receives a message, you need to run an onMessage callback,
-  // because the provider must know that the new message arrived.
-  // Here you need to implement callback registration in your service.
-  // You can do it in any way you like. It's important that you will have access to it elsewhere in the service.
   on<T extends ChatEventType, H extends ChatEvent<T>>(
     evtType: T,
     evtHandler: ChatEventHandler<T, H>
@@ -151,19 +166,95 @@ export class ChatService<ConversationData = any, UserData = any> implements ICha
     const key = `on${evtType.charAt(0).toUpperCase()}${evtType.substring(1)}`;
 
     if (key in this.eventHandlers) {
-      this.eventHandlers[key] = evtHandler;
+      this.eventHandlers[key].push(evtHandler);
     }
   }
 
-  // The ChatProvider can unregister the callback.
-  // In this case remove it from your service to keep it clean.
   off<T extends ChatEventType, H extends ChatEvent<T>>(
     evtType: T,
     eventHandler: ChatEventHandler<T, H>
   ) {
     const key = `on${evtType.charAt(0).toUpperCase()}${evtType.substring(1)}`;
     if (key in this.eventHandlers) {
-      this.eventHandlers[key] = () => {};
+      const index = this.eventHandlers[key].indexOf(eventHandler);
+      if (index >= 0) {
+        this.eventHandlers[key].splice(index, 1);
+      }
     }
+  }
+
+  /**
+   * Emits an event to all registered event handlers
+   * @param evtType
+   * @param evt
+   * @private
+   */
+  private emit<T extends ChatEventType, H extends ChatEvent<T>>(
+    evtType: T,
+    evt: H
+  ) {
+    const key = `on${evtType.charAt(0).toUpperCase()}${evtType.substring(1)}`;
+    if (key in this.eventHandlers) {
+      this.eventHandlers[key].forEach((handler) => handler(evt));
+    }
+  }
+
+  /**
+   * Dispatches an event to the appropriate event handler
+   * @param type
+   * @param payload
+   * @private
+   */
+  private dispatchEventOfType(type: string, payload: any) {
+    switch (type) {
+      case "connected": {
+        this.handleConnection()
+        break
+      }
+      case "room_created": {
+        this.handleRoomCreated(payload)
+        break
+      }
+      case "message_sent": {
+        this.handleIncomingMessage(payload)
+        break
+      }
+    }
+  }
+
+  private handleConnection() {
+    const event = new ConnectionStateChangedEvent(ConnectionState.Connected)
+    this.emit("connectionStateChanged", event)
+  }
+
+  private handleRoomCreated(payload: any) {
+    const participants = payload["user_ids"].forEach((id: string) => {
+      new Participant({ id })
+    })
+    const conversation = new Conversation({
+      id: payload.roomId,
+      participants,
+    })
+    const event = new ConversationJoinedEvent(conversation)
+    this.emit("conversationJoined", event)
+  }
+
+  private handleIncomingMessage(payload: any) {
+    console.log("Handle Incoming Message")
+    const event = new MessageEvent({
+      message: {
+        id: payload.id,
+        content: {
+          content: payload.body,
+        },
+        contentType: MessageContentType.TextHtml,
+        direction: MessageDirection.Incoming,
+        senderId: payload.from.uuid,
+        status: MessageStatus.Sent,
+        createdTime: payload.created_at
+      },
+      conversationId: payload.to.uuid,
+    })
+    this.emit("message", event)
   }
 }

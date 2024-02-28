@@ -23,7 +23,7 @@ export const ConversationHeader = () => {
   }
 
   return (
-    <div className="w-full h-[var(--chat-header-height)] bg-primary-700 flex gap-3 items-center px-4">
+    <div className="w-full h-[var(--chat-header-height)] flex gap-3 items-center px-4">
       <Avatar conversation={activeConversation} />
       <h2 className="font-medium text-lg">{name}</h2>
     </div>

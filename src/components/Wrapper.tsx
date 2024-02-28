@@ -16,6 +16,7 @@ const nav = [
   //   icon: PaperAirplaneIcon,
   //   path: "/fp",
   // },
+  
   {
     name: "Chat",
     icon: ChatBubbleLeftEllipsisIcon,

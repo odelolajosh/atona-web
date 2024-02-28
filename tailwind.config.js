@@ -8,24 +8,25 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '202120',
+          DEFAULT: '#197CAE',
         },
         secondary: {
-          DEFAULT: '#F7F7F7',
+          DEFAULT: '#212225',
         },
         surface: {
           button: '#31312E',
+          input: '#1A191B',
         },
-        background: '#111110',
-        foreground: '#EEEEEC',
+        background: '#121113',
+        foreground: '#EEEEF0',
         muted: {
-          DEFAULT: '#6E6C66',
-          foreground: '#B5B3AD',
+          DEFAULT: '#363A3F',
+          foreground: '#B5B2BC',
         },
         stroke: {
           DEFAULT: '#494844',
-          1: '#494844',
-          2: '#62605B'
+          separator: '#3C393F',
+          input: '#323035',
         },
         overlay: '#00000089',
         success: '#A8F5E5',
@@ -47,6 +48,15 @@ export default {
         overlayShow: 'overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1)',
         contentShow: 'contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1)',
       },
+    },
+    fontFamily: {
+      sans: [
+        '"Inter var", sans-serif',
+        {
+          fontVariationSettings: '"slnt" 0',
+          fontOpticalSizing: 'auto',
+        },
+      ],
     },
   },
   plugins: [],

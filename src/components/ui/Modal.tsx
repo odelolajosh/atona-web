@@ -9,8 +9,8 @@ const Description = Dialog.Description;
 type ModalProps = Dialog.DialogProps
 
 type ContentProps = Dialog.DialogContentProps & {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
 };
 
 const Content = ({ title, description, children, ...props }: ContentProps) => (

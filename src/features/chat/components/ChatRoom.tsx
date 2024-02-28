@@ -45,8 +45,9 @@ export const ChatRoom = () => {
   )
 
   return (
-    <div className="flex-1 h-full flex flex-col items-center pb-4">
+    <div className="flex-1 h-full flex flex-col items-center pb-4 border-l border-stroke-separator/50">
       <ConversationHeader />
+      <hr className="w-full border-t border-stroke-separator/50" />
       <MessageList className="w-full flex-1 py-4 message--font" ref={messageListRef}>
         <Messages messages={currentMessages} />
       </MessageList>

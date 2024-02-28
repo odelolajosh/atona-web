@@ -30,8 +30,10 @@ export const MessageInput: React.FC<MessageInputProps> = ({ value: _value, place
     ];
   }
 
-  const handleChange = (innerHTML: string, textContent?: string | null, innerText?: string) => {
+  const handleChange = (innerHTML: string) => {
     setValue(innerHTML)
+    const textContent = editableRef.current?.textContent
+    const innerText = editableRef.current?.innerText
     onChange?.(innerHTML, textContent, innerText)
   }
 
@@ -61,7 +63,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({ value: _value, place
   };
 
   return (
-    <div className={cn("relative bg-primary-900 rounded-2xl w-full max-w-2xl", className)}>
+    <div className={cn("relative bg-surface-input border border-stroke-input rounded-2xl w-full max-w-2xl", className)}>
       {/* Content Editable */}
       <div className="w-full h-full">
         <ContentEditable ref={editableRef} className="w-full h-full min-h-14 max-h-48 overflow-y-auto p-4 pr-32 outline-none bg-transparent text-white content-editable-ph" placeholder={placeholder} value={value} onChange={handleChange} onKeyPress={handleKeyPress} />
