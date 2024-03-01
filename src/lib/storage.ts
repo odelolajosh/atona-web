@@ -2,9 +2,14 @@ const prefix = 'atona_';
 
 export const storage = {
   get(key: string) {
-    return localStorage.getItem(prefix + key);
+    const value = localStorage.getItem(prefix + key);
+    if (value) {
+      return JSON.parse(value);
+    }
+    return null;
   },
-  set(key: string, value: string) {
+  set(key: string, value: any) {
+    value = value === undefined ? "" : JSON.stringify(value);
     localStorage.setItem(prefix + key, value);
   },
   remove(key: string) {

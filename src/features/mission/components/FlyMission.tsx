@@ -21,9 +21,11 @@ export const FlyMission = (props: ModalProps & { waypoints: Position[] }) => {
       {props.children && <Modal.Trigger asChild>{props.children}</Modal.Trigger>}
       <Modal.Content title="Create Mission" description="Fly the drone to a location">
         <form onSubmit={handleMission}>
-          <Input label="Altitude" type="number" defaultValue="10" error={errors.altitude?.message}
+          <label htmlFor="name" className="text-white">Username</label>
+          <Input type="number" defaultValue="10"
             {...register('altitude', { required: true })}
           />
+          {errors.altitude && <small>{errors.altitude?.message}</small>}
           <div className="flex justify-end mt-6">
             <Button type="submit" size="sm" disabled={submitting}>
               Fly

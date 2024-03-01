@@ -19,9 +19,9 @@ export const MissionHome = () => {
     disconnect();
   }
 
-  const restartDroneConnection = () => {
-    connect();
-  }
+  // const restartDroneConnection = () => {
+  //   connect();
+  // }
 
   return (
     <>

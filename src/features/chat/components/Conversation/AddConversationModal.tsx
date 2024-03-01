@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useTypedChat } from '../../hooks/useChat';
 import { Modal, ModalProps } from '@/components/ui/Modal';
 import { Button } from '@/components/ui';
@@ -7,17 +7,8 @@ import { cn } from '@/lib/utils';
 type AddConversationModalProps = ModalProps;
 
 export const AddConversationModal: React.FC<AddConversationModalProps> = (props) => {
-  const { users, currentUser, service, conversations } = useTypedChat();
+  const { users, currentUser, service } = useTypedChat();
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-
-  const csn = useMemo(() => {
-    const result = {} as Record<string, string>;
-    users.forEach((u) => {
-      const cn = conversations.find((c) => c.getParticipant(u.id))
-      if (cn) result[u.id] = cn.id
-    })
-    return result
-  }, [users])
 
   const handleAction = async () => {
     if (selectedUsers.length === 0) return

@@ -3,13 +3,15 @@ import { PropsWithChildren, useMemo } from "react"
 import { MessageHtmlContent } from "./MessageHtmlContent"
 import { Avatar } from "./Avatar"
 import { cn } from "@/lib/utils"
+import { formatDate } from "../../lib/utils"
 
 type MessageProps<T extends MessageContentType> = {
   model: {
     senderId: string,
     type: MessageContentType,
     payload: MessageContent<T>,
-    direction: MessageDirection
+    direction: MessageDirection,
+    updatedAt: Date,
   },
   position: number
 }
@@ -19,7 +21,8 @@ export const Message = <T extends MessageContentType>({
     type = MessageContentType.TextMarkdown,
     payload,
     direction,
-    senderId
+    senderId,
+    updatedAt
   },
   position
 }: MessageProps<T>) => {
@@ -33,13 +36,13 @@ export const Message = <T extends MessageContentType>({
   }, [senderId])
 
   const containerClass = cn(
-    "grow flex w-full px-4 py-1",
+    "grow flex w-full px-4 py-px",
     "hover:bg-neutral-600/10",
     "message"
   )
 
   const messageClass = cn(
-    "px-4 py-2 rounded-lg text-white max-w-[min(80%,32rem)]",
+    "max-w-[min(80%,32rem)]",
     {
       "message--incoming mr-auto ml-12": direction === MessageDirection.Incoming,
       "message--outgoing ml-auto": direction === MessageDirection.Outgoing,
@@ -63,15 +66,19 @@ export const Message = <T extends MessageContentType>({
     <div className={containerClass}>
       <div className={messageClass}>
         {/* Header */}
-        {
-          (position === 0 && direction === MessageDirection.Incoming) && (
-            <div className="flex flex-col gap-1">
-              <div className="text-xs text-neutral-400">{user?.username}</div>
-            </div>
-          )
-        }
+        {(position === 0 && direction === MessageDirection.Incoming) && (
+          <div className="flex flex-col gap-1">
+            <div className="text-xs text-neutral-400">{user?.username}</div>
+          </div>
+        )}
         {/* Content */}
-        {messageJsx}
+        <div className="pr-14">
+          {messageJsx}
+        </div>
+        {/* Footer */}
+        <div>
+          <div className="text-xs text-muted-foreground text-right -mt-3">{formatDate(updatedAt)}</div>
+        </div>
       </div>
     </div>
   )

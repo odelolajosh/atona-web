@@ -1,4 +1,4 @@
-import { PropsWithChildren, forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react"
+import { PropsWithChildren, forwardRef, useEffect, useImperativeHandle, useRef } from "react"
 import { Message, MessageGroup as MsgGroup } from "./Message"
 import { MessageGroup } from "@chatscope/use-chat/dist/MessageGroup"
 import { cn } from "@/lib/utils"
@@ -193,6 +193,7 @@ export const Messages: React.FC<MessagesProps> = ({ messages }) => {
                   type: m.contentType,
                   payload: m.content,
                   direction: m.direction,
+                  updatedAt: m.createdTime,
                 }} position={index} />
               )
             })}

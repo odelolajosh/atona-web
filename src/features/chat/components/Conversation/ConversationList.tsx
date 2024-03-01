@@ -1,10 +1,10 @@
 import { Conversation as TConversation } from "@chatscope/use-chat"
 import { useTypedChat } from "../../hooks/useChat"
 import { ConversationData } from "../../types"
-import { useMemo } from "react"
 import { cn } from "@/lib/utils"
 import { Avatar } from "../Avatar"
 import { Button, Input } from "@/components/ui"
+import { useConversation } from "../../hooks/useConversation"
 
 // type ConversationProps = {
 //   avatar: string
@@ -31,18 +31,8 @@ type ConversationProps = {
 }
 
 const Conversation = ({ conversation: c }: ConversationProps) => {
-  const { activeConversation, setActiveConversation, getUser } = useTypedChat()
-
-  const [avatar, name] = useMemo(() => {
-    const participant = c.participants.length > 0 ? c.participants[0] : undefined;
-    if (participant) {
-      const user = getUser(participant.id);
-      if (user) {
-        return [user.avatar, c.data?.name || user.username]
-      }
-    }
-    return [undefined, ""]
-  }, [c])
+  const { activeConversation, setActiveConversation } = useTypedChat()
+  const { name } = useConversation(c.id)
 
   return (
     <div className={cn(
@@ -51,7 +41,7 @@ const Conversation = ({ conversation: c }: ConversationProps) => {
         "bg-primary hover:bg-primary": activeConversation?.id === c.id
       }
     )} onClick={() => setActiveConversation(c.id)}>
-      <Avatar conversation={c} className="w-10 h-10 rounded-full" />
+      <Avatar name={name} className="w-10 h-10 rounded-full" />
       <div className="flex-1">
         <div className="text-white font-medium">{name}</div>
       </div>

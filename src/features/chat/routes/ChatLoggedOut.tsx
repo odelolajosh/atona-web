@@ -16,7 +16,7 @@ const getMacAddress = () => {
 }
 
 export const ChatLoggedOut: React.FC<ChatLoggedOutProps> = ({ onLogin }) => {
-  const { register, handleSubmit } = useForm<{ name: string }>()
+  const { register, handleSubmit, formState: { errors }, setError } = useForm<{ name: string }>()
   const [loading, setLoading] = React.useState(false)
   const { setCurrentUser } = useTypedChat()
 
@@ -25,7 +25,7 @@ export const ChatLoggedOut: React.FC<ChatLoggedOutProps> = ({ onLogin }) => {
       setLoading(true)
       const macAddress = getMacAddress()
       const result: any = await chatAPI.post('/users', { name, macAddress })
-      const user = result.user
+      const user = result.data.user
       const currentUser = new User({
         id: user.uuid,
         presence: new Presence({ status: user.online ? UserStatus.Available : UserStatus.Away }),
@@ -33,12 +33,18 @@ export const ChatLoggedOut: React.FC<ChatLoggedOutProps> = ({ onLogin }) => {
         avatar: user.avatar,
         data: {}
       })
-      storage.set('user', JSON.stringify(currentUser))
+      storage.set('user', currentUser)
       setCurrentUser(currentUser)
       onLogin(currentUser.id)
       setLoading(false)
     } catch (err) {
-      console.log(err)
+      // const error = err as AxiosError
+      // if (error.response?.status === 500) {
+      //   setError('root', { message: "Server error, please try again later" })
+      // } else {
+      //   setError('name', { message: "Username already taken" })
+      // }
+      setError('name', { message: "Username already taken" })
       setLoading(false)
     }
   })
@@ -51,8 +57,10 @@ export const ChatLoggedOut: React.FC<ChatLoggedOutProps> = ({ onLogin }) => {
         <div className="flex flex-col mt-8">
           <label htmlFor="name" className="text-white">Username</label>
           <Input id="name" className="mt-2 tracking-wide text-lg" {...register('name', { required: true })} placeholder="Naero" autoFocus autoComplete="off" required />
+          {errors.name && <p className="text-error mt-2">{errors.name.message}</p>}
         </div>
-        <div className="mt-6">
+        <div className="mt-6 space-y-4">
+          {errors.root && <p className="text-error">{errors.root.message}</p>}
           <Button type="submit">
             {loading ? (
               <svg className="animate-spin h-6 w-6 mx-auto text-text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

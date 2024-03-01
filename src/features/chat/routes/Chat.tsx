@@ -11,19 +11,24 @@ import chatAPI from "../lib/api";
 import { ChatLoggedOut } from "./ChatLoggedOut";
 import { useTypedChat } from "../hooks/useChat";
 import { ChatUIProvider } from "../lib/provider";
+import "../chat.css";
+
+const __TEST__ = false;
 
 // Storage needs to generate id for messages and groups
 const messageIdGenerator = () => uuid();
 const groupIdGenerator = () => uuid();
 
 // Create serviceFactory
-const serviceFactory: ChatServiceFactory<ChatService<ConversationData, UserData>> = (storage, updateState) => {
+const serviceFactory: ChatServiceFactory<ChatService> = (storage, updateState) => {
   return new ChatService(storage, updateState);
 };
 
 const chatStorage = new BasicStorage<ConversationData>({ groupIdGenerator, messageIdGenerator });
 
-seedStorage(chatStorage);
+if (__TEST__) {
+  seedStorage(chatStorage);
+}
 
 const chatConfig: ChatProviderConfig = {
   typingThrottleTime: 250,
@@ -41,7 +46,7 @@ export function Chat() {
   return (
     <ChatProvider serviceFactory={serviceFactory} storage={chatStorage} config={chatConfig}>
       <ChatUIProvider>
-        <main className="h-full flex" style={variables as any}>
+        <main className="h-full flex border-t border-stroke-separator/50" style={variables as any}>
           <ChatImpl />
         </main>
       </ChatUIProvider>
@@ -53,12 +58,17 @@ const ChatImpl = () => {
   const { currentUser, setCurrentUser, service, addUser, addConversation, setConversationLoading, removeAllUsers, removeAllConversations, showAddConversation, setShowAddConversation } = useTypedChat()
 
   useEffect(() => {
+    if (__TEST__) return;
     const user = storage.get('user') as User<UserData> | null
     if (!user) return
     setCurrentUser(user)
   }, [])
 
   useEffect(() => {
+    if (__TEST__) {
+      setConversationLoading(false);
+    };
+
     if (!currentUser) return
 
     const onConnectionStateChanged = (event: ConnectionStateChangedEvent) => {
@@ -102,8 +112,8 @@ const ChatImpl = () => {
       chatAPI.get(`/users/${userId}/chatrooms`)
     ])
 
-    const users = result[0].users as any[]
-    const conversations = result[1].chatRooms as any[]
+    const users = result[0].data.users as any[]
+    const conversations = result[1].data.chatRooms as any[]
 
     // remove all existing users
     removeAllUsers()
@@ -122,7 +132,7 @@ const ChatImpl = () => {
       addUser(newUser)
     })
 
-    conversations.forEach((conversation) => {
+    conversations.forEach((conversation: ChatAPI.Conversation) => {
       const participants = conversation.users.map((u: any) => {
         return new Participant({ id: u.uuid })
       })
@@ -130,7 +140,10 @@ const ChatImpl = () => {
       const newConversation = new Conversation({
         id: conversation.uuid,
         participants,
-        data: {} as ConversationData
+        data: {
+          name: conversation.name,
+          type: conversation.chatRoomType === 0 ? "dm" : "group"
+        } as ConversationData
       })
 
       addConversation(newConversation)

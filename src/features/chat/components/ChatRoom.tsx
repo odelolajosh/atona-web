@@ -28,6 +28,8 @@ export const ChatRoom = () => {
       status: MessageStatus.Sent
     });
 
+    console.log("Handle Send", message)
+
     if (activeConversation) {
       sendMessage({
         message,
@@ -39,7 +41,7 @@ export const ChatRoom = () => {
   };
 
   if (!activeConversation) return (
-    <div className="flex-1 flex flex-col items-center justify-center h-full">
+    <div className="flex-1 flex flex-col items-center justify-center h-full bg-secondary">
       <div className="text-gray-400">No chat selected</div>
     </div>
   )

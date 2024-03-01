@@ -1,4 +1,4 @@
-import { PaperAirplaneIcon, GlobeEuropeAfricaIcon, BoltIcon, PowerIcon, ChatBubbleLeftEllipsisIcon } from "@heroicons/react/24/outline"
+import { GlobeEuropeAfricaIcon, ChatBubbleLeftEllipsisIcon } from "@heroicons/react/24/outline"
 import { NavLink, Outlet } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { useWs } from "@/provider/WsProvider"
@@ -38,7 +38,7 @@ export default function Wrapper() {
   const ws = useWs("Wrapper");
 
   return (
-    <div className={cn("w-full h-screen select-none max-w-screen font-clash bg-background")}>
+    <div className={cn("w-full h-screen max-w-screen font-clash bg-background")}>
       <nav role='list' className={cn('flex items-center content-center justify-between w-full h-16 px-4 text-white', {
         "bg-success/20": ws.status === 'CONNECTED',
         "bg-warning/20": ws.status === 'CONNECTING'

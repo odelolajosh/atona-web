@@ -1,0 +1,43 @@
+.message--incoming,
+.message--outgoing {
+  @apply px-4 py-2 rounded-xl text-white;
+}
+
+.message--outgoing {
+  @apply bg-primary text-white;
+}
+
+.message--incoming {
+  @apply bg-secondary;
+}
+
+.message--first {
+  position: relative;
+}
+
+.message--outgoing.message--first {
+  @apply rounded-tr-none;
+}
+
+.message--incoming.message--first {
+  @apply rounded-tl-none;
+}
+
+.message--outgoing.message--first::before {
+  content: "";
+  @apply absolute w-0 h-0 top-0 -right-2;
+  @apply border-8 border-transparent border-t-primary rounded;
+}
+
+.message--incoming.message--first::before {
+  content: "";
+  @apply absolute w-0 h-0 top-0 -left-2;
+  @apply border-8 border-transparent border-t-secondary rounded;
+}
+
+.content-editable-ph:empty:before {
+  content: attr(data-placeholder);
+  color: #929292;
+  display: block;
+  cursor: text;
+}

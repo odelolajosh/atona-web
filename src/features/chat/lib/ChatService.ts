@@ -1,6 +1,8 @@
 import SturdyWebSocket from "@/lib/ws";
 import { ChatEvent, ChatEventType as BaseChatEventType, ConnectionState, ConnectionStateChangedEvent, IChatService, IStorage, MessageContentType, MessageDirection, MessageEvent, MessageStatus, SendMessageServiceParams, SendTypingServiceParams, UpdateState, Conversation, Participant } from "@chatscope/use-chat";
 import { ChatEventHandler, ChatEventType, ConversationJoinedEvent } from "./events";
+import { ConversationData, UserData } from "../types";
+import { wsURL } from "./api";
 
 type EventHandlers = {
   onMessage: Array<ChatEventHandler<
@@ -34,7 +36,7 @@ type EventHandlers = {
   [key: string]: Array<any>;
 };
 
-export class ChatService<ConversationData = any, UserData = any> implements IChatService {
+export class ChatService implements IChatService {
   storage?: IStorage<ConversationData, UserData>;
   updateState: UpdateState;
   ws?: SturdyWebSocket;
@@ -59,7 +61,7 @@ export class ChatService<ConversationData = any, UserData = any> implements ICha
    * @param userId authenticates websocket connection
    */
   connect(userId: string) {
-    this.ws = new SturdyWebSocket(`ws://localhost:3232/ws/${userId}`, {
+    this.ws = new SturdyWebSocket(`${wsURL}/${userId}`, {
       connectTimeout: 1000,
       debug: true,
       minReconnectDelay: 1000,
@@ -83,9 +85,9 @@ export class ChatService<ConversationData = any, UserData = any> implements ICha
     }
 
     this.ws.onmessage = (event) => {
+      if (!event.data) return
       const data = JSON.parse(event.data)
-      if (!data.event) return
-      this.dispatchEventOfType(data.event, data.payload)
+      this.dispatchEventOfType(data.type, data.payload)
     }
 
     this.ws.onclose = () => {
@@ -128,6 +130,7 @@ export class ChatService<ConversationData = any, UserData = any> implements ICha
       type: "on_message",
       payload: {
         body: message.content?.content,
+        content_type: String(message.contentType),
         to_id: conversationId,
       }
     }))
@@ -227,20 +230,24 @@ export class ChatService<ConversationData = any, UserData = any> implements ICha
     this.emit("connectionStateChanged", event)
   }
 
-  private handleRoomCreated(payload: any) {
-    const participants = payload["user_ids"].forEach((id: string) => {
-      new Participant({ id })
-    })
-    const conversation = new Conversation({
+  private handleRoomCreated(payload: { room: ChatAPI.Room, roomId: string }) {
+    if (!payload.room) return
+    const users = payload.room.users ?? [];
+    const participants = users.map((user) => new Participant({ id: user.uuid }))
+
+    const conversation = new Conversation<ConversationData>({
       id: payload.roomId,
       participants,
+      data: {
+        name: payload.room.name,
+        type: payload.room.chatRoomType === 0 ? "dm" : "group",
+      }
     })
     const event = new ConversationJoinedEvent(conversation)
     this.emit("conversationJoined", event)
   }
 
   private handleIncomingMessage(payload: any) {
-    console.log("Handle Incoming Message")
     const event = new MessageEvent({
       message: {
         id: payload.id,
