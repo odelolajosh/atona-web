@@ -24,13 +24,12 @@ export const ChatLoggedOut: React.FC<ChatLoggedOutProps> = ({ onLogin }) => {
     try {
       setLoading(true)
       const macAddress = getMacAddress()
-      const result: any = await chatAPI.post('/users', { name, macAddress })
-      const user = result.data.user
+      const user = await chatAPI.authenticateUser(name, macAddress)
       const currentUser = new User({
         id: user.uuid,
         presence: new Presence({ status: user.online ? UserStatus.Available : UserStatus.Away }),
         username: user.name,
-        avatar: user.avatar,
+        avatar: user.avatarUrl,
         data: {}
       })
       storage.set('user', currentUser)

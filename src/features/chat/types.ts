@@ -10,6 +10,7 @@ export interface ChatState {
 export interface ConversationData {
   readonly type?: 'dm' | 'group'
   readonly name: string
+  initialMessageStatus?: 'idle' | 'success' | 'error' | 'loading'
 }
 
 export interface IMessage {

@@ -13,7 +13,7 @@ import { useTypedChat } from "../hooks/useChat";
 import { ChatUIProvider } from "../lib/provider";
 import "../chat.css";
 
-const __TEST__ = false;
+const __DEV__ = false;
 
 // Storage needs to generate id for messages and groups
 const messageIdGenerator = () => uuid();
@@ -26,7 +26,7 @@ const serviceFactory: ChatServiceFactory<ChatService> = (storage, updateState) =
 
 const chatStorage = new BasicStorage<ConversationData>({ groupIdGenerator, messageIdGenerator });
 
-if (__TEST__) {
+if (__DEV__) {
   seedStorage(chatStorage);
 }
 
@@ -58,14 +58,14 @@ const ChatImpl = () => {
   const { currentUser, setCurrentUser, service, addUser, addConversation, setConversationLoading, removeAllUsers, removeAllConversations, showAddConversation, setShowAddConversation } = useTypedChat()
 
   useEffect(() => {
-    if (__TEST__) return;
+    if (__DEV__) return;
     const user = storage.get('user') as User<UserData> | null
     if (!user) return
     setCurrentUser(user)
   }, [])
 
   useEffect(() => {
-    if (__TEST__) {
+    if (__DEV__) {
       setConversationLoading(false);
     };
 
@@ -107,13 +107,14 @@ const ChatImpl = () => {
   }
 
   const loadConversation = async (userId: string) => {
-    const result: any[] = await Promise.all([
-      chatAPI.get('/users'),
-      chatAPI.get(`/users/${userId}/chatrooms`)
+    const result = await Promise.all([
+      chatAPI.getUsers(),
+      chatAPI.getConversations(userId)
     ])
 
-    const users = result[0].data.users as any[]
-    const conversations = result[1].data.chatRooms as any[]
+    if (!result[0] || !result[1]) return
+
+    const [users, conversations] = result;
 
     // remove all existing users
     removeAllUsers()
@@ -126,7 +127,7 @@ const ChatImpl = () => {
           status: user.online ? UserStatus.Available : UserStatus.Away
         }),
         username: user.name,
-        avatar: user.avatar,
+        avatar: user.avatarUrl,
         data: {}
       })
       addUser(newUser)

@@ -32,4 +32,31 @@ namespace ChatAPI {
     created_at: string;
     updated_at: string;
   }
+
+  export interface Message {
+    id: number;
+    uuid: string;
+    body: string;
+    content_type: string;
+    from: {
+      id: number;
+      uuid: string;
+      name: string;
+      avatarUrl: string;
+      online: boolean;
+    };
+    from_id: number;
+    to: {
+      id: number;
+      uuid: string;
+      users: null;
+      chatRoomType: number;
+      name: string;
+      created_at: string;
+      updated_at: string;
+    };
+    to_id: number;
+    created_at: string;
+    updated_at: string;
+  }
 }
