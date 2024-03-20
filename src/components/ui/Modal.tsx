@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import * as Dialog from '@radix-ui/react-dialog';
 
 const Root = Dialog.Root;
@@ -16,7 +17,7 @@ type ContentProps = Dialog.DialogContentProps & {
 const Content = ({ title, description, children, ...props }: ContentProps) => (
   <Dialog.Portal>
     <Dialog.Overlay className="bg-overlay data-[state=open]:animate-overlayShow fixed inset-0" />
-    <Dialog.Content {...props} className="data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-background border border-foreground/40 p-6 shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none">
+    <Dialog.Content {...props} className={cn("data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-background border border-foreground/40 p-6 shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none", props.className)}>
       {title && (
         <Dialog.Title className="text-foreground m-0 text-xl font-medium">
           {title}

@@ -2,7 +2,7 @@ import { useControllableState } from "@/lib/hooks/state";
 import { forwardRef, useEffect, useRef } from "react";
 import ReactContentEditable, { ContentEditableEvent } from "react-contenteditable";
 
-function mergeRefs<T = any>(
+function mergeRefs<T = object>(
   ...refs: Array<React.MutableRefObject<T> | React.LegacyRef<T> | undefined | null>
 ): React.RefCallback<T> {
   return (value) => {
@@ -39,7 +39,7 @@ export const ContentEditable = forwardRef<HTMLDivElement, ContentEditableProps>(
     if (autoFocus) {
       msgRef.current?.focus()
     }
-  }, [])
+  }, [autoFocus])
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLDivElement>) => onKeyPress?.(e)
 
@@ -52,6 +52,7 @@ export const ContentEditable = forwardRef<HTMLDivElement, ContentEditableProps>(
     <ReactContentEditable
       innerRef={mergeRefs(ref, msgRef)}
       {...rest}
+      autoCorrect="off"
       contentEditable={disabled === false}
       aria-disabled={disabled}
       data-placeholder={placeholder || ""}

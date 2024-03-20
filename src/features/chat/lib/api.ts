@@ -32,12 +32,18 @@ const getMessages = async (conversationId: string) => {
 }
 
 const authenticateUser = async (name: string, macAddress: string) => {
+  const response = await axios.post('/auth/user', { name, macAddress })
+  return response.data.user as ChatAPI.User;
+}
+
+const registerUser = async (name: string, macAddress: string) => {
   const response = await axios.post('/users', { name, macAddress })
   return response.data.user as ChatAPI.User;
 }
 
 const chatAPI = {
   authenticateUser,
+  registerUser,
   getUsers,
   getConversations,
   getMessages

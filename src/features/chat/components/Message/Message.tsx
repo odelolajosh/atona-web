@@ -33,7 +33,7 @@ export const Message = <T extends MessageContentType>({
   const user = useMemo(() => {
     const user = getUser(senderId)
     return user
-  }, [senderId])
+  }, [getUser, senderId])
 
   const containerClass = cn(
     "grow flex w-full px-4 py-px",
@@ -54,10 +54,10 @@ export const Message = <T extends MessageContentType>({
     switch (type) {
       case MessageContentType.TextMarkdown:
       case MessageContentType.TextHtml:
-        return <MessageHtmlContent html={payload.content as any} />
+        return <MessageHtmlContent html={payload.content as string} />
       default:
         return (
-          <div>{payload.content as any}</div>
+          <div>{payload.content as string}</div>
         )
     }
   }, [type, payload])

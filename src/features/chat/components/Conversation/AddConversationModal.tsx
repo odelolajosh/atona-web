@@ -4,9 +4,9 @@ import { Modal, ModalProps } from '@/components/ui/Modal';
 import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
-type AddConversationModalProps = ModalProps;
+type AddConversationModalProps = ModalProps & { children?: React.ReactNode }
 
-export const AddConversationModal: React.FC<AddConversationModalProps> = (props) => {
+export const AddConversationModal: React.FC<AddConversationModalProps> = ({ children, ...props }) => {
   const { users, currentUser, service } = useTypedChat();
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
@@ -35,8 +35,9 @@ export const AddConversationModal: React.FC<AddConversationModalProps> = (props)
 
   return (
     <Modal.Root {...props} onOpenChange={(open) => !open && handleClose()}>
-      <Modal.Content title="Add Conversation">
-        <div className="my-2">
+      {children && <Modal.Trigger>{children}</Modal.Trigger>}
+      <Modal.Content title="Add Conversation" className="flex flex-col">
+        <div className="my-2 sticky top">
           {selectedUsers.length > 0 ? (
             <div className="flex flex-row gap-4 items-center">
               <div className="text-muted-foreground tracking-wider">

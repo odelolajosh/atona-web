@@ -1,74 +1,75 @@
-import { AddConversationModal, ChatRoom, ConversationList } from "@/features/chat/components";
-import { ChatService } from "../lib/ChatService";
-import { AutoDraft, BasicStorage, ChatProvider, ChatProviderConfig, ChatServiceFactory, ConnectionState, ConnectionStateChangedEvent, Conversation, Participant, Presence, User, UserStatus } from "@chatscope/use-chat";
-import { ConversationData, UserData } from "../types";
-import { seedStorage } from "../mock";
-import { uuid } from "@/lib/uid";
-import { useEffect } from "react";
-import { storage } from "@/lib/storage";
+import "../chat.css";
+import { ConversationList } from "@/features/chat/components";
+import { ConnectionState, ConnectionStateChangedEvent, Conversation, Participant, Presence, User, UserStatus } from "@chatscope/use-chat";
+import { ConversationData } from "../types";
+import { useCallback, useEffect } from "react";
 import { ConversationJoinedEvent } from "../lib/events";
 import chatAPI from "../lib/api";
-import { ChatLoggedOut } from "./ChatLoggedOut";
 import { useTypedChat } from "../hooks/useChat";
-import { ChatUIProvider } from "../lib/provider";
-import "../chat.css";
+import { __DEV__ } from "../lib/const";
+import { Outlet } from "react-router-dom";
+import { ChatAPI } from "../lib/types";
 
-const __DEV__ = false;
+export const ChatImpl = () => {
+  const { currentUser, service, addUser, addConversation, conversationStatus, setConversationStatus, removeAllUsers, removeAllConversations } = useTypedChat()
 
-// Storage needs to generate id for messages and groups
-const messageIdGenerator = () => uuid();
-const groupIdGenerator = () => uuid();
-
-// Create serviceFactory
-const serviceFactory: ChatServiceFactory<ChatService> = (storage, updateState) => {
-  return new ChatService(storage, updateState);
-};
-
-const chatStorage = new BasicStorage<ConversationData>({ groupIdGenerator, messageIdGenerator });
-
-if (__DEV__) {
-  seedStorage(chatStorage);
-}
-
-const chatConfig: ChatProviderConfig = {
-  typingThrottleTime: 250,
-  typingDebounceTime: 900,
-  debounceTyping: true,
-  autoDraft: AutoDraft.Save | AutoDraft.Restore
-}
-
-const variables = {
-  "--chat-header-height": "66px",
-  "--chat-list-width": "350px",
-} as const
-
-export function Chat() {
-  return (
-    <ChatProvider serviceFactory={serviceFactory} storage={chatStorage} config={chatConfig}>
-      <ChatUIProvider>
-        <main className="h-full flex border-t border-stroke-separator/50" style={variables as any}>
-          <ChatImpl />
-        </main>
-      </ChatUIProvider>
-    </ChatProvider>
-  )
-}
-
-const ChatImpl = () => {
-  const { currentUser, setCurrentUser, service, addUser, addConversation, setConversationLoading, removeAllUsers, removeAllConversations, showAddConversation, setShowAddConversation } = useTypedChat()
-
-  useEffect(() => {
+  const loadConversation = useCallback(async (userId: string) => {
     if (__DEV__) return;
-    const user = storage.get('user') as User<UserData> | null
-    if (!user) return
-    setCurrentUser(user)
-  }, [])
+    
+    if (conversationStatus !== "idle") return;
+
+    setConversationStatus("loading")
+    try {
+      const result = await Promise.all([
+        chatAPI.getUsers(),
+        chatAPI.getConversations(userId)
+      ])
+
+      if (!result[0] || !result[1]) return
+
+      const [users, conversations] = result;
+
+      // remove all existing users
+      removeAllUsers()
+      removeAllConversations()
+
+      users.forEach((user) => {
+        const newUser = new User({
+          id: user.uuid,
+          presence: new Presence({
+            status: user.online ? UserStatus.Available : UserStatus.Away
+          }),
+          username: user.name,
+          avatar: user.avatarUrl,
+          data: {}
+        })
+        addUser(newUser)
+      })
+
+      conversations.forEach((conversation: ChatAPI.Conversation) => {
+        const participants = conversation.users.map((u) => {
+          return new Participant({ id: u.uuid })
+        })
+
+        const newConversation = new Conversation({
+          id: conversation.uuid,
+          participants,
+          data: {
+            name: conversation.name,
+            type: conversation.chatRoomType === 0 ? "dm" : "group"
+          } as ConversationData
+        })
+
+        addConversation(newConversation)
+      })
+      setConversationStatus("success")
+    } catch (err) {
+      console.error("Failed to load conversation", err)
+      setConversationStatus("error")
+    }
+  }, [addConversation, addUser, removeAllConversations, removeAllUsers, conversationStatus, setConversationStatus])
 
   useEffect(() => {
-    if (__DEV__) {
-      setConversationLoading(false);
-    };
-
     if (!currentUser) return
 
     const onConnectionStateChanged = (event: ConnectionStateChangedEvent) => {
@@ -83,15 +84,7 @@ const ChatImpl = () => {
 
     service.connect(currentUser.id)
 
-    setConversationLoading(true)
     loadConversation(currentUser.id)
-      .catch((err) => {
-        console.error("Conversation did not load", err)
-      })
-      .finally(() => {
-        setConversationLoading(false)
-        console.log("Conversation is loaded")
-      })
 
     service.on("connectionStateChanged", onConnectionStateChanged)
     service.on("conversationJoined", onConversationJoined)
@@ -100,63 +93,13 @@ const ChatImpl = () => {
       service.off("connectionStateChanged", onConnectionStateChanged)
       service.off("conversationJoined", onConversationJoined)
     }
-  }, [currentUser])
+  }, [addConversation, currentUser, loadConversation, service])
 
-  const setUp = async (userId: string) => {
-    console.log('setting up', userId)
-  }
-
-  const loadConversation = async (userId: string) => {
-    const result = await Promise.all([
-      chatAPI.getUsers(),
-      chatAPI.getConversations(userId)
-    ])
-
-    if (!result[0] || !result[1]) return
-
-    const [users, conversations] = result;
-
-    // remove all existing users
-    removeAllUsers()
-    removeAllConversations()
-
-    users.forEach((user) => {
-      const newUser = new User({
-        id: user.uuid,
-        presence: new Presence({
-          status: user.online ? UserStatus.Available : UserStatus.Away
-        }),
-        username: user.name,
-        avatar: user.avatarUrl,
-        data: {}
-      })
-      addUser(newUser)
-    })
-
-    conversations.forEach((conversation: ChatAPI.Conversation) => {
-      const participants = conversation.users.map((u: any) => {
-        return new Participant({ id: u.uuid })
-      })
-
-      const newConversation = new Conversation({
-        id: conversation.uuid,
-        participants,
-        data: {
-          name: conversation.name,
-          type: conversation.chatRoomType === 0 ? "dm" : "group"
-        } as ConversationData
-      })
-
-      addConversation(newConversation)
-    })
-  }
-
-  if (!currentUser) return <ChatLoggedOut onLogin={setUp} />
   return (
     <>
       <ConversationList />
-      <ChatRoom />
-      <AddConversationModal open={showAddConversation} onOpenChange={(open) => !open && setShowAddConversation(open)} />
+      <Outlet />
+      {/* <AddConversationModal open={showAddConversation} onOpenChange={(open) => !open && setShowAddConversation(open)} /> */}
     </>
   )
 }

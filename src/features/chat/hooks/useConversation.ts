@@ -7,7 +7,12 @@ export const useConversation = (conversationId: string) => {
   return useMemo(() => {
     const c = getConversation(conversationId)
     if (c) {
-      if (c.data?.type === "dm") {
+      if (c.data?.type === "group") {
+        return {
+          name: c.data.name,
+          avatar: ""
+        }
+      } else {
         // get the first user that is not the current user
         const otherparticipant = c.participants.find(p => currentUser?.id !== p.id)
         if (otherparticipant) {
@@ -19,16 +24,11 @@ export const useConversation = (conversationId: string) => {
             }
           }
         }
-      } else if (c.data?.type === "group") {
-        return {
-          name: c.data.name,
-          avatar: ""
-        }
       }
     }
     return {
       name: "",
       avatar: undefined
     }
-  }, [conversationId])
+  }, [conversationId, currentUser?.id, getConversation, getUser])
 }

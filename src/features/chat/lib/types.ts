@@ -1,4 +1,6 @@
-namespace ChatAPI {
+/* eslint-disable @typescript-eslint/no-namespace */
+
+export namespace ChatAPI {
   export interface User {
     id: number,
     uuid: string,

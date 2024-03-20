@@ -11,7 +11,7 @@ export const router = createBrowserRouter([
     element: <Wrapper />,
     children: [
       { path: "", element: <MissionHome /> },
-      { path: "chat", element: <Chat /> },
+      { path: "chat/*", element: <Chat /> },
       { path: "vs", element: <VideoStream /> }
     ]
   }

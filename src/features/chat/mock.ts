@@ -127,7 +127,7 @@ export const seedStorage = (storage: IStorage) => {
   })
 
   const users = [joshua, elon, mark]
-  for (let user of users) {
+  for (const user of users) {
     storage.addUser(user)
   }
 
@@ -154,7 +154,8 @@ export const seedStorage = (storage: IStorage) => {
         }),
       ],
       data: {
-        name: "The ENvoys"
+        name: "The ENvoys",
+        type: "group"
       }
     }),
   ]

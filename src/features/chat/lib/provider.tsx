@@ -1,21 +1,26 @@
 import { createContext } from "@/lib/context";
-import { PropsWithChildren, useState } from "react";
+import { PropsWithChildren, useMemo, useState } from "react";
+
+type LoadingStatus = "idle" | "loading" | "success" | "error"
 
 type ChatUIContextValue = {
-  conversationLoading: boolean
-  setConversationLoading: (loading: boolean) => void
-  showAddConversation: boolean
-  setShowAddConversation: (show: boolean) => void
+  conversationStatus: LoadingStatus;
+  setConversationStatus: (status: LoadingStatus) => void;
 }
 
 const [useChatUI, ChatUIManager] = createContext<ChatUIContextValue>("ChatUIManager");
 
+
 export const ChatUIProvider = ({ children }: PropsWithChildren) => {
-  const [conversationLoading, setConversationLoading] = useState(false);
-  const [showAddConversation, setShowAddConversation] = useState(false);
+  const [conversationStatus, setConversationStatus] = useState<LoadingStatus>("idle");
+
+  const values = useMemo(() => ({
+    conversationStatus,
+    setConversationStatus
+  }), [conversationStatus])
 
   return (
-    <ChatUIManager {...{ conversationLoading, setConversationLoading, showAddConversation, setShowAddConversation }}>
+    <ChatUIManager {...values}>
       {children}
     </ChatUIManager>
   )
