@@ -11,7 +11,7 @@ import { useTypedChat } from '../hooks/useChat';
 import { __DEV__ } from '../lib/const';
 import { storage } from '@/lib/storage';
 import { Room, Lobby } from '../components';
-import { UploadProvider } from '../components/Uploader';
+import { UploadProvider } from '../components/Uploader/Uploader';
 
 // Storage needs to generate id for messages and groups
 const messageIdGenerator = () => uuid();

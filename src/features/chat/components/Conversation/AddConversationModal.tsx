@@ -35,7 +35,7 @@ export const AddConversationModal: React.FC<AddConversationModalProps> = ({ chil
 
   return (
     <Modal.Root {...props} onOpenChange={(open) => !open && handleClose()}>
-      {children && <Modal.Trigger>{children}</Modal.Trigger>}
+      {children && <Modal.Trigger asChild>{children}</Modal.Trigger>}
       <Modal.Content title="Add Conversation" className="flex flex-col">
         <div className="my-2 sticky top">
           {selectedUsers.length > 0 ? (

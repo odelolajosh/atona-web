@@ -140,6 +140,9 @@ export const seedStorage = (storage: IStorage) => {
       participants: [
         new Participant({
           id: joshua.id,
+        }),
+        new Participant({
+          id: elon.id,
         })
       ],
     }),
@@ -154,7 +157,7 @@ export const seedStorage = (storage: IStorage) => {
         }),
       ],
       data: {
-        name: "The ENvoys",
+        name: "The Envoys",
         type: "group"
       }
     }),

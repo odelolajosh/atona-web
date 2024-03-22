@@ -1,9 +1,10 @@
-import { MessageContent, MessageContentType, MessageDirection, useChat } from "@chatscope/use-chat"
+import { GalleryItem, MessageContent, MessageContentType, MessageDirection, useChat } from "@chatscope/use-chat"
 import { PropsWithChildren, useMemo } from "react"
 import { MessageHtmlContent } from "./MessageHtmlContent"
 import { Avatar } from "./Avatar"
 import { cn } from "@/lib/utils"
 import { formatDate } from "../../lib/utils"
+import { MessageGalleryContent } from "./MessageGalleryContent"
 
 type MessageProps<T extends MessageContentType> = {
   model: {
@@ -55,6 +56,8 @@ export const Message = <T extends MessageContentType>({
       case MessageContentType.TextMarkdown:
       case MessageContentType.TextHtml:
         return <MessageHtmlContent html={payload.content as string} />
+      case MessageContentType.Gallery:
+        return <MessageGalleryContent items={payload.content as GalleryItem[]} />
       default:
         return (
           <div>{payload.content as string}</div>

@@ -26,6 +26,9 @@ dependencies:
   '@radix-ui/react-tabs':
     specifier: ^1.0.4
     version: 1.0.4(@types/react-dom@18.2.22)(@types/react@18.2.67)(react-dom@18.2.0)(react@18.2.0)
+  '@rpldy/mock-sender':
+    specifier: ^1.8.0
+    version: 1.8.0
   '@rpldy/shared':
     specifier: ^1.8.0
     version: 1.8.0
@@ -1291,6 +1294,12 @@ packages:
 
   /@rpldy/life-events@1.8.0:
     resolution: {integrity: sha512-JxhLCBTvv7CnIZQ7iLwZzYuuyIb3aKzb1QRZk2a3z5inxrERzQma/Ql93Fy+NAYdX2zcZZCloPFpu2tPTJFB6A==}
+    dependencies:
+      '@rpldy/shared': 1.8.0
+    dev: false
+
+  /@rpldy/mock-sender@1.8.0:
+    resolution: {integrity: sha512-Dz9bCTeYt6J+led10Y5iP1l2cSzvFFplusm+5hCUUgAEO8O0rpno4w6wzEyZrd/hp1Sb04qUH4gnOhPfqfiuXA==}
     dependencies:
       '@rpldy/shared': 1.8.0
     dev: false
