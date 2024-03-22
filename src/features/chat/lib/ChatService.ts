@@ -4,6 +4,7 @@ import { ChatEvent, ChatEventType as BaseChatEventType, ConnectionState, Connect
 import { ChatEventHandler, ChatEventType, ConversationJoinedEvent } from "./events";
 import { ConversationData, UserData } from "../types";
 import { wsURL } from "./api";
+import { ChatAPI } from "./types";
 
 type EventHandlers = {
   onMessage: Array<ChatEventHandler<
@@ -234,7 +235,7 @@ export class ChatService implements IChatService {
   private handleRoomCreated(payload: { room: ChatAPI.Room, roomId: string }) {
     if (!payload.room) return
     const users = payload.room.users ?? [];
-    const participants = users.map((user) => new Participant({ id: user.uuid }))
+    const participants = users.map((user: ChatAPI.User) => new Participant({ id: user.uuid }))
 
     const conversation = new Conversation<ConversationData>({
       id: payload.roomId,

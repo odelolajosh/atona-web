@@ -1,4 +1,5 @@
 import Axios from 'axios';
+import { ChatAPI } from './types';
 
 export const baseURL = "https://naerospace-chat-staging-f79d5af35fb9.herokuapp.com";
 export const wsURL = "wss://naerospace-chat-staging-f79d5af35fb9.herokuapp.com/ws";
