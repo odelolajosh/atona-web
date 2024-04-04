@@ -1,4 +1,4 @@
-import { GlobeEuropeAfricaIcon, ChatBubbleLeftEllipsisIcon } from "@heroicons/react/24/outline"
+import { GlobeEuropeAfricaIcon, ChatBubbleLeftEllipsisIcon, VideoCameraIcon } from "@heroicons/react/24/outline"
 import { NavLink, Outlet } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { useWs } from "@/provider/WsProvider"
@@ -21,6 +21,11 @@ const nav = [
     name: "Chat",
     icon: ChatBubbleLeftEllipsisIcon,
     path: "/chat",
+  },
+  {
+    name: "Streams",
+    icon: VideoCameraIcon,
+    path: "/vs",
   },
   // {
   //   name: "Terminal",
