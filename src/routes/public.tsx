@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { Spinner } from '@/components/icons/Spinner';
-import { AuthLoader } from '@/lib/auth';
+import { useAuthLoader } from '@/lib/auth';
 import { lazyNamedImport } from '@/lib/utils';
 import { PropsWithChildren, Suspense } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
@@ -12,14 +12,11 @@ const fallback = (
 );
 
 const Public: React.FC<PropsWithChildren> = ({ children }) => {
-  return (
-    <AuthLoader
-      renderLoading={() => fallback}
-      renderUnauthenticated={() => <>{children}</>}
-    >
-      <Navigate to="/" />
-    </AuthLoader>
-  );
+  const { state } = useAuthLoader();
+
+  if (state === 'loading') return fallback;
+  if (state === 'authenticated') return <Navigate to="/" />;
+  return <>{children}</>;
 };
 
 const App = () => {

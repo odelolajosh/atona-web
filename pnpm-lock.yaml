@@ -74,9 +74,6 @@ dependencies:
   react-hook-form:
     specifier: ^7.50.1
     version: 7.51.1(react@18.2.0)
-  react-query-auth:
-    specifier: ^2.3.0
-    version: 2.3.0(@tanstack/react-query@5.29.2)(react@18.2.0)
   react-router-dom:
     specifier: ^6.22.3
     version: 6.22.3(react-dom@18.2.0)(react@18.2.0)
@@ -2866,17 +2863,6 @@ packages:
 
   /react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
-    dev: false
-
-  /react-query-auth@2.3.0(@tanstack/react-query@5.29.2)(react@18.2.0):
-    resolution: {integrity: sha512-42IvqDxnQMOCdPmf+H8hMscO+1EgDPMuNnJrYEJwe8Itsd2z96obtlm85PvBk8BgvOQrKGEGx1VDsAIzk6y7yw==}
-    engines: {node: '>=16'}
-    peerDependencies:
-      '@tanstack/react-query': '>=4.24.6'
-      react: '>=16.8.0'
-    dependencies:
-      '@tanstack/react-query': 5.29.2(react@18.2.0)
-      react: 18.2.0
     dev: false
 
   /react-refresh@0.14.0:

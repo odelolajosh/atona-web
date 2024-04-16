@@ -1,6 +1,6 @@
 import React, { useMemo } from "react"
 import { useTypedChat } from "../hooks/useChat"
-import { uuid } from "@/lib/uid"
+import { uuid } from "@/lib/utils"
 import { storage } from "@/lib/storage"
 import { useForm } from "react-hook-form"
 import { Button, Input } from "@/components/ui"

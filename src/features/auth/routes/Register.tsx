@@ -1,5 +1,7 @@
+import { RegisterForm } from "../components/RegisterForm";
+
 export const Register = () => {
   return (
-    <h1>Register</h1>
+    <RegisterForm onSuccess={() => { }} />
   );
 };

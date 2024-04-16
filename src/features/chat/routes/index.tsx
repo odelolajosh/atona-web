@@ -1,8 +1,7 @@
-import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
-import { ChatLoggedOut } from './ChatLoggedOut';
+import { Outlet, Route, Routes } from 'react-router-dom';
 import { ChatImpl as Chat } from './Chat';
-import { uuid } from '@/lib/uid';
-import { AutoDraft, BasicStorage, ChatProvider, ChatProviderConfig, ChatServiceFactory, User } from '@chatscope/use-chat';
+import { uuid } from '@/lib/utils';
+import { AutoDraft, BasicStorage, ChatProvider, ChatProviderConfig, ChatServiceFactory, Presence, User, UserStatus } from '@chatscope/use-chat';
 import { ChatService } from '../lib/chat-service';
 import { ConversationData, UserData } from '../types';
 import { seedStorage } from '../mock';
@@ -12,6 +11,8 @@ import { __DEV__ } from '../lib/const';
 import { storage } from '@/lib/storage';
 import { Room, Lobby } from '../components';
 import { UploadProvider } from '../components/uploader/Uploader';
+import { useUser } from '@/lib/auth';
+import { useEffect } from 'react';
 
 // Storage needs to generate id for messages and groups
 const messageIdGenerator = () => uuid();
@@ -46,24 +47,23 @@ const variables = {
 } as const
 
 const Protected = () => {
-  const { currentUser } = useTypedChat()
+  const { data } = useUser();
+  const { setCurrentUser } = useTypedChat()
 
-  if (!currentUser) {
-    return <Navigate to="login" />
-  }
+  useEffect(() => {
+    if (data) {
+      const currentUser = new User({
+        id: data.id,
+        presence: new Presence({ status: UserStatus.Available }),
+        username: data.firstName,
+        data: {}
+      })
+      storage.set('user', currentUser)
+      setCurrentUser(currentUser)
+    }
+  }, [data, setCurrentUser])
 
   return <Outlet />
-}
-
-const Public = () => {
-  const { currentUser } = useTypedChat()
-
-  if (currentUser) {
-    return <Navigate to="/" />
-  }
-
-  return <Outlet />
-
 }
 
 const ChatWrapper = () => (
@@ -86,9 +86,6 @@ const ChatRoute = () => (
           <Route index element={<Lobby />} />
           <Route path=":conversationId" element={<Room />} />
         </Route>
-      </Route>
-      <Route element={<Public />}>
-        <Route path="login" element={<ChatLoggedOut />} />
       </Route>
     </Route>
   </Routes>

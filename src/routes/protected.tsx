@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import Wrapper from "@/components/Wrapper";
 import { Spinner } from "@/components/icons/Spinner";
-import { AuthLoader } from "@/lib/auth";
+import { useAuthLoader } from "@/lib/auth";
 import { lazyNamedImport } from "@/lib/utils";
 import { Suspense } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
@@ -20,14 +20,12 @@ const Protected = ({ children }: { children: React.ReactNode }) => {
   const { pathname, search } = useLocation();
   const from = `${pathname}${search}`;
 
-  return (
-    <AuthLoader
-      renderLoading={() => fallback}
-      renderUnauthenticated={() => <Navigate to="/login" state={{ from }} />}
-    >
-      {children}
-    </AuthLoader>
-  );
+  const { state, error } = useAuthLoader();
+
+  if (state === "loading") return fallback;
+  if (state === "error") return <div>{error}</div>;
+  if (state === "unauthenticated") return <Navigate to="/login" state={{ from }} />;
+  return <>{children}</>;
 };
 
 const App = () => {

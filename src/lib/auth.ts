@@ -1,46 +1,130 @@
+import React from 'react';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryKey,
+  UseQueryOptions,
+  UseMutationOptions,
+} from '@tanstack/react-query';
+import { User, UserResponse } from '@/features/auth/types';
 import { LoginCredentialsDTO, RegisterCredentialsDTO, getMe, loginWithEmailAndPassword, registerWithEmailAndPassword } from '@/features/auth';
-import { User } from '@/features/auth/types';
-import { configureAuth } from 'react-query-auth';
 
-const userFn = async () => {
-  try {
-    const response = await getMe();
-    return response ?? {};
-  } catch (err) {
-    console.log(err);
-    return null;
-  }
-};
+const userKey = ['authenticated-user'];
 
-const loginFn = async (data: LoginCredentialsDTO) => {
-  const response = await loginWithEmailAndPassword(data);
-  const { user } = response;
-  return user;
-};
+const useUser = (
+  options?: Omit<
+    UseQueryOptions<User, Error, User, QueryKey>,
+    'queryKey' | 'queryFn'
+  >
+) => useQuery({
+  queryKey: userKey,
+  queryFn: getMe,
+  ...options,
+});
 
-const registerFn = async (data: RegisterCredentialsDTO) => {
-  const response = await registerWithEmailAndPassword(data);
-  const { user } = response;
-  return user;
-};
+const useLogin = (
+  options?: Omit<
+    UseMutationOptions<UserResponse, Error, LoginCredentialsDTO>,
+    'mutationFn'
+  >
+) => {
+  const queryClient = useQueryClient();
 
-const logoutFn = async () => {
-  new Promise((resolve) => {
-    setTimeout(resolve, 1000);
+  const setUser = React.useCallback(
+    (data: User) => queryClient.setQueryData(userKey, data),
+    [queryClient]
+  );
+
+  return useMutation({
+    mutationFn: loginWithEmailAndPassword,
+    ...options,
+    onSuccess: (response, ...rest) => {
+      setUser(response.user);
+      options?.onSuccess?.(response, ...rest);
+    },
   });
+};
+
+const useRegister = (
+  options?: Omit<
+    UseMutationOptions<UserResponse, Error, RegisterCredentialsDTO>,
+    'mutationFn'
+  >
+) => {
+  const queryClient = useQueryClient();
+
+  const setUser = React.useCallback(
+    (data: User) => queryClient.setQueryData(userKey, data),
+    [queryClient]
+  );
+
+  return useMutation({
+    mutationFn: registerWithEmailAndPassword,
+    ...options,
+    onSuccess: (response, ...rest) => {
+      setUser(response.user);
+      options?.onSuccess?.(response, ...rest);
+    },
+  });
+};
+
+const useLogout = (options?: UseMutationOptions<unknown, Error, unknown>) => {
+  const queryClient = useQueryClient();
+
+  const setUser = React.useCallback(
+    (data: User | null) => queryClient.setQueryData(userKey, data),
+    [queryClient]
+  );
+
+  return useMutation({
+    mutationFn: () => Promise.resolve(null),
+    ...options,
+    onSuccess: (...args) => {
+      setUser(null);
+      options?.onSuccess?.(...args);
+    },
+  });
+};
+
+const useAuthLoader = () => {
+  const { isSuccess, isFetched, status, data } = useUser();
+
+  if (isSuccess) {
+    if (!data) {
+      return {
+        state: "unauthenticated",
+        error: "User is not authenticated",
+      }
+    }
+    return {
+      state: "authenticated",
+      user: data,
+    }
+  }
+
+  if (!isFetched) {
+    return {
+      state: "loading",
+    }
+  }
+
+  if (status === 'error') {
+    return {
+      state: "error",
+      error: "An error occurred while loading user data",
+    }
+  }
+
+  return {
+    state: "unknown",
+  }
 }
 
-const config = {
-  userFn,
-  loginFn,
-  registerFn,
-  logoutFn
+export {
+  useUser,
+  useLogin,
+  useRegister,
+  useLogout,
+  useAuthLoader
 };
-
-// eslint-disable-next-line react-refresh/only-export-components
-export const { useUser, useLogin, useRegister, useLogout, AuthLoader } = configureAuth<
-  User | null,
-  unknown,
-  LoginCredentialsDTO,
-  RegisterCredentialsDTO
->(config);
