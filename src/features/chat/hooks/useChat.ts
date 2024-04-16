@@ -1,6 +1,6 @@
 import { useChat } from "@chatscope/use-chat";
 import { ConversationData, UserData } from "../types";
-import { ChatService } from "../lib/ChatService";
+import { ChatService } from "../lib/chat-service";
 import { useChatUI } from "../lib/provider";
 
 type TypedChat = ReturnType<typeof useChat<ConversationData, UserData>> & {

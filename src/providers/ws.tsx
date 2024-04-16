@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext } from "@/lib/context";
 import SturdyWebSocket from "@/lib/ws";
 import { PropsWithChildren, useCallback, useRef, useState } from "react";
@@ -36,6 +37,10 @@ const WsProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const ws = useRef<SturdyWebSocket>();
   const [messages, setMessages] = useState<Telemetry[]>([]);
   const [status, setStatus] = useState<WsStatus>("DISCONNECTED");
+
+  const reconnect = useCallback(() => {
+    ws.current?.reconnect();
+  }, []);
 
   const connect = useCallback(() => {
     if (ws.current) {
@@ -77,11 +82,7 @@ const WsProvider: React.FC<PropsWithChildren> = ({ children }) => {
       setStatus("DISCONNECTED");
       ws.current = undefined;
     }
-  }, [ws.current]);
-
-  const reconnect = useCallback(() => {
-    ws.current?.reconnect();
-  }, []);
+  }, [reconnect]);
 
   const disconnect = useCallback(() => {
     ws.current?.close();

@@ -1,7 +1,8 @@
 import { RouterProvider } from 'react-router-dom'
 import { router } from './routes'
 import { Suspense } from 'react';
-import { WsProvider } from './provider/WsProvider';
+import { WsProvider } from './providers/ws';
+import { AppProvider } from './providers/app';
 
 function App() {
   const fallback = (
@@ -12,9 +13,11 @@ function App() {
 
   return (
     <Suspense fallback={fallback}>
-      <WsProvider>
-        <RouterProvider router={router} />
-      </WsProvider>
+      <AppProvider>
+        <WsProvider>
+          <RouterProvider router={router} />
+        </WsProvider>
+      </AppProvider>
     </Suspense>
   )
 }

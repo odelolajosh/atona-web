@@ -1,7 +1,7 @@
 import { Map } from "@/components/map";
 import { Button } from "@/components/ui";
 import { cn } from "@/lib/utils";
-import { useWs } from "@/provider/WsProvider";
+import { useWs } from "@/providers/ws";
 import { BoltSlashIcon } from "@heroicons/react/24/outline";
 import { FlyMission } from "..";
 import { useModal } from "@/lib/hooks/modal";

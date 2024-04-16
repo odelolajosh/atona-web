@@ -82,3 +82,9 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #fff;
 }
+
+@base {
+  body {
+    @apply bg-background text-foreground;
+  }
+}

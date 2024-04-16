@@ -7,7 +7,7 @@ import { Waypoints } from './Waypoints';
 import { Position, Waypoint } from './types';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { UAVIcon } from '../icons/UAV';
-import { useWs } from '@/provider/WsProvider';
+import { useWs } from '@/providers/ws';
 import { uuid } from '@/lib/uid';
 import { useCurrentLocation } from './hooks';
 import { MapMenu, NsMapContext, useNsMap } from "./provider";

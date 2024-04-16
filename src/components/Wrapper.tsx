@@ -1,7 +1,7 @@
 import { GlobeEuropeAfricaIcon, ChatBubbleLeftEllipsisIcon, VideoCameraIcon } from "@heroicons/react/24/outline"
-import { NavLink, Outlet } from "react-router-dom"
+import { NavLink } from "react-router-dom"
 import { cn } from "@/lib/utils"
-import { useWs } from "@/provider/WsProvider"
+import { useWs } from "@/providers/ws"
 import { NaeroIcon } from "./icons/Naero"
 
 /******** Navigation ********/
@@ -16,7 +16,7 @@ const nav = [
   //   icon: PaperAirplaneIcon,
   //   path: "/fp",
   // },
-  
+
   {
     name: "Chat",
     icon: ChatBubbleLeftEllipsisIcon,
@@ -39,7 +39,7 @@ const nav = [
   // }
 ]
 
-export default function Wrapper() {
+export default function Wrapper({ children }: { children: React.ReactNode }) {
   const ws = useWs("Wrapper");
 
   return (
@@ -130,7 +130,7 @@ export default function Wrapper() {
         </div>
       </nav>
       <div className='w-full h-[calc(100vh-4rem)] overflow-hidden'>
-        <Outlet />
+        {children}
       </div>
     </div>
   )

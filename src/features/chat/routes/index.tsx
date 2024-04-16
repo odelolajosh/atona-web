@@ -3,7 +3,7 @@ import { ChatLoggedOut } from './ChatLoggedOut';
 import { ChatImpl as Chat } from './Chat';
 import { uuid } from '@/lib/uid';
 import { AutoDraft, BasicStorage, ChatProvider, ChatProviderConfig, ChatServiceFactory, User } from '@chatscope/use-chat';
-import { ChatService } from '../lib/ChatService';
+import { ChatService } from '../lib/chat-service';
 import { ConversationData, UserData } from '../types';
 import { seedStorage } from '../mock';
 import { ChatUIProvider } from '../lib/provider';
@@ -11,7 +11,7 @@ import { useTypedChat } from '../hooks/useChat';
 import { __DEV__ } from '../lib/const';
 import { storage } from '@/lib/storage';
 import { Room, Lobby } from '../components';
-import { UploadProvider } from '../components/Uploader/Uploader';
+import { UploadProvider } from '../components/uploader/Uploader';
 
 // Storage needs to generate id for messages and groups
 const messageIdGenerator = () => uuid();

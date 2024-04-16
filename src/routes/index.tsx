@@ -1,18 +1,10 @@
-import Wrapper from "@/components/Wrapper";
-import { VideoStream } from "@/features/vs";
-import { lazyNamedImport } from "@/lib/utils";
 import { createBrowserRouter } from "react-router-dom";
+import { protectedRoutes } from "./protected";
+import { publicRoutes } from "./public";
 
-const { MissionHome } = lazyNamedImport(() => import("@/features/mission"), "MissionHome");
-const { Chat } = lazyNamedImport(() => import("@/features/chat"), "Chat");
+
 
 export const router = createBrowserRouter([
-  {
-    element: <Wrapper />,
-    children: [
-      { path: "", element: <MissionHome /> },
-      { path: "chat/*", element: <Chat /> },
-      { path: "vs", element: <VideoStream /> }
-    ]
-  }
+  ...protectedRoutes,
+  ...publicRoutes
 ])
