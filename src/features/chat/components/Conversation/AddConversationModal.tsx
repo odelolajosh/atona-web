@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useTypedChat } from '../../hooks/useChat';
-import { Modal, ModalProps } from '@/components/ui/Modal';
-import { Button } from '@/components/ui';
+import { Modal, ModalProps } from '@/components/ui/modal';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 type AddConversationModalProps = ModalProps & { children?: React.ReactNode }
 

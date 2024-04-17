@@ -3,11 +3,12 @@ import { useTypedChat } from "../../hooks/useChat"
 import { ConversationData } from "../../types"
 import { cn } from "@/lib/utils"
 import { Avatar } from "../Avatar"
-import { Button, Input } from "@/components/ui"
 import { useConversation } from "../../hooks/useConversation"
 import { useNavigate } from "react-router-dom"
 import { AddConversationModal } from "."
 import { Spinner } from "@/components/icons/Spinner"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
 type ConversationProps = {
   conversation: TConversation<ConversationData>
@@ -20,9 +21,9 @@ const Conversation = ({ conversation: c }: ConversationProps) => {
 
   return (
     <div className={cn(
-      "flex gap-4 items-center px-4 py-2 rounded-2xl cursor-pointer transition-colors hover:bg-secondary/50",
+      "flex gap-4 items-center px-4 py-2 rounded-2xl cursor-pointer transition-colors hover:bg-muted/50",
       {
-        "bg-primary hover:bg-primary": activeConversation?.id === c.id
+        "bg-muted hover:bg-muted text-muted-foreground hover:text-muted-foreground": activeConversation?.id === c.id
       }
     )} onClick={() => navigate(`/chat/${c.id}`)}>
       <Avatar name={name} className="w-10 h-10 rounded-full" />
@@ -52,7 +53,7 @@ export const ConversationList = () => {
           </div>
           {/* Floating button */}
           <AddConversationModal>
-            <Button className="absolute bottom-4 right-4" size="sm">Add conversation</Button>
+            <Button className="absolute bottom-4 right-4" size="lg">Add conversation</Button>
           </AddConversationModal>
         </>
       )}

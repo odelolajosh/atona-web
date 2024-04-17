@@ -13,7 +13,7 @@ export const Avatar = ({ name, src, ...props }: AvatarProps) => {
   }, [name])
 
   return (
-    <div {...props} className={cn("flex-shrink-0 w-10 h-10 rounded-full bg-secondary text-white flex items-center justify-center", props.className)}>
+    <div {...props} className={cn("flex-shrink-0 w-10 h-10 rounded-full bg-accent text-accent-foreground flex items-center justify-center", props.className)}>
       {src ? <img src={src} alt={name} className="w-full h-full rounded-full" /> : initials}
     </div>
   )

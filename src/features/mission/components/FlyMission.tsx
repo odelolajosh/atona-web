@@ -1,9 +1,10 @@
-import { Button, Input } from "@/components/ui";
-import { Modal, ModalProps } from "@/components/ui/Modal";
+import { Modal, ModalProps } from "@/components/ui/modal";
 import { usePromise } from "@/lib/hooks/promise";
 import { useForm } from "react-hook-form";
 import { takeoff, uploadMission } from "../api";
 import { Position } from "@/components/map/types";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export const FlyMission = (props: ModalProps & { waypoints: Position[] }) => {
   const { register, handleSubmit, formState: { errors } } = useForm<{ altitude: string }>();

@@ -1,5 +1,5 @@
 import { Position } from "@/components/map/types";
-import axios from "@/lib/axios"
+import { axios } from "@/lib/axios"
 
 
 export const uploadMission = (wps: Position[], altitude: number) => {

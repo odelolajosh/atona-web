@@ -1,4 +1,4 @@
-import { PropsWithChildren, forwardRef, useEffect, useImperativeHandle, useRef } from "react"
+import { PropsWithChildren, forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from "react"
 import { Message, MessageGroup as MsgGroup } from "./Message"
 import { MessageGroup } from "@chatscope/use-chat/dist/MessageGroup"
 import { cn } from "@/lib/utils"
@@ -34,28 +34,25 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(({ child
     preventScrollTop: false,
   })
 
-  useEffect(() => {
-    mount()
+  const handleScroll = useCallback(() => {
+    const snapshot = snapshotRef.current
+
+    if (!snapshot.scrollTicking) {
+      window.requestAnimationFrame(() => {
+        if (snapshot.noScroll === false) {
+          snapshot.preventScrollTop = isSticked();
+        } else {
+          snapshot.noScroll = false;
+        }
+
+        snapshot.scrollTicking = false;
+      })
+
+      snapshot.scrollTicking = true
+    }
   }, [])
 
-  useEffect(() => {
-    const snapshot = snapshotRef.current!
-
-    if (snapshot.sticky) {
-      scrollToEnd("smooth")
-      snapshot.preventScrollTop = true;
-    }
-
-    captureSnapshot()
-  }, [children])
-
-  useImperativeHandle(ref, () => {
-    return {
-      mount
-    }
-  })
-
-  const mount = () => {
+  const mount = useCallback(() => {
     scrollToEnd("smooth")
 
     const list = containerRef.current!
@@ -69,7 +66,44 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(({ child
       list.removeEventListener("scroll", handleScroll)
       snapshot.resizeObserver?.disconnect()
     }
-  }
+  }, [handleScroll]);
+
+  const captureSnapshot = useCallback(() => {
+    const list = containerRef.current
+    if (!list) return
+
+    const sticky = list.scrollHeight - list.scrollTop - list.clientHeight < 1
+    const [lastMessage, lastMessageGroup] = getLastMessageAndGroup()
+
+    snapshotRef.current = {
+      lastClientHeight: list.clientHeight,
+      preventScrollTop: !sticky,
+      lastMessage,
+      lastMessageGroup,
+      sticky,
+    }
+  }, [])
+
+  useEffect(() => {
+    mount()
+  }, [mount])
+
+  useEffect(() => {
+    const snapshot = snapshotRef.current!
+
+    if (snapshot.sticky) {
+      scrollToEnd("smooth")
+      snapshot.preventScrollTop = true;
+    }
+
+    captureSnapshot()
+  }, [captureSnapshot, children])
+
+  useImperativeHandle(ref, () => {
+    return {
+      mount
+    }
+  })
 
   const handleResize = () => {
     const snapshot = snapshotRef.current
@@ -99,24 +133,6 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(({ child
     }
   }
 
-  const handleScroll = () => {
-    const snapshot = snapshotRef.current
-
-    if (!snapshot.scrollTicking) {
-      window.requestAnimationFrame(() => {
-        if (snapshot.noScroll === false) {
-          snapshot.preventScrollTop = isSticked();
-        } else {
-          snapshot.noScroll = false;
-        }
-
-        snapshot.scrollTicking = false;
-      })
-
-      snapshot.scrollTicking = true
-    }
-  }
-
   const isSticked = () => {
     const list = containerRef.current!
     return Math.round(list.scrollHeight - list.scrollTop - list.clientHeight) < 1
@@ -127,22 +143,6 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(({ child
     const lastMessageGroup = containerRef.current?.querySelector(".message--group:last-child")
     const lastMessage = lastMessageGroup?.querySelector(".message:last-child")
     return [lastMessage, lastMessageGroup]
-  }
-
-  const captureSnapshot = () => {
-    const list = containerRef.current
-    if (!list) return
-
-    const sticky = list.scrollHeight - list.scrollTop - list.clientHeight < 1
-    const [lastMessage, lastMessageGroup] = getLastMessageAndGroup()
-
-    snapshotRef.current = {
-      lastClientHeight: list.clientHeight,
-      preventScrollTop: !sticky,
-      lastMessage,
-      lastMessageGroup,
-      sticky,
-    }
   }
 
   const scrollToEnd = (scrollBehavior: ScrollBehavior = "smooth") => {

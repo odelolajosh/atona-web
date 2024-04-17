@@ -1,11 +1,12 @@
 import { Map } from "@/components/map";
-import { Button } from "@/components/ui";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useWs } from "@/providers/ws";
 import { BoltSlashIcon } from "@heroicons/react/24/outline";
 import { FlyMission } from "..";
 import { useModal } from "@/lib/hooks/modal";
 import { Position } from "@/components/map/types";
+import { Helmet } from "react-helmet-async";
 
 export const MissionHome = () => {
   const { status, lastMessage, connect, disconnect } = useWs("Home");
@@ -25,12 +26,15 @@ export const MissionHome = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Flight - Atona GCS</title>
+      </Helmet>
       <section className="flex w-full h-full relative">
         <aside className="w-full max-w-md">
           <section className="flex flex-col gap-4 items-center justify-center px-6 h-1/2 bg-muted/20">
             <p className={cn("mx-auto text-3xl font-medium text-center text-error capitalize", {
               "text-success": status === 'CONNECTED',
-              "text-error": status === 'DISCONNECTED',
+              "text-destructive": status === 'DISCONNECTED',
               "text-warning": status === 'CONNECTING'
             })}>{status.toLowerCase()}</p>
             {status === 'DISCONNECTED' ? (
@@ -38,6 +42,7 @@ export const MissionHome = () => {
                 <Button
                   type="button"
                   className="w-fit"
+                  size="lg"
                   onClick={initiateDroneConnection}
                 >
                   Connect Drone
@@ -82,7 +87,7 @@ export const MissionHome = () => {
               </li>
               <li className="flex flex-col gap-3 items-center justify-center text-muted-foreground">
                 <span className="mx-auto text-xl">Arm Status</span>
-                <span className="mx-auto text-3xl text-white">{status === 'CONNECTED' ? (lastMessage?.armed ? Boolean(lastMessage?.armed) ? "Armed" : "Disarmed" : "--") : "--"}</span>
+                <span className="mx-auto text-3xl text-white">{status === 'CONNECTED' ? (lastMessage?.armed ? lastMessage?.armed ? "Armed" : "Disarmed" : "--") : "--"}</span>
               </li>
             </div>
 

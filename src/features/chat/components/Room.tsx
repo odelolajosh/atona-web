@@ -139,9 +139,9 @@ export const Room = () => {
   )
 
   return (
-    <div className="flex-1 h-full flex flex-col items-center pb-4 border-l border-stroke-separator/50">
+    <div className="flex-1 h-full flex flex-col items-center pb-4 border-l border-border">
       <ConversationHeader />
-      <hr className="w-full border-t border-stroke-separator/50" />
+      <hr className="w-full border-t border-border" />
       <MessageList className="w-full flex-1 py-4 message--font" ref={messageListRef}>
         {preflight === 'success' ? (
           <Messages messages={currentMessages} />

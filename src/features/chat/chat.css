@@ -4,11 +4,11 @@
 }
 
 .message--outgoing {
-  @apply bg-primary text-white;
+  @apply bg-primary text-primary-foreground;
 }
 
 .message--incoming {
-  @apply bg-secondary;
+  @apply bg-primary text-primary-foreground;
 }
 
 .message--first {
@@ -32,7 +32,7 @@
 .message--incoming.message--first::before {
   content: "";
   @apply absolute w-0 h-0 top-0 -left-2;
-  @apply border-8 border-transparent border-t-secondary rounded;
+  @apply border-8 border-transparent border-t-primary rounded;
 }
 
 .content-editable-ph:empty:before {

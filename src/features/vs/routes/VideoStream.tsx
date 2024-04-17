@@ -100,7 +100,7 @@ export const VideoStream = () => {
     <div className="flex flex-col h-full w-full items-center justify-center p-4">
       <video
         ref={player}
-        className={`bg-secondary h-[600px] max-h-full w-full max-w-5xl rounded-lg ${isConnecting ? 'loading' : ''}`}
+        className={`bg-muted h-[600px] max-h-full w-full max-w-5xl rounded-lg ${isConnecting ? 'loading' : ''}`}
       />
       {isConnecting && <p>Connecting...</p>}
     </div>

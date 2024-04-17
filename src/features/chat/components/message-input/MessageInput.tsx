@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useRef } from "react"
 import { ContentEditable } from "./ContentEditable"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui"
 import { useControllableState } from "@/lib/hooks/state"
 import { DocumentIcon, PaperAirplaneIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline"
 import { UploadButton } from "../uploader/Uploader"
 import { Progress } from "@/components/icons/Spinner"
 import { useUploaderPreview, useUploaderPreviewItem } from ".."
 import { FILE_STATES } from "@rpldy/shared"
+import { Button } from "@/components/ui/button"
 
 type MessageInputProps = {
   value?: string
@@ -73,7 +73,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({ value: _value, place
 
   return (
     <div className="flex flex-col gap-2 w-full max-w-2xl p-2">
-      <div className={cn("relative bg-surface-input border border-stroke-input rounded-2xl w-full max-w-2xl", className)}>
+      <div className={cn("relative bg-input border border-border rounded-2xl w-full max-w-2xl", className)}>
         {/* Attachment Button */}
         <div className="absolute left-0 bottom-0 p-1 flex justify-center align-center gap-2">
           <UploadButton>
@@ -112,7 +112,7 @@ const PreviewItem = ({ id, conversationId }: { id: string, conversationId: strin
 
   if (!item) return null
   return (
-    <div key={item.id} className="relative group flex items-center gap-3 py-2 px-6 bg-surface-input border border-stroke-input rounded-2xl">
+    <div key={item.id} className="relative group flex items-center gap-3 py-2 px-6 bg-input border border-border rounded-2xl">
       <span className="relative">
         <DocumentIcon width={24} />
         {showSpinner && (

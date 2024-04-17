@@ -44,9 +44,9 @@ export default function Wrapper({ children }: { children: React.ReactNode }) {
 
   return (
     <div className={cn("w-full h-screen max-w-screen font-clash bg-background")}>
-      <nav role='list' className={cn('flex items-center content-center justify-between w-full h-16 px-4 text-white', {
-        "bg-success/20": ws.status === 'CONNECTED',
-        "bg-warning/20": ws.status === 'CONNECTING'
+      <nav role='list' className={cn('flex items-center content-center justify-between w-full h-16 px-4] border-b border-border', {
+        "bg-success/[0.05]": ws.status === 'CONNECTED',
+        "bg-warning/[0.05]": ws.status === 'CONNECTING'
       })}>
         <div className='flex items-center content-center h-full'>
           <NaeroIcon className='flex items-center content-center w-24 h-12 py-1' />
@@ -127,6 +127,24 @@ export default function Wrapper({ children }: { children: React.ReactNode }) {
               <span>Connect</span>
             </div>
           )} */}
+        </div>
+      </nav>
+      <div className='w-full h-[calc(100vh-4rem)] overflow-hidden'>
+        {children}
+      </div>
+    </div>
+  )
+}
+
+export function MiniWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <div className={cn("relative w-full h-screen max-w-screen")}>
+      <nav role='list' className={cn('flex items-center content-center justify-between w-full h-16 px-4')}>
+        <div className='flex items-center content-center h-full gap-2'>
+          <NaeroIcon className='flex items-center content-center w-24 h-12 py-1' />
+          <h1 className='text-2xl font-extrabold text-white'>
+            Naerospace
+          </h1>
         </div>
       </nav>
       <div className='w-full h-[calc(100vh-4rem)] overflow-hidden'>

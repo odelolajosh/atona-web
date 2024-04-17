@@ -51,19 +51,42 @@
 }
 
 :root {
-  font-family: 'Clash', sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  --background: 240deg 6% 7%;
+  --foreground: 220deg 9% 94%;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  --muted: 225deg 6% 14%;
+  --muted-foreground: 222deg 5% 49%;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
+  --card: 220deg 6% 10%;
+  --card-foreground: var(--foreground);
+
+  --popover: 0deg 0% 100%;
+  --popover-foreground: 222.2deg 47.4% 11.2%;
+
+  --border: 220deg 6% 19%;
+
+  --input: 210deg 5% 7%;
+
+  --primary: 225deg 6% 14%;
+  --primary-foreground: 210deg 40% 98%;
+
+  --secondary: 193deg 98% 74%;
+  --secondary-foreground: 210deg 13% 13%;
+
+  --accent: 193deg 100% 88%;
+  --accent-foreground: 215deg 44% 8%;
+
+  --destructive: 348deg 75% 59%;
+  --destructive-foreground: 210deg 40% 98%;
+
+  --success: 164deg 64% 42%;
+  --success-foreground: 210deg 40% 98%;
+
+  --warning: 26deg 100% 56%;
+  --warning-foreground: 210deg 40% 98%;
+
+  --ring: 215 20.2% 65.1%;
+  --radius: 0.5rem;
 }
 
 ::-webkit-scrollbar {
@@ -83,8 +106,16 @@
   background: #fff;
 }
 
-@base {
+@layer base {
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-display antialiased;
+
+    color-scheme: light dark;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
   }
 }

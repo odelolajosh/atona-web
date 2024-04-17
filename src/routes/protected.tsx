@@ -1,11 +1,12 @@
 /* eslint-disable react-refresh/only-export-components */
-import Wrapper from "@/components/Wrapper";
+import Wrapper from "@/components/wrapper";
 import { Spinner } from "@/components/icons/Spinner";
 import { useAuthLoader } from "@/lib/auth";
 import { lazyNamedImport } from "@/lib/utils";
 import { Suspense } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
+const { Mission } = lazyNamedImport(() => import("@/features/mission"), "Mission");
 const { MissionHome } = lazyNamedImport(() => import("@/features/mission"), "MissionHome");
 const { Chat } = lazyNamedImport(() => import("@/features/chat"), "Chat");
 const { VideoStream } = lazyNamedImport(() => import("@/features/vs"), "VideoStream");
@@ -28,6 +29,12 @@ const Protected = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+Protected;
+
+const Unprotected = ({ children }: { children: React.ReactNode }) => {
+  return <>{children}</>;
+};
+
 const App = () => {
   return (
     <Suspense fallback={fallback}>
@@ -38,18 +45,19 @@ const App = () => {
 
 export const protectedRoutes = [
   {
-    path: '/',
+    path: "/",
     element: (
-      <Protected>
+      <Unprotected>
         <Wrapper>
           <App />
         </Wrapper>
-      </Protected>
+      </Unprotected>
     ),
     children: [
-      { path: '', element: <MissionHome /> },
+      { path: "/", element: <MissionHome /> },
+      { path: "mission/*", element: <Mission /> },
       { path: "chat/*", element: <Chat /> },
-      { path: "vs/*", element: <VideoStream /> }
+      { path: "vs/*", element: <VideoStream /> },
     ],
   },
 ];

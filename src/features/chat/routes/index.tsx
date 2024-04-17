@@ -13,6 +13,7 @@ import { Room, Lobby } from '../components';
 import { UploadProvider } from '../components/uploader/Uploader';
 import { useUser } from '@/lib/auth';
 import { useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 
 // Storage needs to generate id for messages and groups
 const messageIdGenerator = () => uuid();
@@ -70,7 +71,10 @@ const ChatWrapper = () => (
   <ChatProvider serviceFactory={serviceFactory} storage={chatStorage} config={chatConfig}>
     <ChatUIProvider>
       <UploadProvider>
-        <main className="h-full flex border-t border-stroke-separator/50" style={variables as React.CSSProperties}>
+        <main className="h-full flex" style={variables as React.CSSProperties}>
+          <Helmet>
+            <title>Chat - Atona GCS</title>
+          </Helmet>
           <Outlet />
         </main>
       </UploadProvider>
