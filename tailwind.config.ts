@@ -81,7 +81,7 @@ export default {
       ],
     },
   },
-  plugins: [tailwindPatternBackground],
+  plugins: [require("tailwindcss-animate"), tailwindPatternBackground],
 } satisfies Config;
 
 function tailwindPatternBackground({ matchUtilities, theme }: PluginAPI) {
