@@ -1,2 +1,2 @@
-export * from './Message'
-export * from './Messages'
+export * from './message'
+export * from './messages'

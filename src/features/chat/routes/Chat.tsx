@@ -5,13 +5,13 @@ import { ConversationData } from "../types";
 import { useCallback, useEffect } from "react";
 import { ConversationJoinedEvent } from "../lib/events";
 import chatAPI from "../lib/api";
-import { useTypedChat } from "../hooks/useChat";
+import { useChat } from "../hooks/use-chat";
 import { __DEV__ } from "../lib/const";
 import { Outlet } from "react-router-dom";
 import { ChatAPI } from "../lib/types";
 
 export const ChatImpl = () => {
-  const { currentUser, service, addUser, addConversation, conversationStatus, setConversationStatus, removeAllUsers, removeAllConversations } = useTypedChat()
+  const { currentUser, service, addUser, addConversation, conversationStatus, setConversationStatus, removeAllUsers, removeAllConversations } = useChat()
 
   const loadConversation = useCallback(async (userId: string) => {
     if (__DEV__) return;

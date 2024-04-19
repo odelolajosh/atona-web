@@ -4,7 +4,7 @@ import { getMockSenderEnhancer } from "@rpldy/mock-sender";
 import type { Batch, BatchItem } from "@rpldy/shared";
 import { FC, PropsWithChildren } from "react";
 import { Slot } from "@radix-ui/react-slot";
-import { useTypedChat } from "../../hooks/useChat";
+import { useChat } from "../../hooks/use-chat";
 import { UploaderStore } from "./store";
 import { useUploaderStore } from ".";
 import { UPLOAD_API_URL } from "./api";
@@ -34,7 +34,7 @@ export const UploadProvider: FC<PropsWithChildren> = ({ children }) => {
 }
 
 export const Uploader = ({ children }: { children: React.ReactNode }) => {
-  const { activeConversation } = useTypedChat();
+  const { activeConversation } = useChat();
   const uploaderStore = useUploaderStore("Uploader");
 
   useBatchAddListener((batch: Batch) => {

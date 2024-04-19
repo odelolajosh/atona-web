@@ -1,10 +1,10 @@
 import { GalleryItem, MessageContent, MessageContentType, MessageDirection, useChat } from "@chatscope/use-chat"
 import { PropsWithChildren, useMemo } from "react"
-import { MessageHtmlContent } from "./MessageHtmlContent"
-import { Avatar } from "./Avatar"
+import { MessageHtmlContent } from "./message-html-content"
+import { Avatar } from "./avatar"
 import { cn } from "@/lib/utils"
 import { formatDate } from "../../lib/utils"
-import { MessageGalleryContent } from "./MessageGalleryContent"
+import { MessageGalleryContent } from "./message-gallery-content"
 
 type MessageProps<T extends MessageContentType> = {
   model: {

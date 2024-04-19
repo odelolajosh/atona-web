@@ -7,7 +7,7 @@ type TypedChat = ReturnType<typeof useChat<ConversationData, UserData>> & {
   service: ChatService
 }
 
-export const useTypedChat = (consumer: string = "useTypedChat") => {
+export const useChat = (consumer: string = "useChat") => {
   const chat = useChat<ConversationData, UserData>() as TypedChat
   const chatUI = useChatUI(consumer)
 

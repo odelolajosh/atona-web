@@ -1,8 +1,8 @@
 import { useMemo } from "react"
-import { useTypedChat } from "./useChat"
+import { useChat } from "./use-chat"
 
 export const useConversation = (conversationId: string) => {
-  const { getConversation, getUser, currentUser } = useTypedChat()
+  const { getConversation, getUser, currentUser } = useChat()
 
   return useMemo(() => {
     const c = getConversation(conversationId)

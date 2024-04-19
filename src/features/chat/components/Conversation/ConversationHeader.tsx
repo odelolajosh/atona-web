@@ -1,10 +1,10 @@
-import { useTypedChat } from "../../hooks/useChat"
-import { Avatar } from "../Avatar"
-import { useConversation } from "../../hooks/useConversation"
+import { useChat } from "../../hooks/use-chat"
+import { Avatar } from "../avatar"
+import { useConversation } from "../../hooks/use-conversation"
 import { Helmet } from "react-helmet-async"
 
 export const ConversationHeader = () => {
-  const { activeConversation } = useTypedChat()
+  const { activeConversation } = useChat()
   const { name } = useConversation(activeConversation?.id || "")
 
   return (

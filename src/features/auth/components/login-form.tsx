@@ -35,7 +35,7 @@ export const LoginForm = ({ onSuccess }: { onSuccess: () => void }) => {
   }
 
   return (
-    <Card className="max-w-[500px] mx-auto bg-card/20">
+    <Card className="max-w-[500px] mx-auto bg-card/30">
       <CardHeader className="space-y-px">
         <CardTitle className="scroll-m-20 text-3xl font-extrabold tracking-tight">Login</CardTitle>
         <CardDescription className="text-lg text-muted-foreground">Please enter your email to continue</CardDescription>

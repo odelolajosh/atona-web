@@ -1,9 +1,9 @@
 import { Conversation as TConversation } from "@chatscope/use-chat"
-import { useTypedChat } from "../../hooks/useChat"
+import { useChat } from "../../hooks/use-chat"
 import { ConversationData } from "../../types"
 import { cn } from "@/lib/utils"
-import { Avatar } from "../Avatar"
-import { useConversation } from "../../hooks/useConversation"
+import { Avatar } from "../avatar"
+import { useConversation } from "../../hooks/use-conversation"
 import { useNavigate } from "react-router-dom"
 import { AddConversationModal } from "."
 import { Spinner } from "@/components/icons/Spinner"
@@ -16,7 +16,7 @@ type ConversationProps = {
 
 const Conversation = ({ conversation: c }: ConversationProps) => {
   const navigate = useNavigate()
-  const { activeConversation } = useTypedChat()
+  const { activeConversation } = useChat()
   const { name } = useConversation(c.id)
 
   return (
@@ -35,7 +35,7 @@ const Conversation = ({ conversation: c }: ConversationProps) => {
 }
 
 export const ConversationList = () => {
-  const { conversations, conversationStatus } = useTypedChat()
+  const { conversations, conversationStatus } = useChat()
 
   return (
     <div className="w-[var(--chat-list-width)] flex flex-col relative">

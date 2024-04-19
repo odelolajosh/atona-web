@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ConversationHeader, Lobby, MessageInput, MessageList, MessageListRef, Messages, useUploaderStore } from "."
-import { useTypedChat } from "../hooks/useChat"
+import { useChat } from "../hooks/use-chat"
 import { ChatMessage, GalleryContent, GalleryItem, HtmlContent, MessageContent, MessageContentType, MessageDirection, MessageStatus } from "@chatscope/use-chat";
 import chatAPI from "../lib/api";
 import { Spinner } from "@/components/icons/Spinner";
@@ -11,7 +11,7 @@ type Preflight = 'idle' | 'success' | 'error' | 'loading';
 
 export const Room = () => {
   const { conversationId } = useParams() as { conversationId: string };
-  const { activeConversation, setActiveConversation, sendMessage, currentUser, currentMessage, setCurrentMessage, currentMessages, addMessage } = useTypedChat();
+  const { activeConversation, setActiveConversation, sendMessage, currentUser, currentMessage, setCurrentMessage, currentMessages, addMessage } = useChat();
   const { clearConversationUploads, getUploadedItems } = useUploaderStore("Room");
   const messageListRef = useRef<MessageListRef>(null);
   const [preflight, _setPreflight] = useState<Preflight>(activeConversation?.data?.preflight || 'idle');

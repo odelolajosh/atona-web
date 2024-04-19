@@ -4,8 +4,8 @@ import { Register } from './register';
 import { MiniWrapper } from '@/components/wrapper';
 
 const Wrapper = () => (
-  <div className="relative flex items-center justify-center h-screen bg-background bg-grid-[#222326]/[0.2]">
-    <div className="absolute pointer-events-none inset-0 flex items-center justify-center bg-black [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
+  <div className="relative flex items-center justify-center h-screen bg-muted-background bg-grid-white/[0.02]">
+    <div className="absolute pointer-events-none inset-0 flex items-center justify-center bg-background [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
     <MiniWrapper>
       <Outlet />
     </MiniWrapper>

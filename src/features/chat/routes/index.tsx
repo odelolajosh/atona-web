@@ -1,16 +1,16 @@
 import { Outlet, Route, Routes } from 'react-router-dom';
-import { ChatImpl as Chat } from './Chat';
+import { ChatImpl as Chat } from './chat';
 import { uuid } from '@/lib/utils';
 import { AutoDraft, BasicStorage, ChatProvider, ChatProviderConfig, ChatServiceFactory, Presence, User, UserStatus } from '@chatscope/use-chat';
 import { ChatService } from '../lib/chat-service';
 import { ConversationData, UserData } from '../types';
 import { seedStorage } from '../mock';
 import { ChatUIProvider } from '../lib/provider';
-import { useTypedChat } from '../hooks/useChat';
+import { useChat } from '../hooks/use-chat';
 import { __DEV__ } from '../lib/const';
 import { storage } from '@/lib/storage';
 import { Room, Lobby } from '../components';
-import { UploadProvider } from '../components/uploader/Uploader';
+import { UploadProvider } from '../components/uploader/uploader';
 import { useUser } from '@/lib/auth';
 import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
@@ -49,7 +49,7 @@ const variables = {
 
 const Protected = () => {
   const { data } = useUser();
-  const { setCurrentUser } = useTypedChat()
+  const { setCurrentUser } = useChat()
 
   useEffect(() => {
     if (data) {

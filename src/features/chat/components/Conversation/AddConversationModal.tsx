@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useTypedChat } from '../../hooks/useChat';
+import { useChat } from '../../hooks/use-chat';
 import { Modal, ModalProps } from '@/components/ui/modal';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 type AddConversationModalProps = ModalProps & { children?: React.ReactNode }
 
 export const AddConversationModal: React.FC<AddConversationModalProps> = ({ children, ...props }) => {
-  const { users, currentUser, service } = useTypedChat();
+  const { users, currentUser, service } = useChat();
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
   const handleAction = async () => {

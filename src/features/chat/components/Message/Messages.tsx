@@ -1,5 +1,5 @@
 import { PropsWithChildren, forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from "react"
-import { Message, MessageGroup as MsgGroup } from "./Message"
+import { Message, MessageGroup as MsgGroup } from "./message"
 import { MessageGroup } from "@chatscope/use-chat/dist/MessageGroup"
 import { cn } from "@/lib/utils"
 
