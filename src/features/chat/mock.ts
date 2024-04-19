@@ -110,6 +110,34 @@ const elonMarkAndMeMessages: IMessage[] = [
 ]
 
 
+const randomNames = [
+  "John Doe",
+  "Jane Doe",
+  "Bill Gates",
+  "Steve Jobs",
+  "Tim Cook",
+  "Sundar Pichai",
+  "Satya Nadella",
+  "Jeff Bezos",
+  "Larry Page",
+  "Sergey Brin",
+  "Jack Dor",
+  "Mark Cuban",
+  "Warren Buffet",
+  "Bill Clinton",
+  "Barack Obama",
+  "George Bush",
+  "Donald Trump",
+  "Joe Biden",
+  "Kamala Harris",
+  "Hillary Clinton",
+  "Michelle Obama",
+  "Melinda Gates",
+  "Oprah Winfrey",
+  "Ellen DeGeneres",
+  "Ellen Musk",
+]
+
 export const seedStorage = (storage: IStorage) => {
   const joshua = new User({
     id: "1",
@@ -126,7 +154,14 @@ export const seedStorage = (storage: IStorage) => {
     username: "Mark Zuckerberg",
   })
 
-  const users = [joshua, elon, mark]
+  const moreUsers = randomNames.map((name, index) => {
+    return new User({
+      id: (index + 4).toString(),
+      username: name,
+    })
+  })
+
+  const users = [joshua, elon, mark, ...moreUsers]
   for (const user of users) {
     storage.addUser(user)
   }
@@ -166,7 +201,7 @@ export const seedStorage = (storage: IStorage) => {
   conversations.forEach(c => {
     storage.addConversation(c)
   });
-  
+
   elonMarkAndMeMessages.forEach(m => {
     storage.addMessage(new ChatMessage({
       direction: m.from === joshua.id ? MessageDirection.Outgoing : MessageDirection.Incoming,

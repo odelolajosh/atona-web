@@ -1,7 +1,7 @@
 import { NaeroIcon } from "./naero"
 
 type LogoProps = {
-  text: boolean
+  text?: boolean
 }
 
 export const Logo = ({ text }: LogoProps) => (

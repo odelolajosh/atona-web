@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { useWs } from "@/providers/ws"
 import { NaeroIcon } from "./icons/naero"
+import { Logo } from "./icons/logo"
 
 /******** Navigation ********/
 const nav = [
@@ -141,10 +142,7 @@ export function MiniWrapper({ children }: { children: React.ReactNode }) {
     <div className={cn("relative w-full h-screen max-w-screen")}>
       <nav role='list' className={cn('flex items-center content-center justify-between w-full h-16 px-4')}>
         <div className='flex items-center content-center h-full gap-2'>
-          <NaeroIcon className='flex items-center content-center w-24 h-12 py-1' />
-          <h1 className='text-2xl font-extrabold text-white'>
-            Naerospace
-          </h1>
+          <Logo text />
         </div>
       </nav>
       <div className='w-full h-[calc(100vh-4rem)] overflow-hidden'>

@@ -1,14 +1,14 @@
-import { useChat } from "@chatscope/use-chat";
+import { useChat as _useChat } from "@chatscope/use-chat";
 import { ConversationData, UserData } from "../types";
 import { ChatService } from "../lib/chat-service";
 import { useChatUI } from "../lib/provider";
 
-type TypedChat = ReturnType<typeof useChat<ConversationData, UserData>> & {
+type UseChat = ReturnType<typeof _useChat<ConversationData, UserData>> & {
   service: ChatService
 }
 
 export const useChat = (consumer: string = "useChat") => {
-  const chat = useChat<ConversationData, UserData>() as TypedChat
+  const chat = _useChat<ConversationData, UserData>() as UseChat
   const chatUI = useChatUI(consumer)
 
   const removeAllUsers = () => {

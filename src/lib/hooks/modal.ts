@@ -2,7 +2,7 @@ import { useState } from "react";
 
 type Modal<T> = {
   type: T;
-  data: any;
+  data: unknown;
 };
 
 export type ModalProps<T> = Modal<T>;
@@ -10,7 +10,7 @@ export type ModalProps<T> = Modal<T>;
 export const useModal = <T>() => {
   const [modal, setModal] = useState<Modal<T> | null>(null);
 
-  const openModal = (type: T, data: any) => {
+  const openModal = (type: T, data: unknown) => {
     setModal({ type, data });
   };
 

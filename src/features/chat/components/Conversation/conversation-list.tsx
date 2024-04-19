@@ -9,6 +9,7 @@ import { AddConversationModal } from "."
 import { Spinner } from "@/components/icons/spinner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Pencil2Icon } from "@radix-ui/react-icons"
 
 type ConversationProps = {
   conversation: TConversation<ConversationData>
@@ -53,7 +54,9 @@ export const ConversationList = () => {
           </div>
           {/* Floating button */}
           <AddConversationModal>
-            <Button className="absolute bottom-4 right-4" size="lg">Add conversation</Button>
+            <Button className="absolute bottom-4 right-4 gap-2" size="lg">
+              <Pencil2Icon /> New conversation
+            </Button>
           </AddConversationModal>
         </>
       )}

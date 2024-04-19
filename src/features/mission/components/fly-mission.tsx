@@ -1,39 +1,72 @@
-import { Modal, ModalProps } from "@/components/ui/modal";
 import { usePromise } from "@/lib/hooks/promise";
 import { useForm } from "react-hook-form";
-import { takeoff, uploadMission } from "../api";
+import { uploadMission } from "../api";
 import { Position } from "@/components/map/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogProps } from "@/components/ui/dialog";
+import { Form } from "@/components/ui/form";
+import { useControllableState } from "@/lib/hooks/state";
 
-export const FlyMission = (props: ModalProps & { waypoints: Position[] }) => {
-  const { register, handleSubmit, formState: { errors } } = useForm<{ altitude: string }>();
+type MissionDTO = {
+  altitude: number;
+};
 
-  const [handleMission, submitting] = usePromise(handleSubmit(async (data) => {
+export const FlyMission = (props: DialogProps & { waypoints: Position[] }) => {
+  const [open, onOpenChange] = useControllableState({
+    prop: props.open,
+    defaultProp: false,
+    onChange: props.onOpenChange
+  });
+
+  const form = useForm<MissionDTO>({
+    defaultValues: {
+      altitude: 10,
+    }
+  });
+
+  const [handleMission, submitting] = usePromise(async (data: MissionDTO) => {
     const altitude = Number(data.altitude);
-    console.log("handling mission", altitude, props.waypoints)
+    console.log("log", altitude, props.waypoints)
     await uploadMission(props.waypoints, altitude);
-    await takeoff(altitude);
+    // await takeoff(altitude);
     props.onOpenChange?.(false);
-  }));
+  });
 
   return (
-    <Modal.Root {...props}>
-      {props.children && <Modal.Trigger asChild>{props.children}</Modal.Trigger>}
-      <Modal.Content title="Create Mission" description="Fly the drone to a location">
-        <form onSubmit={handleMission}>
-          <label htmlFor="name" className="text-white">Username</label>
-          <Input type="number" defaultValue="10"
-            {...register('altitude', { required: true })}
-          />
-          {errors.altitude && <small>{errors.altitude?.message}</small>}
-          <div className="flex justify-end mt-6">
-            <Button type="submit" size="sm" disabled={submitting}>
-              Fly
-            </Button>
-          </div>
-        </form>
-      </Modal.Content>
-    </Modal.Root>
-  )
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {props.children && <Dialog.Trigger asChild>{props.children}</Dialog.Trigger>}
+      <Dialog.Content className="sm:max-w-[425px]">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleMission)}>
+            <Dialog.Header>
+              <Dialog.Title>Create mission</Dialog.Title>
+              <Dialog.Description>
+                Set the takeoff altitude to fly drone.
+              </Dialog.Description>
+            </Dialog.Header>
+            <div className="grid gap-4 py-4">
+              <Form.Field
+                control={form.control}
+                name="altitude"
+                render={({ field }) => (
+                  <Form.Item className="grid grid-cols-4 items-center gap-4">
+                    <Form.Label htmlFor="altitude" className="text-right">
+                      Altitude
+                    </Form.Label>
+                    <Form.Control>
+                      <Input id="altitude" type="number" {...field} className="col-span-3" />
+                    </Form.Control>
+                  </Form.Item>
+                )}
+              />
+            </div>
+            <Dialog.Footer>
+              <Button type="submit" disabled={submitting}>Fly</Button>
+            </Dialog.Footer>
+          </form>
+        </Form>
+      </Dialog.Content>
+    </Dialog>
+  );
 }

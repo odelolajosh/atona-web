@@ -1,3 +1,3 @@
-export * from "./ConversationHeader";
-export * from "./ConversationList";
-export * from "./AddConversationModal";
+export * from "./conversation-header";
+export * from "./conversation-list";
+export * from "./add-conversation-modal";

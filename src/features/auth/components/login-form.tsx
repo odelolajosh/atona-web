@@ -3,10 +3,10 @@ import { NavLink } from "react-router-dom"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { useLogin } from "@/lib/auth"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Form } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 
 const formSchema = z.object({
   email: z.string().email({
@@ -36,38 +36,38 @@ export const LoginForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
   return (
     <Card className="max-w-[500px] mx-auto bg-card/80">
-      <CardHeader className="space-y-px">
-        <CardTitle className="scroll-m-20 text-3xl font-extrabold tracking-tight">Login</CardTitle>
-        <CardDescription className="text-lg text-muted-foreground">Please enter your email to continue</CardDescription>
-      </CardHeader>
-      <CardContent>
+      <Card.Header className="space-y-px">
+        <Card.Title className="scroll-m-20 text-3xl font-extrabold tracking-tight">Login</Card.Title>
+        <Card.Description className="text-lg text-muted-foreground">Please enter your email to continue</Card.Description>
+      </Card.Header>
+      <Card.Content>
         <Form {...form}>
           <form className="w-[min(100%,500px)] mx-auto space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <div className="space-y-4">
-              <FormField
+              <Form.Field
                 control={form.control}
                 name="email"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
+                  <Form.Item>
+                    <Form.Label>Email</Form.Label>
+                    <Form.Control>
                       <Input placeholder="someone@gmail.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                    </Form.Control>
+                    <Form.Message />
+                  </Form.Item>
                 )}
               />
-              <FormField
+              <Form.Field
                 control={form.control}
                 name="password"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
+                  <Form.Item>
+                    <Form.Label>Password</Form.Label>
+                    <Form.Control>
                       <Input type="password" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                    </Form.Control>
+                    <Form.Message />
+                  </Form.Item>
                 )}
               />
             </div>
@@ -80,7 +80,7 @@ export const LoginForm = ({ onSuccess }: { onSuccess: () => void }) => {
             </div>
           </form>
         </Form>
-      </CardContent>
+      </Card.Content>
     </Card>
   )
 }

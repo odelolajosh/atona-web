@@ -1,23 +1,27 @@
 import { useState } from 'react'
 import { useChat } from '../../hooks/use-chat';
-import { Modal, ModalProps } from '@/components/ui/modal';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogProps } from '@/components/ui/dialog';
+import { useControllableState } from '@/lib/hooks/state';
 
-type AddConversationModalProps = ModalProps & { children?: React.ReactNode }
+type AddConversationModalProps = DialogProps & { children?: React.ReactNode }
 
-export const AddConversationModal: React.FC<AddConversationModalProps> = ({ children, ...props }) => {
+export const AddConversationModal: React.FC<AddConversationModalProps> = (props) => {
+  const [open, onOpenChange] = useControllableState({
+    prop: props.open,
+    defaultProp: false,
+    onChange: props.onOpenChange
+  })
+
   const { users, currentUser, service } = useChat();
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
-  const handleAction = async () => {
+  const handleAction = () => {
     if (selectedUsers.length === 0) return
-    try {
-      await service.createConversation(selectedUsers)
-      handleClose()
-    } catch (err) {
-      console.error("Failed to create conversation", err)
-    }
+    service.createConversation(selectedUsers)
+    setSelectedUsers([])
+    onOpenChange?.(false)
   }
 
   const handleSelection = (userId: string) => {
@@ -28,16 +32,17 @@ export const AddConversationModal: React.FC<AddConversationModalProps> = ({ chil
     }
   }
 
-  const handleClose = () => [
-    setSelectedUsers([]),
-    props.onOpenChange?.(false)
-  ]
-
   return (
-    <Modal.Root {...props} onOpenChange={(open) => !open && handleClose()}>
-      {children && <Modal.Trigger asChild>{children}</Modal.Trigger>}
-      <Modal.Content title="Add Conversation" className="flex flex-col">
-        <div className="my-2 sticky top">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {props.children && <Dialog.Trigger asChild>{props.children}</Dialog.Trigger>}
+      <Dialog.Content className="sm:max-w-[425px]">
+        <Dialog.Header>
+          <Dialog.Title>New conversation</Dialog.Title>
+          <Dialog.Description>
+            Select users to start a conversation
+          </Dialog.Description>
+        </Dialog.Header>
+        <div>
           {selectedUsers.length > 0 ? (
             <div className="flex flex-row gap-4 items-center">
               <div className="text-muted-foreground tracking-wider">
@@ -53,7 +58,7 @@ export const AddConversationModal: React.FC<AddConversationModalProps> = ({ chil
             </div>
           )}
         </div>
-        <div className="mt-6 mb-2 px-1 grow overflow-y-auto">
+        <div className="px-1 grow overflow-y-auto max-h-[50vh]">
           {users.map((u) => {
             if (u.id === currentUser?.id) return null
 
@@ -63,8 +68,8 @@ export const AddConversationModal: React.FC<AddConversationModalProps> = ({ chil
               "h-12 px-4 py-6 my-1 rounded-xl",
               "transition-colors cursor-pointer",
               {
-                "hover:bg-secondary": !selected,
-                "bg-primary": selected,
+                "hover:bg-muted": !selected,
+                "bg-secondary text-secondary-foreground": selected,
                 // "opacity-50": csn[u.id]
               }
             )
@@ -75,7 +80,7 @@ export const AddConversationModal: React.FC<AddConversationModalProps> = ({ chil
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                   </svg>
                 </div>
-                <div>
+                <div className={cn({ "font-medium": selected })}>
                   {u.username}
                 </div>
               </div>
@@ -85,13 +90,13 @@ export const AddConversationModal: React.FC<AddConversationModalProps> = ({ chil
             <div>Nothing here</div>
           )}
         </div>
-        <div className="mt-4 flex flex-row gap-4">
-          <Button disabled={selectedUsers.length === 0} className="h-auto flex-1 py-2 px-4 rounded-lg transition-colors" onClick={handleAction}>
-            Start Conversation
+        <Dialog.Footer>
+          <Button disabled={selectedUsers.length === 0} className='w-full' onClick={handleAction}>
+            Create {selectedUsers.length > 1 ? 'Group' : 'Conversation'}
           </Button>
-        </div>
-      </Modal.Content>
-    </Modal.Root>
+        </Dialog.Footer>
+      </Dialog.Content>
+    </Dialog>
   )
 }
 
