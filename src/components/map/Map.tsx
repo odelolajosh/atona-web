@@ -1,4 +1,4 @@
-import { Tab, TabItem, TabList } from "@/components/ui/Tab";
+import { Tab, TabItem, TabList } from "@/components/ui/tab";
 import { APIProvider, Map as GglMap, AdvancedMarker } from '@vis.gl/react-google-maps';
 import type { MapProps as GglMapProps, MapMouseEvent } from '@vis.gl/react-google-maps';
 import React, { PropsWithChildren, useCallback, useMemo, useState } from 'react';
