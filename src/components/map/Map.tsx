@@ -6,7 +6,7 @@ import { useControllableState, useLocalState } from '@/lib/hooks/state';
 import { Waypoints } from './waypoints';
 import { Position, Waypoint } from './types';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { UAVIcon } from '../icons/UAV';
+import { UAVIcon } from '../icons/uav';
 import { useWs } from '@/providers/ws';
 import { uuid } from '@/lib/utils';
 import { useCurrentLocation } from './hooks';

@@ -5,7 +5,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { queryClient } from '@/lib/react-query';
 import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/icons/Spinner';
+import { Spinner } from '@/components/icons/spinner';
 
 const ErrorFallback = () => {
   return (

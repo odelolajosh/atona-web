@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import Svg, { SvgProps } from "./Svg";
+import Svg, { SvgProps } from "./svg";
 
 export const Spinner = (props: SvgProps) => (
   <Svg {...props} className={cn("animate-spin mx-auto text-text-black", props.className)} fill="none" viewBox="0 0 24 24">

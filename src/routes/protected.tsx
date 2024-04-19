@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import Wrapper from "@/components/wrapper";
-import { Spinner } from "@/components/icons/Spinner";
+import { Spinner } from "@/components/icons/spinner";
 import { useAuthLoader } from "@/lib/auth";
 import { lazyNamedImport } from "@/lib/utils";
 import { Suspense } from "react";

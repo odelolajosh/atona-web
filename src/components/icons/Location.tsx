@@ -1,4 +1,4 @@
-import Svg, { SvgProps } from "./Svg";
+import Svg, { SvgProps } from "./svg";
 
 // export const LocationIcon = (props: SvgProps) => (
 //   <Svg {...props} viewBox="0 0 24 24" fill="currentColor" >

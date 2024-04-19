@@ -1,4 +1,4 @@
-import { NaeroIcon } from "./Naero"
+import { NaeroIcon } from "./naero"
 
 type LogoProps = {
   text: boolean

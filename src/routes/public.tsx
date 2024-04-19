@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { Spinner } from '@/components/icons/Spinner';
+import { Spinner } from '@/components/icons/spinner';
 import { useAuthLoader } from '@/lib/auth';
 import { lazyNamedImport } from '@/lib/utils';
 import { PropsWithChildren, Suspense } from 'react';

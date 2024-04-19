@@ -6,7 +6,7 @@ import { Avatar } from "../avatar"
 import { useConversation } from "../../hooks/use-conversation"
 import { useNavigate } from "react-router-dom"
 import { AddConversationModal } from "."
-import { Spinner } from "@/components/icons/Spinner"
+import { Spinner } from "@/components/icons/spinner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 

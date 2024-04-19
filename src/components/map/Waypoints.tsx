@@ -1,9 +1,9 @@
 import { useControllableState } from "@/lib/hooks/state";
 import { AdvancedMarker } from "@vis.gl/react-google-maps";
 import { Waypoint } from "./types";
-import { Polyline } from "./Polyline";
+import { Polyline } from "./polyline";
 import { PropsWithChildren, useMemo, useState } from "react";
-import { LocationIcon } from "../icons/Location";
+import { LocationIcon } from "../icons/location";
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useNsMap } from "./provider";
 

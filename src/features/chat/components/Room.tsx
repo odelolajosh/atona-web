@@ -3,7 +3,7 @@ import { ConversationHeader, Lobby, MessageInput, MessageList, MessageListRef, M
 import { useChat } from "../hooks/use-chat"
 import { ChatMessage, GalleryContent, GalleryItem, HtmlContent, MessageContent, MessageContentType, MessageDirection, MessageStatus } from "@chatscope/use-chat";
 import chatAPI from "../lib/api";
-import { Spinner } from "@/components/icons/Spinner";
+import { Spinner } from "@/components/icons/spinner";
 import { Outlet, useParams } from "react-router-dom";
 import { __DEV__ } from "../lib/const";
 
