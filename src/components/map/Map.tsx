@@ -1,4 +1,4 @@
-import { Tab, TabItem, TabList } from "@/components/ui/tab";
+import { Tabs } from "@/components/ui/tab";
 import { APIProvider, Map as GglMap, AdvancedMarker } from '@vis.gl/react-google-maps';
 import type { MapProps as GglMapProps, MapMouseEvent } from '@vis.gl/react-google-maps';
 import React, { PropsWithChildren, useCallback, useMemo, useState } from 'react';
@@ -137,26 +137,23 @@ const Map: React.FC<MapProps> = ({ children, waypoints, onWaypointsChange, onFly
               <Waypoints waypoints={wps || []} onWaypointsChange={setWps} closePath={closePath} />
             </GglMap>
             <div className="absolute top-4 right-4 z-10">
-              <Tab
+              <Tabs
                 defaultValue="roadmap"
                 onValueChange={(value) => setTheme(value as keyof typeof mapTheme)}
-                className='bg-muted'
               >
-                <TabList className="grid w-52 grid-cols-2 space-x-2 rounded-full bg-background p-1 absolute top-[10px] right-12 font-medium text-base" aria-label="Select a map type">
-                  <TabItem
-                    className="h-8 data-[state=active]:bg-primary data-[state=active]:text-foreground rounded-full outline-none cursor-pointer transition-colors duration-300"
+                <Tabs.List aria-label="Select a map type">
+                  <Tabs.Trigger
                     value="roadmap"
                   >
                     Roadmap
-                  </TabItem>
-                  <TabItem
-                    className="h-8 data-[state=active]:bg-primary data-[state=active]:text-foreground rounded-full outline-none cursor-pointer transition-colors duration-300"
+                  </Tabs.Trigger>
+                  <Tabs.Trigger
                     value="satellite"
                   >
                     Satellite
-                  </TabItem>
-                </TabList>
-              </Tab>
+                  </Tabs.Trigger>
+                </Tabs.List>
+              </Tabs>
             </div>
           </div>
           <ContextMenu options={contextMenu} />

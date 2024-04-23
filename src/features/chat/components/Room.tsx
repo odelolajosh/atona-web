@@ -139,7 +139,7 @@ export const Room = () => {
   )
 
   return (
-    <div className="flex-1 h-full flex flex-col items-center pb-4 border-l border-border">
+    <div className="h-full flex flex-col items-center pb-4 border-l border-border">
       <ConversationHeader />
       <hr className="w-full border-t border-border" />
       <MessageList className="w-full flex-1 py-4 message--font" ref={messageListRef}>

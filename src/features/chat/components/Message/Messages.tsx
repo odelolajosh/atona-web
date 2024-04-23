@@ -185,7 +185,7 @@ export const Messages: React.FC<MessagesProps> = ({ messages }) => {
     <>
       {messages.map((g, index) => {
         return (
-          <MsgGroup key={index} direction={g.direction}>
+          <MsgGroup key={index} direction={g.direction} senderId={g.senderId}>
             {g.messages.map((m, index) => {
               return (
                 <Message key={index} model={{

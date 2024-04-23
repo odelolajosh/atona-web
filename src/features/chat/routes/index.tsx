@@ -3,12 +3,11 @@ import { ChatImpl as Chat } from './chat';
 import { uuid } from '@/lib/utils';
 import { AutoDraft, BasicStorage, ChatProvider, ChatProviderConfig, ChatServiceFactory, Presence, User, UserStatus } from '@chatscope/use-chat';
 import { ChatService } from '../lib/chat-service';
-import { ConversationData, UserData } from '../types';
+import { ConversationData } from '../types';
 import { seedStorage } from '../mock';
 import { ChatUIProvider } from '../lib/provider';
 import { useChat } from '../hooks/use-chat';
 import { __DEV__ } from '../lib/const';
-import { storage } from '@/lib/storage';
 import { Room, Lobby } from '../components';
 import { UploadProvider } from '../components/uploader/uploader';
 import { useUser } from '@/lib/auth';
@@ -28,11 +27,6 @@ const chatStorage = new BasicStorage<ConversationData>({ groupIdGenerator, messa
 
 if (__DEV__) {
   seedStorage(chatStorage);
-} else {
-  const user = storage.get('user') as User<UserData> | null
-  if (user) {
-    chatStorage.setCurrentUser(user)
-  }
 }
 
 const chatConfig: ChatProviderConfig = {
@@ -59,7 +53,6 @@ const Protected = () => {
         username: data.firstName,
         data: {}
       })
-      storage.set('user', currentUser)
       setCurrentUser(currentUser)
     }
   }, [data, setCurrentUser])
@@ -71,7 +64,7 @@ const ChatWrapper = () => (
   <ChatProvider serviceFactory={serviceFactory} storage={chatStorage} config={chatConfig}>
     <ChatUIProvider>
       <UploadProvider>
-        <main className="h-full flex" style={variables as React.CSSProperties}>
+        <main className="h-full" style={variables as React.CSSProperties}>
           <Helmet>
             <title>Chat - Atona GCS</title>
           </Helmet>

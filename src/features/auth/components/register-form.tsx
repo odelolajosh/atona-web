@@ -35,7 +35,7 @@ export const RegisterForm = ({ onSuccess }: { onSuccess: () => void }) => {
   }
 
   return (
-    <Card className="max-w-[500px] mx-auto bg-card/80">
+    <Card className="max-w-[500px] mx-auto bg-card/90">
       <Card.Header className="space-y-px">
         <Card.Title className="scroll-m-20 text-3xl font-extrabold tracking-tight">Create an account</Card.Title>
         <Card.Description className="text-lg text-muted-foreground">Please enter your email to continue</Card.Description>

@@ -7,15 +7,17 @@ import { ConversationJoinedEvent } from "../lib/events";
 import chatAPI from "../lib/api";
 import { useChat } from "../hooks/use-chat";
 import { __DEV__ } from "../lib/const";
-import { Outlet } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 import { ChatAPI } from "../lib/types";
+import { cn } from "@/lib/utils";
 
 export const ChatImpl = () => {
+  const { conversationId } = useParams();
   const { currentUser, service, addUser, addConversation, conversationStatus, setConversationStatus, removeAllUsers, removeAllConversations } = useChat()
 
   const loadConversation = useCallback(async (userId: string) => {
     if (__DEV__) return;
-    
+
     if (conversationStatus !== "idle") return;
 
     setConversationStatus("loading")
@@ -96,10 +98,17 @@ export const ChatImpl = () => {
   }, [addConversation, currentUser, loadConversation, service])
 
   return (
-    <>
-      <ConversationList />
-      <Outlet />
+    <div className="flex h-full">
+      <ConversationList className={cn("transition-width duration-75", {
+        "w-full md:w-[var(--chat-list-width)]": !conversationId,
+        "w-0 overflow-hidden md:w-[var(--chat-list-width)]": conversationId
+      })} />
+      <div className={cn("flex-1", {
+        "hidden md:block": !conversationId
+      })}>
+        <Outlet />
+      </div>
       {/* <AddConversationModal open={showAddConversation} onOpenChange={(open) => !open && setShowAddConversation(open)} /> */}
-    </>
+    </div >
   )
 }

@@ -1,10 +1,10 @@
 import { GalleryItem, MessageContent, MessageContentType, MessageDirection, useChat } from "@chatscope/use-chat"
 import { PropsWithChildren, useMemo } from "react"
 import { MessageHtmlContent } from "./message-html-content"
-import { Avatar } from "./avatar"
 import { cn } from "@/lib/utils"
 import { formatDate } from "../../lib/utils"
 import { MessageGalleryContent } from "./message-gallery-content"
+import { ChatAvatar } from "../chat-avatar"
 
 type MessageProps<T extends MessageContentType> = {
   model: {
@@ -89,24 +89,31 @@ export const Message = <T extends MessageContentType>({
 
 type MessageGroupProps = PropsWithChildren<{
   direction: MessageDirection,
-  avatar?: string
+  senderId: string
 }>
 
 export const MessageGroup: React.FC<MessageGroupProps> = ({
   direction,
-  avatar = "https://avatars.githubusercontent.com/u/25190563?v=4",
-  children
+  children,
+  senderId
 }) => {
+  const { getUser } = useChat()
+
+  const user = useMemo(() => {
+    const user = getUser(senderId)
+    return user
+  }, [getUser, senderId])
+
   return (
     <section className={cn("relative", "message--group")}>
       {/* Avatar */}
-      <Avatar className={cn(
-        "absolute top-4",
+      <ChatAvatar className={cn(
+        "absolute top-0",
         {
-          "left-6": direction === MessageDirection.Incoming,
-          "right-6 hidden": direction === MessageDirection.Outgoing
+          "left-4": direction === MessageDirection.Incoming,
+          "right-4 hidden": direction === MessageDirection.Outgoing
         }
-      )} url={avatar} />
+      )} src={user?.avatar} name={user?.username} />
       {/* Message */}
       <div className="flex flex-col w-full">
         {children}

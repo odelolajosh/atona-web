@@ -2,7 +2,7 @@ import { Conversation as TConversation } from "@chatscope/use-chat"
 import { useChat } from "../../hooks/use-chat"
 import { ConversationData } from "../../types"
 import { cn } from "@/lib/utils"
-import { Avatar } from "../avatar"
+import { ChatAvatar } from "../chat-avatar"
 import { useConversation } from "../../hooks/use-conversation"
 import { useNavigate } from "react-router-dom"
 import { AddConversationModal } from "."
@@ -18,7 +18,7 @@ type ConversationProps = {
 const Conversation = ({ conversation: c }: ConversationProps) => {
   const navigate = useNavigate()
   const { activeConversation } = useChat()
-  const { name } = useConversation(c.id)
+  const { name, avatar } = useConversation(c.id)
 
   return (
     <div className={cn(
@@ -27,7 +27,7 @@ const Conversation = ({ conversation: c }: ConversationProps) => {
         "bg-muted hover:bg-muted text-muted-foreground hover:text-muted-foreground": activeConversation?.id === c.id
       }
     )} onClick={() => navigate(`/chat/${c.id}`)}>
-      <Avatar name={name} className="w-10 h-10 rounded-full" />
+      <ChatAvatar src={avatar} name={name} className="w-10 h-10 rounded-full" />
       <div className="flex-1">
         <div className="text-white font-medium">{name}</div>
       </div>
@@ -35,11 +35,11 @@ const Conversation = ({ conversation: c }: ConversationProps) => {
   )
 }
 
-export const ConversationList = () => {
+export const ConversationList = ({ className }: { className?: string }) => {
   const { conversations, conversationStatus } = useChat()
 
   return (
-    <div className="w-[var(--chat-list-width)] flex flex-col relative">
+    <div className={cn("w-full flex flex-col relative", className)}>
       <div className="py-4 px-6">
         <Input type="text" placeholder="Search..." autoComplete="off" />
       </div>

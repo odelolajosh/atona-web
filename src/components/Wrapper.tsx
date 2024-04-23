@@ -51,14 +51,13 @@ export default function Wrapper({ children }: { children: React.ReactNode }) {
       })}>
         <div className='flex items-center content-center h-full'>
           <NaeroIcon className='flex items-center content-center w-24 h-12 py-1' />
-          <ul className='grid h-full grid-cols-5 gap-2 py-1 ml-5'>
+          <ul className='flex h-full gap-2 py-1 ml-5'>
             {nav.map((item, index) => (
               <li key={index}>
                 <NavLink className={({ isActive }) => cn(
-                  "flex flex-col items-center justify-center h-full px-3 rounded-md",
-                  "hover:text-zinc-100 text-zinc-500",
+                  "inline-flex flex-col h-14 items-center justify-center rounded-md bg-background px-4 text-sm font-medium transition-colors hover:bg-muted/50 focus:bg-muted focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-muted/50",
                   {
-                    "bg-zinc-500/20 text-zinc-100": isActive,
+                    "bg-muted/50 hover:bg-muted/30": isActive,
                   }
                 )} to={item.path}>
                   <item.icon className='w-8 h-8 mx-auto' />
