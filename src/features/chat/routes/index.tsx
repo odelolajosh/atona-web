@@ -8,10 +8,10 @@ const chatRoutes: RouteObject[] = [
     element: <ChatWrapper />,
     children: [
       {
-        path: '/',
+        path: 'chat',
         element: <Chat />,
         children: [
-          { path: '/', element: <Lobby /> },
+          { index: true, element: <Lobby /> },
           { path: ':conversationId', element: <Room /> },
         ],
       },
