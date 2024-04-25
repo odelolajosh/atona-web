@@ -3,8 +3,8 @@ import { ChatAPI } from './types';
 
 // export const baseURL = "https://naerospace-chat-staging-f79d5af35fb9.herokuapp.com";
 // export const wsURL = "wss://naerospace-chat-staging-f79d5af35fb9.herokuapp.com/ws";
-export const baseURL = "http://158.220.111.179:8004";
-export const wsURL = "wss://158.220.111.179:8004";
+export const baseURL = "https://admin.sabrecwa.com/brymes";
+export const wsURL = "wss://admin.sabrecwa.com/brymes/ws";
 
 const axios = Axios.create({
   baseURL
