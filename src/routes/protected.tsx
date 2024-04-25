@@ -2,14 +2,12 @@
 import Wrapper from "@/components/wrapper";
 import { Spinner } from "@/components/icons/spinner";
 import { useAuthLoader } from "@/lib/auth";
-import { lazyNamedImport } from "@/lib/utils";
 import { Suspense } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+import missionRoutes from "@/features/mission/routes";
+import chatRoutes from "@/features/chat/routes";
+import vsRoutes from "@/features/vs/routes";
 
-const { Mission } = lazyNamedImport(() => import("@/features/mission"), "Mission");
-const { MissionHome } = lazyNamedImport(() => import("@/features/mission"), "MissionHome");
-const { Chat } = lazyNamedImport(() => import("@/features/chat"), "Chat");
-const { VideoStream } = lazyNamedImport(() => import("@/features/vs"), "VideoStream");
 
 const fallback = (
   <div className="h-screen w-full flex items-center justify-center">
@@ -29,12 +27,6 @@ const Protected = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-Protected;
-
-const Unprotected = ({ children }: { children: React.ReactNode }) => {
-  return <>{children}</>;
-};
-
 const App = () => {
   return (
     <Suspense fallback={fallback}>
@@ -45,19 +37,17 @@ const App = () => {
 
 export const protectedRoutes = [
   {
-    path: "/",
     element: (
-      <Unprotected>
+      <Protected>
         <Wrapper>
           <App />
         </Wrapper>
-      </Unprotected>
+      </Protected>
     ),
     children: [
-      { path: "/", element: <MissionHome /> },
-      { path: "mission/*", element: <Mission /> },
-      { path: "chat/*", element: <Chat /> },
-      { path: "vs/*", element: <VideoStream /> },
+      ...missionRoutes,
+      ...chatRoutes,
+      ...vsRoutes
     ],
   },
 ];

@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { Spinner } from '@/components/icons/spinner';
+import authRoutes from '@/features/auth/routes';
 import { useAuthLoader } from '@/lib/auth';
-import { lazyNamedImport } from '@/lib/utils';
 import { PropsWithChildren, Suspense } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
@@ -27,19 +27,15 @@ const App = () => {
   );
 };
 
-
-const { Auth } = lazyNamedImport(() => import('@/features/auth'), 'Auth');
-
 export const publicRoutes = [
   {
-    path: '/',
     element: (
       <Public>
         <App />
       </Public>
     ),
     children: [
-      { path: '*', element: <Auth /> },
+      ...authRoutes
     ],
   },
 ];

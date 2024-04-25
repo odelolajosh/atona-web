@@ -11,7 +11,7 @@ import { Outlet, useParams } from "react-router-dom";
 import { ChatAPI } from "../lib/types";
 import { cn } from "@/lib/utils";
 
-export const ChatImpl = () => {
+export const Chat = () => {
   const { conversationId } = useParams();
   const { currentUser, service, addUser, addConversation, conversationStatus, setConversationStatus, removeAllUsers, removeAllConversations } = useChat()
 

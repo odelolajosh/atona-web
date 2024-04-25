@@ -1,24 +1,16 @@
-import { Outlet, Route, Routes } from 'react-router-dom';
-import { Login } from './login';
-import { Register } from './register';
-import { MiniWrapper } from '@/components/wrapper';
+import { RouteObject } from "react-router-dom";
+import { AuthLayout } from "./layout";
+import { Login } from "./login";
+import { Register } from "./register";
 
-const Wrapper = () => (
-  <div className="relative flex items-center justify-center h-screen bg-muted-background bg-grid-white/[0.01]">
-    <div className="absolute pointer-events-none inset-0 flex items-center justify-center bg-background [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
-    <MiniWrapper>
-      <Outlet />
-    </MiniWrapper>
-  </div>
-)
+const authRoutes: RouteObject[] = [
+  {
+    element: <AuthLayout />,
+    children: [
+      { path: 'login', element: <Login /> },
+      { path: 'register', element: <Register /> },
+    ],
+  },
+];
 
-export const Auth = () => {
-  return (
-    <Routes>
-      <Route element={<Wrapper />}>
-        <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
-      </Route>
-    </Routes>
-  )
-}
+export default authRoutes;
