@@ -40,12 +40,16 @@ const nav = [
   // }
 ]
 
+const cssVariables = {
+  "--nav-height": "4rem",
+} as React.CSSProperties
+
 export default function Wrapper({ children }: { children: React.ReactNode }) {
   const ws = useWs("Wrapper");
 
   return (
-    <div className={cn("w-full h-screen max-w-screen font-clash bg-background")}>
-      <nav role='list' className={cn('flex items-center content-center justify-between w-full h-16 px-4] border-b border-border', {
+    <div className={cn("w-full h-screen max-w-screen font-clash bg-background")} style={cssVariables}>
+      <nav role='list' className={cn('flex items-center content-center justify-between w-full h-[var(--nav-height)] px-4] border-b border-border', {
         "bg-success/[0.05]": ws.status === 'CONNECTED',
         "bg-warning/[0.05]": ws.status === 'CONNECTING'
       })}>
@@ -138,8 +142,8 @@ export default function Wrapper({ children }: { children: React.ReactNode }) {
 
 export function MiniWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <div className={cn("relative w-full h-screen max-w-screen")}>
-      <nav role='list' className={cn('flex items-center content-center justify-between w-full h-16 px-4')}>
+    <div className={cn("relative w-full h-screen max-w-screen")} style={cssVariables}>
+      <nav role='list' className={cn('flex items-center content-center justify-between w-full h-[var(--nav-height)] px-4')}>
         <div className='flex items-center content-center h-full gap-2'>
           <Logo text />
         </div>
