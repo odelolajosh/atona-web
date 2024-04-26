@@ -4,7 +4,7 @@ import { AutoDraft, BasicStorage, ChatProvider, ChatProviderConfig, ChatServiceF
 import { ChatService } from '../lib/chat-service';
 import { ConversationData } from '../types';
 import { seedStorage } from '../mock';
-import { ChatUIProvider } from '../lib/provider';
+import { ChatStateProvider } from '../lib/provider';
 import { useChat } from '../hooks/use-chat';
 import { __DEV__ } from '../lib/const';
 import { UploadProvider } from '../components/uploader/uploader';
@@ -48,7 +48,7 @@ const AuthenticatedChat = ({ children }: { children: React.ReactNode }) => {
       const currentUser = new User({
         id: data.id,
         presence: new Presence({ status: UserStatus.Available }),
-        username: data.firstName,
+        username: data.username,
         data: {}
       })
       setCurrentUser(currentUser)
@@ -60,7 +60,7 @@ const AuthenticatedChat = ({ children }: { children: React.ReactNode }) => {
 
 const ChatWrapper = () => (
   <ChatProvider serviceFactory={serviceFactory} storage={chatStorage} config={chatConfig}>
-    <ChatUIProvider>
+    <ChatStateProvider>
       <UploadProvider>
         <main className="h-full" style={variables as React.CSSProperties}>
           <Helmet>
@@ -71,7 +71,7 @@ const ChatWrapper = () => (
           </AuthenticatedChat>
         </main>
       </UploadProvider>
-    </ChatUIProvider>
+    </ChatStateProvider>
   </ChatProvider>
 )
 

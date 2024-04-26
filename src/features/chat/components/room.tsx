@@ -1,81 +1,23 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { ConversationHeader, Lobby, MessageInput, MessageList, MessageListRef, Messages, useUploaderStore } from "."
 import { useChat } from "../hooks/use-chat"
 import { ChatMessage, GalleryContent, GalleryItem, HtmlContent, MessageContent, MessageContentType, MessageDirection, MessageStatus } from "@chatscope/use-chat";
-import chatAPI from "../lib/api";
 import { Spinner } from "@/components/icons/spinner";
 import { Outlet, useParams } from "react-router-dom";
-import { __DEV__ } from "../lib/const";
-
-type Preflight = 'idle' | 'success' | 'error' | 'loading';
+import { useLoadMessages } from "../hooks/use-load-messages";
 
 export const Room = () => {
   const { conversationId } = useParams() as { conversationId: string };
-  const { activeConversation, setActiveConversation, sendMessage, currentUser, currentMessage, setCurrentMessage, currentMessages, addMessage } = useChat();
+  const { activeConversation, setActiveConversation, sendMessage, currentUser, currentMessage, setCurrentMessage, currentMessages } = useChat();
   const { clearConversationUploads, getUploadedItems } = useUploaderStore("Room");
   const messageListRef = useRef<MessageListRef>(null);
-  const [preflight, _setPreflight] = useState<Preflight>(activeConversation?.data?.preflight || 'idle');
 
-  const setPreflight = useCallback((value: Preflight) => {
-    if (activeConversation) {
-      if (!activeConversation.data) {
-        activeConversation.data = {
-          name: '',
-          preflight: value
-        };
-      } else {
-        activeConversation.data.preflight = value;
-      }
-    }
-    _setPreflight(value);
-  }, [activeConversation]);
+  const loadMessages = useLoadMessages("Room");
 
   useEffect(() => {
     if (!conversationId) return;
     setActiveConversation(conversationId);
   }, [conversationId, setActiveConversation])
-
-  const loadInitialMessages = useCallback(async () => {
-    if (!activeConversation) return;
-
-    if (__DEV__) {
-      setPreflight('success');
-      return;
-    }
-
-    if (preflight === 'success') return;
-
-    setPreflight('loading');
-    try {
-      const messages = await chatAPI.getMessages(activeConversation?.id);
-
-      messages.forEach((message) => {
-        const chatMessage = new ChatMessage({
-          id: message.uuid,
-          direction: message.from.uuid === currentUser!.id ? MessageDirection.Outgoing : MessageDirection.Incoming,
-          senderId: message.from.uuid,
-          content: {
-            content: message.body,
-          },
-          contentType: MessageContentType.TextHtml,
-          status: MessageStatus.Sent,
-          createdTime: new Date(message.created_at),
-        });
-        addMessage(chatMessage, activeConversation.id, false);
-      })
-      setPreflight('success');
-    } catch (error) {
-      console.error("Failed to load messages", error);
-      setPreflight('error');
-    }
-  }, [activeConversation, addMessage, currentUser, preflight, setPreflight])
-
-  useEffect(() => {
-    if (!activeConversation) return;
-
-    messageListRef.current?.mount()
-    loadInitialMessages();
-  }, [activeConversation, loadInitialMessages])
 
   const handleChange = (value: string) => {
     setCurrentMessage(value);
@@ -143,9 +85,9 @@ export const Room = () => {
       <ConversationHeader />
       <hr className="w-full border-t border-border" />
       <MessageList className="w-full flex-1 py-4 message--font" ref={messageListRef}>
-        {preflight === 'success' ? (
+        {loadMessages.status === 'success' ? (
           <Messages messages={currentMessages} />
-        ) : preflight === 'error' ? (
+        ) : loadMessages.status === 'error' ? (
           <div className="flex-1 flex flex-col items-center justify-center h-full">
             We could not load messages
           </div>

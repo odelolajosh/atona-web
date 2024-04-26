@@ -42,6 +42,7 @@ export class ChatService implements IChatService {
   storage?: IStorage<ConversationData, UserData>;
   updateState: UpdateState;
   ws?: SturdyWebSocket;
+  userId?: string;
 
   eventHandlers: EventHandlers = {
     onMessage: [],
@@ -63,7 +64,14 @@ export class ChatService implements IChatService {
    * @param userId authenticates websocket connection
    */
   connect(userId: string) {
-    this.ws = new SturdyWebSocket(`${wsURL}/${userId}`, {
+    if (this.ws && this.userId === userId) {
+      return;
+    }
+
+    const url = `${wsURL}/${userId}`;
+
+    this.userId = userId
+    this.ws = new SturdyWebSocket(url, {
       connectTimeout: 1000,
       debug: true,
       minReconnectDelay: 1000,
@@ -96,8 +104,8 @@ export class ChatService implements IChatService {
       this.emit("connectionStateChanged", new ConnectionStateChangedEvent(ConnectionState.Disconnected))
     }
 
-    this.ws.onerror = (err: any) => {
-      console.error("Socket encountered error: ", err.message, "Closing socket");
+    this.ws.onerror = () => {
+      console.error("Socket encountered error. Closing socket");
       this.emit("connectionStateChanged", new ConnectionStateChangedEvent(ConnectionState.Disconnected))
     }
   }

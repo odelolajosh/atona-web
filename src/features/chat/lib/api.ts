@@ -1,10 +1,9 @@
 import Axios from 'axios';
 import { ChatAPI } from './types';
+import { apiUrl } from '@/lib/const';
 
-// export const baseURL = "https://naerospace-chat-staging-f79d5af35fb9.herokuapp.com";
-// export const wsURL = "wss://naerospace-chat-staging-f79d5af35fb9.herokuapp.com/ws";
-export const baseURL = "https://admin.sabrecwa.com/brymes";
-export const wsURL = "wss://admin.sabrecwa.com/brymes/ws";
+export const baseURL =  apiUrl;
+export const wsURL =  apiUrl.replace('http', 'ws') + '/ws';
 
 const axios = Axios.create({
   baseURL

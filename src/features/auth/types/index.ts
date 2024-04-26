@@ -3,10 +3,8 @@ import { Base } from "@/types";
 export interface User extends Base {
   id: string;
   email: string;
-  firstName: string;
-  lastName: string;
-  bio: string;
-  role: 'ADMIN' | 'USER';
+  username: string;
+  avatarUrl: string;
 }
 
 export type UserResponse = {

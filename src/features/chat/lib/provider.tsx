@@ -1,29 +1,46 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext } from "@/lib/context";
-import { PropsWithChildren, useMemo, useState } from "react";
+import { PropsWithChildren, useCallback, useMemo, useState } from "react";
 
-type LoadingStatus = "idle" | "loading" | "success" | "error"
+export type LoadingStatus = "idle" | "loading" | "success" | "error"
 
 type ChatUIContextValue = {
-  conversationStatus: LoadingStatus;
-  setConversationStatus: (status: LoadingStatus) => void;
+  conversationsStatus: LoadingStatus;
+  setConversationsStatus: (status: LoadingStatus) => void;
+  getConversationMessagesStatus: (conversationId: string) => LoadingStatus;
+  setConversationMessagesStatus: (conversationId: string, status: LoadingStatus) => void;
 }
 
-const [useChatUI, ChatUIManager] = createContext<ChatUIContextValue>("ChatUIManager");
+const [useChatState, ChatStateManager] = createContext<ChatUIContextValue>("ChatUIManager");
 
 
-export const ChatUIProvider = ({ children }: PropsWithChildren) => {
-  const [conversationStatus, setConversationStatus] = useState<LoadingStatus>("idle");
+const ChatStateProvider = ({ children }: PropsWithChildren) => {
+  const [conversationsStatus, setConversationsStatus] = useState<LoadingStatus>("idle");
+  const [conversationMessagesStatus, _setConversationMessagesStatus] = useState<Record<string, LoadingStatus>>({});
+
+  const getConversationMessagesStatus = useCallback((conversationId: string) => {
+    return conversationMessagesStatus[conversationId] ?? "idle"
+  }, [conversationMessagesStatus])
+
+  const setConversationMessagesStatus = useCallback((conversationId: string, status: LoadingStatus) => {
+    _setConversationMessagesStatus((prev) => ({
+      ...prev,
+      [conversationId]: status
+    }))
+  }, [])
 
   const values = useMemo(() => ({
-    conversationStatus,
-    setConversationStatus
-  }), [conversationStatus])
+    conversationsStatus,
+    setConversationsStatus,
+    getConversationMessagesStatus,
+    setConversationMessagesStatus
+  }), [conversationsStatus, getConversationMessagesStatus, setConversationMessagesStatus])
 
   return (
-    <ChatUIManager {...values}>
+    <ChatStateManager {...values}>
       {children}
-    </ChatUIManager>
+    </ChatStateManager>
   )
 }
 
-export { useChatUI }
+export { useChatState, ChatStateProvider }

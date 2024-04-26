@@ -1,4 +1,4 @@
-import { Conversation as TConversation } from "@chatscope/use-chat"
+import { Conversation as TConversation, UserStatus } from "@chatscope/use-chat"
 import { useChat } from "../../hooks/use-chat"
 import { ConversationData } from "../../types"
 import { cn } from "@/lib/utils"
@@ -10,6 +10,9 @@ import { Spinner } from "@/components/icons/spinner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Pencil2Icon } from "@radix-ui/react-icons"
+import { usePresence } from "../../hooks/use-presence"
+import { useChatState } from "../../lib/provider"
+import { useUser } from "@/lib/auth"
 
 type ConversationProps = {
   conversation: TConversation<ConversationData>
@@ -36,14 +39,17 @@ const Conversation = ({ conversation: c }: ConversationProps) => {
 }
 
 export const ConversationList = ({ className }: { className?: string }) => {
-  const { conversations, conversationStatus } = useChat()
+  const { data: user } = useUser()
+  const { conversations } = useChat()
+  const { conversationsStatus } = useChatState("ConversationList")
+  const presence = usePresence()
 
   return (
     <div className={cn("w-full flex flex-col relative", className)}>
       <div className="py-4 px-6">
         <Input type="text" placeholder="Search..." autoComplete="off" />
       </div>
-      {conversationStatus === "loading" ? (
+      {conversationsStatus === "loading" ? (
         <div className="flex justify-center items-center h-64">
           <Spinner />
         </div>
@@ -52,12 +58,25 @@ export const ConversationList = ({ className }: { className?: string }) => {
           <div className="flex-1 overflow-y-auto flex flex-col gap-1 px-2" style={{ scrollbarWidth: "none" }}>
             {conversations.map((c) => <Conversation key={c.id} conversation={c} />)}
           </div>
-          {/* Floating button */}
-          <AddConversationModal>
-            <Button className="absolute bottom-4 right-4 gap-2" size="lg">
-              <Pencil2Icon /> New conversation
-            </Button>
-          </AddConversationModal>
+          <div className="p-2 flex gap-2 justify-between items-center">
+            <div className="flex flex-col gap-px items-center">
+              <span className="relative">
+                <ChatAvatar name={user?.username} src={user?.avatarUrl} />
+                <span className={cn("absolute bottom-0 right-0 rounded-full w-3 h-3 bg-orange-500", {
+                  "bg-green-500": presence === UserStatus.Available,
+                })}></span>
+              </span>
+              <span className="text-muted-foreground text-sm">
+                {presence === UserStatus.Available ? "Online" : "Offline"}
+              </span>
+            </div>
+            {/* Floating button */}
+            <AddConversationModal>
+              <Button className="gap-2" size="lg">
+                <Pencil2Icon /> New conversation
+              </Button>
+            </AddConversationModal>
+          </div>
         </>
       )}
     </div>
