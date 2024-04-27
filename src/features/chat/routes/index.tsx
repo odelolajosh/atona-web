@@ -8,7 +8,6 @@ const chatRoutes: RouteObject[] = [
     element: <ChatWrapper />,
     children: [
       {
-        path: 'chat',
         element: <Chat />,
         children: [
           { index: true, element: <Lobby /> },

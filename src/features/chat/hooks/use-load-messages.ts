@@ -1,13 +1,17 @@
-import { ChatMessage, MessageContentType, MessageDirection, MessageStatus, useChat } from "@chatscope/use-chat"
-import { useCallback, useEffect, useMemo } from "react"
+import { ChatMessage, ConnectionState, ConnectionStateChangedEvent, MessageContentType, MessageDirection, MessageStatus } from "@chatscope/use-chat"
+import { useCallback, useEffect, useMemo, useRef } from "react"
 import { __DEV__ } from "../lib/const"
 import chatAPI from "../lib/api"
 import { useChatState } from "../lib/provider";
+import { useChat } from "./use-chat";
+
+const MAX_TRY_COUNT = 1
 
 const useLoadMessages = (consumerName: string) => {
-  const { addMessage, activeConversation, removeMessagesFromConversation, currentUser } = useChat()
+  const tryCount = useRef(0)
+  const { addMessage, activeConversation, removeMessagesFromConversation, currentUser, service } = useChat()
   const { getConversationMessagesStatus, setConversationMessagesStatus } = useChatState(consumerName)
-  
+
   const status = useMemo(() => {
     if (!activeConversation) return 'idle';
     return getConversationMessagesStatus(activeConversation?.id) || 'idle';
@@ -50,12 +54,45 @@ const useLoadMessages = (consumerName: string) => {
   }, [activeConversation, addMessage, currentUser, removeMessagesFromConversation, setConversationMessagesStatus])
 
   useEffect(() => {
-    if (status === 'loading' || status === 'success') return;
+    if (activeConversation?.id) {
+      tryCount.current = 0
+    }
+  }, [activeConversation])
 
-    loadInitialMessages()
-  }, [activeConversation, loadInitialMessages, status])
+  const tryLoadingMessages = useCallback(async (retry = false) => {
+    if (status === 'loading') return
+    if (!retry && status === 'success') return
 
-  return { status }
+    if (retry) tryCount.current = 0
+    if (status === 'error' && tryCount.current >= MAX_TRY_COUNT) return;
+
+    await loadInitialMessages()
+    tryCount.current++;
+  }, [loadInitialMessages, status])
+
+  useEffect(() => {
+    tryLoadingMessages()
+  }, [tryLoadingMessages])
+
+  const retryLoading = useCallback(() => {
+    tryLoadingMessages(true)
+  }, [tryLoadingMessages])
+
+  useEffect(() => {
+    const onConnectionStateChanged = (event: ConnectionStateChangedEvent) => {
+      if (event.status === ConnectionState.Connected) {
+        retryLoading()
+      }
+    }
+
+    service.on("connectionStateChanged", onConnectionStateChanged)
+
+    return () => {
+      service.off("connectionStateChanged", onConnectionStateChanged)
+    }
+  }, [retryLoading, service])
+
+  return { status, retry: retryLoading }
 }
 
 export { useLoadMessages }

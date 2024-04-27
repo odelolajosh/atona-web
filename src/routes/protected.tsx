@@ -38,9 +38,9 @@ export const protectedRoutes = [
       </Protected>
     ),
     children: [
-      ...missionRoutes,
-      ...chatRoutes,
-      ...vsRoutes
+      { children: missionRoutes },
+      { path: "chat", children: chatRoutes },
+      { path: "vs", children: vsRoutes },
     ],
   },
 ];

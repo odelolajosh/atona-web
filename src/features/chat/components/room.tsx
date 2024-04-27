@@ -5,6 +5,7 @@ import { ChatMessage, GalleryContent, GalleryItem, HtmlContent, MessageContent, 
 import { Spinner } from "@/components/icons/spinner";
 import { Outlet, useParams } from "react-router-dom";
 import { useLoadMessages } from "../hooks/use-load-messages";
+import { Button } from "@/components/ui/button";
 
 export const Room = () => {
   const { conversationId } = useParams() as { conversationId: string };
@@ -81,22 +82,23 @@ export const Room = () => {
   )
 
   return (
-    <div className="h-full flex flex-col items-center pb-4 border-l border-border">
+    <div className="h-full flex flex-col items-center sm:pb-4 border-l border-border">
       <ConversationHeader />
       <hr className="w-full border-t border-border" />
-      <MessageList className="w-full flex-1 py-4 message--font" ref={messageListRef}>
-        {loadMessages.status === 'success' ? (
+      {loadMessages.status === 'success' ? (
+        <MessageList className="w-full flex-1 py-4 message--font" ref={messageListRef}>
           <Messages messages={currentMessages} />
-        ) : loadMessages.status === 'error' ? (
-          <div className="flex-1 flex flex-col items-center justify-center h-full">
-            We could not load messages
-          </div>
-        ) : (
-          <div className="flex-1 flex flex-col items-center justify-center h-full">
-            <Spinner />
-          </div>
-        )}
-      </MessageList>
+        </MessageList>
+      ) : loadMessages.status === 'error' ? (
+        <div className="w-full flex-1 py-4 flex flex-col justify-center items-center gap-2">
+          <h3>We could not load messages</h3>
+          <Button onClick={() => loadMessages.retry()}>Retry</Button>
+        </div>
+      ) : (
+        <div className="flex-1 flex flex-col items-center justify-center h-full">
+          <Spinner />
+        </div>
+      )}
       <MessageInput conversationId={conversationId} onSend={handleSend} value={currentMessage} onChange={handleChange} />
       <Outlet />
     </div>

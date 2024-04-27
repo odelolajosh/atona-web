@@ -80,6 +80,7 @@ export class ChatService implements IChatService {
     })
 
     this.ws.onopen = () => {
+      console.info("Naerochat", "Connection is up")
       this.ws?.send(JSON.stringify({
         type: "on_connect",
       }))
@@ -87,10 +88,12 @@ export class ChatService implements IChatService {
     }
 
     this.ws.onreopen = () => {
+      console.info("Naerochat", "Connection is back up")
       this.emit("connectionStateChanged", new ConnectionStateChangedEvent(ConnectionState.Connected))
     }
 
     this.ws.ondown = () => {
+      console.info("Naerochat", "Connection to our server is down")
       this.emit("connectionStateChanged", new ConnectionStateChangedEvent(ConnectionState.Disconnected))
     }
 

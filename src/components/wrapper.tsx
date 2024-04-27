@@ -40,31 +40,27 @@ const nav = [
   // }
 ]
 
-const cssVariables = {
-  "--nav-height": "4rem",
-} as React.CSSProperties
-
 export default function Wrapper({ children }: { children: React.ReactNode }) {
   const ws = useWs("Wrapper");
 
   return (
-    <div className={cn("w-full h-screen max-w-screen font-clash bg-background")} style={cssVariables}>
-      <nav role='list' className={cn('flex items-center content-center justify-between w-full h-[var(--nav-height)] px-4] border-b border-border', {
+    <div className={cn("w-full h-dvh max-w-screen font-clash bg-background")}>
+      <nav role='list' className={cn('flex items-center content-center justify-between w-full h-16 px-4 border-b border-border', {
         "bg-success/[0.05]": ws.status === 'CONNECTED',
         "bg-warning/[0.05]": ws.status === 'CONNECTING'
       })}>
-        <div className='flex items-center content-center h-full'>
-          <NaeroIcon className='flex items-center content-center w-24 h-12 py-1' />
-          <ul className='flex h-full gap-2 py-1 ml-5'>
+        <div className='flex items-center content-center gap-4 h-full'>
+          <NaeroIcon className='flex items-center content-center w-20 md:w-24 py-1' />
+          <ul className='flex h-full gap-1 sm:gap-2 py-1'>
             {nav.map((item, index) => (
               <li key={index}>
                 <NavLink className={({ isActive }) => cn(
-                  "inline-flex flex-col h-14 items-center justify-center rounded-md bg-background px-4 text-sm font-medium transition-colors hover:bg-muted/50 focus:bg-muted focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-muted/50",
+                  "inline-flex flex-col h-14 items-center justify-center rounded-md bg-background px-3 sm:px-4 text-sm font-medium transition-colors hover:bg-muted/50 focus:bg-muted focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-muted/50",
                   {
                     "bg-muted/50 hover:bg-muted/30": isActive,
                   }
                 )} to={item.path}>
-                  <item.icon className='w-8 h-8 mx-auto' />
+                  <item.icon className='w-6 h-6 md:w-8 md:h-8 mx-auto' />
                   <span className='text-xs'>{item.name}</span>
                 </NavLink>
               </li>
@@ -133,7 +129,7 @@ export default function Wrapper({ children }: { children: React.ReactNode }) {
           )} */}
         </div>
       </nav>
-      <div className='w-full h-[calc(100vh-4rem)] overflow-hidden'>
+      <div className='w-full h-[calc(100dvh-4rem)] overflow-hidden'>
         {children}
       </div>
     </div>
@@ -142,8 +138,8 @@ export default function Wrapper({ children }: { children: React.ReactNode }) {
 
 export function MiniWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <div className={cn("relative w-full h-screen max-w-screen")} style={cssVariables}>
-      <nav role='list' className={cn('flex items-center content-center justify-between w-full h-[var(--nav-height)] px-4')}>
+    <div className={cn("relative w-full h-screen max-w-screen")}>
+      <nav role='list' className={cn('flex items-center content-center justify-between w-full h-16 px-4')}>
         <div className='flex items-center content-center h-full gap-2'>
           <Logo text />
         </div>

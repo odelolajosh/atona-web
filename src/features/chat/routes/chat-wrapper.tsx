@@ -35,7 +35,7 @@ const chatConfig: ChatProviderConfig = {
 }
 
 const variables = {
-  "--chat-header-height": "66px",
+  "--chat-header-height": "4rem",
   "--chat-list-width": "350px",
 } as const
 
