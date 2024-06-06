@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef } from "react"
 import { ContentEditable } from "./content-editable"
 import { cn } from "@/lib/utils"
-import { useControllableState } from "@/lib/hooks/state"
+import { useControllableState } from "@/lib/hooks/use-state"
 import { DocumentIcon, PaperAirplaneIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline"
 import { UploadButton } from "../uploader/uploader"
 import { Progress } from "@/components/icons/spinner"

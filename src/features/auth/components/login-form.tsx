@@ -7,6 +7,7 @@ import { Form } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { Spinner } from "@/components/icons/spinner"
 
 const formSchema = z.object({
   email: z.string().email({
@@ -71,7 +72,14 @@ export const LoginForm = ({ onSuccess }: { onSuccess: () => void }) => {
                 )}
               />
             </div>
-            <Button type="submit" size="lg">Login</Button>
+            <Button type="submit" size="lg" disabled={loginMutation.isPending}>
+              Login
+              {loginMutation.isPending && (
+                <div className="absolute inset-0 flex items-center justify-center bg-background/90">
+                  <Spinner className="w-6 h-6 text-white" />
+                </div>
+              )}
+            </Button>
             <div className="mt-6 flex flex-col gap-4">
               <span>
                 <span className="text-gray-300">New to Naerospace?</span>{' '}

@@ -18,7 +18,7 @@ export const ConversationHeader = () => {
       </Helmet>
       <div className="w-full h-[var(--chat-header-height)] flex gap-3 items-center px-4">
         <ChatAvatar src={avatar} name={name} />
-        <h2 className="font-medium text-lg">{name}</h2>
+        <h2 className="flex-1 font-medium text-lg text-ellipsis overflow-hidden">{name}</h2>
         <Button size="icon" className="ml-auto bg-transparent rounded-sm opacity-70 ring-offset-background transition-opacity hover:bg-transparent hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none" onClick={() => navigate("/chat")}>
           <Cross2Icon className="h-6 w-6" />
           <span className="sr-only">Close</span>

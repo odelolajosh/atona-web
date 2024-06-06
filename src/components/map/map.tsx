@@ -2,7 +2,7 @@ import { Tabs } from "@/components/ui/tab";
 import { APIProvider, Map as GglMap, AdvancedMarker } from '@vis.gl/react-google-maps';
 import type { MapProps as GglMapProps, MapMouseEvent } from '@vis.gl/react-google-maps';
 import React, { PropsWithChildren, useCallback, useMemo, useState } from 'react';
-import { useControllableState, useLocalState } from '@/lib/hooks/state';
+import { useControllableState, useLocalState } from '@/lib/hooks/use-state';
 import { Waypoints } from './waypoints';
 import { Position, Waypoint } from './types';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';

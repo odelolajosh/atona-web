@@ -32,8 +32,9 @@ export const useLoadConversation = (consumerName: string) => {
       removeAllConversations()
 
       users.forEach((user) => {
+        console.log("user", user)
         const newUser = new User({
-          id: user.uuid,
+          id: user.userId,
           presence: new Presence({
             status: user.online ? UserStatus.Available : UserStatus.Away
           }),
@@ -46,7 +47,7 @@ export const useLoadConversation = (consumerName: string) => {
 
       conversations.forEach((conversation: ChatAPI.Conversation) => {
         const participants = conversation.users.map((u) => {
-          return new Participant({ id: u.uuid })
+          return new Participant({ id: u.userId })
         })
 
         const newConversation = new Conversation({

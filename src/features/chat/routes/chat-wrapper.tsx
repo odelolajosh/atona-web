@@ -8,9 +8,9 @@ import { ChatStateProvider } from '../lib/provider';
 import { useChat } from '../hooks/use-chat';
 import { __DEV__ } from '../lib/const';
 import { UploadProvider } from '../components/uploader/uploader';
-import { useUser } from '@/lib/auth';
 import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useChatUser } from '../hooks/use-chat-api';
 
 // Storage needs to generate id for messages and groups
 const messageIdGenerator = () => uuid();
@@ -40,22 +40,28 @@ const variables = {
 } as const
 
 const AuthenticatedChat = ({ children }: { children: React.ReactNode }) => {
-  const { data } = useUser();
+  const { data, status } = useChatUser();
   const { setCurrentUser } = useChat()
 
   useEffect(() => {
-    if (data) {
+    if (data && status === "success") {
       const currentUser = new User({
-        id: data.id,
+        id: data.userId,
         presence: new Presence({ status: UserStatus.Available }),
-        username: data.username,
+        username: data.name,
         data: {}
       })
       setCurrentUser(currentUser)
     }
-  }, [data, setCurrentUser])
+  }, [data, status, setCurrentUser])
 
-  return <>{children}</>
+  if (status === "pending") {
+    return <div>Loading...</div>
+  } else if (status === "error") {
+    return <div>Error</div>
+  } else {
+    return <>{children}</>
+  }
 }
 
 const ChatWrapper = () => (

@@ -3,8 +3,8 @@ import SturdyWebSocket from "@/lib/ws";
 import { ChatEvent, ChatEventType as BaseChatEventType, ConnectionState, ConnectionStateChangedEvent, IChatService, IStorage, MessageContentType, MessageDirection, MessageEvent, MessageStatus, SendMessageServiceParams, SendTypingServiceParams, UpdateState, Conversation, Participant } from "@chatscope/use-chat";
 import { ChatEventHandler, ChatEventType, ConversationJoinedEvent } from "./events";
 import { ConversationData, UserData } from "../types";
-import { wsURL } from "./api";
 import { ChatAPI } from "./types";
+import { wsUrl } from "./const";
 
 type EventHandlers = {
   onMessage: Array<ChatEventHandler<
@@ -68,7 +68,7 @@ export class ChatService implements IChatService {
       return;
     }
 
-    const url = `${wsURL}/${userId}`;
+    const url = `${wsUrl}/ws/${userId}`;
 
     this.userId = userId
     this.ws = new SturdyWebSocket(url, {

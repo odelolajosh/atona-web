@@ -1,9 +1,8 @@
 import Axios from 'axios';
 import { ChatAPI } from './types';
-import { apiUrl } from '@/lib/const';
+import { apiUrl } from './const';
 
-export const baseURL =  apiUrl;
-export const wsURL =  apiUrl.replace('http', 'ws') + '/ws';
+export const baseURL = apiUrl;
 
 const axios = Axios.create({
   baseURL
@@ -18,8 +17,17 @@ axios.interceptors.response.use(
   }
 );
 
+const authenticate = (token: string) => {
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+}
+
+const getMe = async () => {
+  const response = await axios.post('/users/auth');
+  return response.data.user as ChatAPI.User;
+}
+
 const getUsers = async () => {
-  const response = await axios.get('/users');
+  const response = await axios.get('/users/');
   return response.data.users as ChatAPI.User[];
 }
 
@@ -48,7 +56,9 @@ const chatAPI = {
   registerUser,
   getUsers,
   getConversations,
-  getMessages
+  getMessages,
+  authenticate,
+  getMe
 }
 
 export default chatAPI;

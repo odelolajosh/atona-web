@@ -6,15 +6,17 @@ type Options = {
 
 type Status = 'idle' | 'pending' | 'success' | 'error';
 
-type UsePromiseHook<T, Args extends any[], E> = [
-  (...args: Args) => Promise<T | undefined>,
-  boolean,
-  T | null,
-  E | null,
-  Status
-];
+type Any = object;
 
-export const usePromise = <T = any, Args extends any[] = any, E = Error>(
+type UsePromiseHook<T, Args extends Any[], E> = {
+  run: (...args: Args) => Promise<T | undefined>;
+  isLoading: boolean;
+  data: T | null;
+  error: E | null;
+  status: Status;
+}
+
+export const usePromise = <T = Any, Args extends Any[] = Any[], E = Error>(
   fn: (...args: Args) => Promise<T>,
   options?: Options,
 ): UsePromiseHook<T, Args, E> => {
@@ -36,6 +38,7 @@ export const usePromise = <T = any, Args extends any[] = any, E = Error>(
     }
   };
 
-  const loading = status === 'pending';
-  return [run, loading, data, error, status];
+  const isLoading = status === 'pending';
+  
+  return { run, isLoading, data, error, status };
 };

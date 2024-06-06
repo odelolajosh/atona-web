@@ -44,7 +44,7 @@ export const Chat = () => {
         "w-full md:w-[var(--chat-list-width)]": !conversationId,
         "w-0 overflow-hidden md:w-[var(--chat-list-width)]": conversationId
       })} />
-      <div className={cn("flex-1", {
+      <div className={cn("w-full md:flex-1", {
         "hidden md:block": !conversationId
       })}>
         <Outlet />

@@ -3,7 +3,8 @@
 export namespace ChatAPI {
   export interface User {
     id: number,
-    uuid: string,
+    // uuid: string,
+    userId: string,
     name: string,
     avatarUrl: string,
     online: boolean
@@ -24,7 +25,8 @@ export namespace ChatAPI {
     uuid: string;
     users: {
       id: number;
-      uuid: string;
+      // uuid: string;
+      userId: string;
       name: string;
       avatarUrl: string;
       online: boolean;
@@ -42,7 +44,8 @@ export namespace ChatAPI {
     content_type: string;
     from: {
       id: number;
-      uuid: string;
+      // uuid: string;
+      userId: string;
       name: string;
       avatarUrl: string;
       online: boolean;

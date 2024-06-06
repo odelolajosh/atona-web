@@ -1,4 +1,4 @@
-import { usePromise } from "@/lib/hooks/promise";
+import { usePromise } from "@/lib/hooks/use-promise";
 import { useForm } from "react-hook-form";
 import { uploadMission } from "../api";
 import { Position } from "@/components/map/types";
@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogProps } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
-import { useControllableState } from "@/lib/hooks/state";
+import { useControllableState } from "@/lib/hooks/use-state";
+import { Spinner } from "@/components/icons/spinner";
 
 type MissionDTO = {
   altitude: number;
@@ -25,7 +26,10 @@ export const FlyMission = (props: DialogProps & { waypoints: Position[] }) => {
     }
   });
 
-  const [handleMission, submitting] = usePromise(async (data: MissionDTO) => {
+  const {
+    run: handleMission,
+    status
+  } = usePromise(async (data: MissionDTO) => {
     const altitude = Number(data.altitude);
     console.log("log", altitude, props.waypoints)
     await uploadMission(props.waypoints, altitude);
@@ -62,7 +66,14 @@ export const FlyMission = (props: DialogProps & { waypoints: Position[] }) => {
               />
             </div>
             <Dialog.Footer>
-              <Button type="submit" disabled={submitting}>Fly</Button>
+              <Button type="submit" disabled={status === 'pending'}>
+                Fly
+                {status === 'pending' && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                    <Spinner className="w-6 h-6" />
+                  </div>
+                )}
+              </Button>
             </Dialog.Footer>
           </form>
         </Form>

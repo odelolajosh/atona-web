@@ -1,4 +1,4 @@
-import { useControllableState } from "@/lib/hooks/state";
+import { useControllableState } from "@/lib/hooks/use-state";
 import { forwardRef, useEffect, useRef } from "react";
 import ReactContentEditable, { ContentEditableEvent } from "react-contenteditable";
 

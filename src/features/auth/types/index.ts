@@ -8,6 +8,7 @@ export interface User extends Base {
 }
 
 export type UserResponse = {
-  jwt: string;
+  // jwt: string;
+  authToken: string;
   user: User;
 };

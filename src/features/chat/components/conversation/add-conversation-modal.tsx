@@ -3,7 +3,7 @@ import { useChat } from '../../hooks/use-chat';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogProps } from '@/components/ui/dialog';
-import { useControllableState } from '@/lib/hooks/state';
+import { useControllableState } from '@/lib/hooks/use-state';
 
 type AddConversationModalProps = DialogProps & { children?: React.ReactNode }
 

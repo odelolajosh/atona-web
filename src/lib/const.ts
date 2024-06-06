@@ -1,2 +1,1 @@
-export const apiUrl = 'http://158.220.111.179:8004';
-// export const wsUrl = 'ws://localhost:8000';
+export const apiUrl = 'http://13.48.45.44:3636/api/v1/';
