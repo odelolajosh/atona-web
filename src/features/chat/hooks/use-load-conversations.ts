@@ -32,7 +32,6 @@ export const useLoadConversation = (consumerName: string) => {
       removeAllConversations()
 
       users.forEach((user) => {
-        console.log("user", user)
         const newUser = new User({
           id: user.userId,
           presence: new Presence({
