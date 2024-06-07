@@ -3,8 +3,8 @@ import { useChat } from "../../hooks/use-chat"
 import { ConversationData, UserData } from "../../types"
 import { cn } from "@/lib/utils"
 import { ChatAvatar } from "../chat-avatar"
-import { useConversation } from "../../hooks/use-conversation"
-import { useNavigate } from "react-router-dom"
+import { getConversationMeta, useConversation } from "../../hooks/use-conversation"
+import { Link, useNavigate } from "react-router-dom"
 import { AddConversationModal } from "."
 import { Spinner } from "@/components/icons/spinner"
 import { Button } from "@/components/ui/button"
@@ -14,28 +14,30 @@ import { usePresence } from "../../hooks/use-presence"
 import { useChatState } from "../../lib/provider"
 import { useUser } from "@/lib/auth"
 import { useMemo, useState } from "react"
+import { Slot } from "@radix-ui/react-slot"
 
 type ConversationProps = {
   conversation: TConversation<ConversationData>
 }
 
 const Conversation = ({ conversation: c }: ConversationProps) => {
-  const navigate = useNavigate()
   const { activeConversation } = useChat()
   const { name, avatar } = useConversation(c.id)
 
   return (
-    <div className={cn(
+    <Slot className={cn(
       "flex gap-4 items-center px-4 py-2 rounded-2xl cursor-pointer transition-colors hover:bg-muted/50",
       {
         "bg-muted hover:bg-muted text-muted-foreground hover:text-muted-foreground": activeConversation?.id === c.id
       }
-    )} onClick={() => navigate(`/chat/${c.id}`)}>
-      <ChatAvatar src={avatar} name={name} className="w-10 h-10 rounded-full" />
-      <div className="flex-1">
-        <div className="text-white font-medium">{name}</div>
-      </div>
-    </div>
+    )}>
+      <Link to={`/chat/${c.id}`}>
+        <ChatAvatar src={avatar} name={name} className="w-10 h-10 rounded-full" />
+        <div className="flex-1">
+          <div className="text-white font-medium">{name}</div>
+        </div>
+      </Link>
+    </Slot>
   )
 }
 
@@ -66,7 +68,7 @@ const UserConversation = ({ user }: { user: User<UserData> }) => {
 
 export const ConversationList = ({ className }: { className?: string }) => {
   const { data: user } = useUser()
-  const { conversations, users } = useChat()
+  const { conversations, users, getUser, currentUser } = useChat()
   const { conversationsStatus } = useChatState("ConversationList")
   const presence = usePresence()
 
@@ -78,11 +80,15 @@ export const ConversationList = ({ className }: { className?: string }) => {
     }
 
     const query = q.toLowerCase()
-    const filteredConversations = conversations.filter((c) => c.data?.name.toLowerCase().includes(query))
+    const filteredConversations = conversations.filter((c) => {
+      if (!currentUser) return false
+      const { name } = getConversationMeta(c, currentUser?.id, getUser)
+      return name.toLowerCase().includes(query)
+    })
     const filteredUsers = users.filter((u) => u.username.toLowerCase().includes(query))
 
     return [filteredConversations, filteredUsers]
-  }, [q, conversations, users])
+  }, [q, conversations, users, currentUser, getUser])
 
   return (
     <div className={cn("w-full flex flex-col relative", className)}>
@@ -109,7 +115,7 @@ export const ConversationList = ({ className }: { className?: string }) => {
             <div className="space-y-2">
               {(q && filteredUsers.length > 0) ? (
                 <div className="text-muted-foreground text-sm px-4 py-2">
-                  Results from your conversations
+                  Results from naerospace
                 </div>
               ) : null}
               <div className="flex flex-col gap-1">
