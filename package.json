@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@chatscope/use-chat": "github:odelolajosh/use-chat#dev",
+    "@chatscope/use-chat": "github:odelolajosh/use-chat#dist",
     "@heroicons/react": "^2.0.18",
     "@hookform/resolvers": "^3.3.4",
     "@radix-ui/react-avatar": "^1.0.4",

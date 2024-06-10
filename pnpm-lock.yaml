@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@chatscope/use-chat':
-    specifier: github:odelolajosh/use-chat#dev
-    version: github.com/odelolajosh/use-chat/591809a865f51a1eb22b3250714d2d673bb2f9ba(react@18.2.0)
+    specifier: github:odelolajosh/use-chat#dist
+    version: github.com/odelolajosh/use-chat/0943a8c5212b998809ccd79bab2343503f3d7835(react@18.2.0)
   '@heroicons/react':
     specifier: ^2.0.18
     version: 2.1.1(react@18.2.0)
@@ -3594,12 +3594,11 @@ packages:
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
-  github.com/odelolajosh/use-chat/591809a865f51a1eb22b3250714d2d673bb2f9ba(react@18.2.0):
-    resolution: {tarball: https://codeload.github.com/odelolajosh/use-chat/tar.gz/591809a865f51a1eb22b3250714d2d673bb2f9ba}
-    id: github.com/odelolajosh/use-chat/591809a865f51a1eb22b3250714d2d673bb2f9ba
+  github.com/odelolajosh/use-chat/0943a8c5212b998809ccd79bab2343503f3d7835(react@18.2.0):
+    resolution: {tarball: https://codeload.github.com/odelolajosh/use-chat/tar.gz/0943a8c5212b998809ccd79bab2343503f3d7835}
+    id: github.com/odelolajosh/use-chat/0943a8c5212b998809ccd79bab2343503f3d7835
     name: '@chatscope/use-chat'
     version: 3.1.2
-    requiresBuild: true
     peerDependencies:
       react: '>= 17.0 <= 18.2.0'
     dependencies:
