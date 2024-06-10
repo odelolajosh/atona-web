@@ -80,12 +80,30 @@ export const ConversationList = ({ className }: { className?: string }) => {
     }
 
     const query = q.toLowerCase()
-    const filteredConversations = conversations.filter((c) => {
-      if (!currentUser) return false
+
+    
+    if (!currentUser) return [[], []]
+
+    const filteredConversations: TConversation<ConversationData>[] = []
+    const dms: string[] = []
+
+    conversations.forEach((c) => {
       const { name } = getConversationMeta(c, currentUser?.id, getUser)
-      return name.toLowerCase().includes(query)
+      if (c.data?.type === "dm") {
+        const otherUser = c.participants.find((p) => p.id !== currentUser.id)
+        if (!otherUser) return
+        dms.push(otherUser.id)
+      }
+      if (name.toLowerCase().includes(query)) {
+        filteredConversations.push(c)
+      }
     })
-    const filteredUsers = users.filter((u) => u.username.toLowerCase().includes(query))
+
+    const filteredUsers = users.filter((u) => {
+      if (u.id === currentUser.id) return false
+      if (dms.includes(u.id)) return false
+      return u.username.toLowerCase().includes(query)
+    })
 
     return [filteredConversations, filteredUsers]
   }, [q, conversations, users, currentUser, getUser])
