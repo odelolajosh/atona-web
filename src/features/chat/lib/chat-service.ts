@@ -246,7 +246,7 @@ export class ChatService implements IChatService {
   private handleRoomCreated(payload: { room: ChatAPI.Room, roomId: string }) {
     if (!payload.room) return
     const users = payload.room.users ?? [];
-    const participants = users.map((user: ChatAPI.User) => new Participant({ id: user.uuid }))
+    const participants = users.map((user: ChatAPI.User) => new Participant({ id: user.userId }))
 
     const conversation = new Conversation<ConversationData>({
       id: payload.roomId,
