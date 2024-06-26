@@ -68,7 +68,7 @@ export class ChatService implements IChatService {
       return;
     }
 
-    const url = `${wsUrl}/ws/${userId}`;
+    const url = `${wsUrl}/${userId}`;
 
     this.userId = userId
     this.ws = new SturdyWebSocket(url, {

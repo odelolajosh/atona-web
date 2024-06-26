@@ -4,8 +4,8 @@ import { ConversationData, UserData } from "../../types"
 import { cn } from "@/lib/utils"
 import { ChatAvatar } from "../chat-avatar"
 import { getConversationMeta, useConversation } from "../../hooks/use-conversation"
-import { Link, useNavigate } from "react-router-dom"
-import { AddConversationModal } from "."
+import { Link } from "react-router-dom"
+import { NewGroupModal } from "./new-group-modal"
 import { Spinner } from "@/components/icons/spinner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,6 +15,8 @@ import { useChatState } from "../../lib/provider"
 import { useUser } from "@/lib/auth"
 import { useMemo, useState } from "react"
 import { Slot } from "@radix-ui/react-slot"
+import { JoinConversationModal } from "./join-conversation-modal"
+import { useModal } from "@/lib/hooks/use-modal"
 
 type ConversationProps = {
   conversation: TConversation<ConversationData>
@@ -43,26 +45,32 @@ const Conversation = ({ conversation: c }: ConversationProps) => {
 
 const UserConversation = ({ user }: { user: User<UserData> }) => {
   const { activeConversation, service } = useChat()
-  const navigate = useNavigate()
   const { username: name, avatar } = user
+  const { openModal, modal, modalProps } = useModal<'new-conversation'>();
 
   const handleClick = () => {
     service.createConversation([user.id])
-    navigate(`/chat/${user.id}`)
+    openModal('new-conversation', user.id)
+    // navigate(`/chat/${user.id}`)
   }
 
   return (
-    <div className={cn(
-      "flex gap-4 items-center px-4 py-2 rounded-2xl cursor-pointer transition-colors hover:bg-muted/50",
-      {
-        "bg-muted hover:bg-muted text-muted-foreground hover:text-muted-foreground": activeConversation?.id === user.id
-      }
-    )} onClick={handleClick}>
-      <ChatAvatar src={avatar} name={name} className="w-10 h-10 rounded-full" />
-      <div className="flex-1">
-        <div className="text-white font-medium">{name}</div>
+    <>
+      <div className={cn(
+        "flex gap-4 items-center px-4 py-2 rounded-2xl cursor-pointer transition-colors hover:bg-muted/50",
+        {
+          "bg-muted hover:bg-muted text-muted-foreground hover:text-muted-foreground": activeConversation?.id === user.id
+        }
+      )} onClick={handleClick}>
+        <ChatAvatar src={avatar} name={name} className="w-10 h-10 rounded-full" />
+        <div className="flex-1">
+          <div className="text-white font-medium">{name}</div>
+        </div>
       </div>
-    </div>
+      {(modal?.type === 'new-conversation' && modal?.data) ? (
+        <JoinConversationModal {...modalProps('new-conversation')} to={modal.data as string} />
+      ) : null}
+    </>
   )
 }
 
@@ -81,7 +89,7 @@ export const ConversationList = ({ className }: { className?: string }) => {
 
     const query = q.toLowerCase()
 
-    
+
     if (!currentUser) return [[], []]
 
     const filteredConversations: TConversation<ConversationData>[] = []
@@ -161,11 +169,11 @@ export const ConversationList = ({ className }: { className?: string }) => {
               </span>
             </div>
             {/* Floating button */}
-            <AddConversationModal>
+            <NewGroupModal>
               <Button className="gap-2" size="lg">
-                <Pencil2Icon /> New conversation
+                <Pencil2Icon /> New group
               </Button>
-            </AddConversationModal>
+            </NewGroupModal>
           </div>
         </>
       )}

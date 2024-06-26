@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogProps } from '@/components/ui/dialog';
 import { useControllableState } from '@/lib/hooks/use-state';
 
-type AddConversationModalProps = DialogProps & { children?: React.ReactNode }
+type NewGroupModalProps = DialogProps & { children?: React.ReactNode }
 
-export const AddConversationModal: React.FC<AddConversationModalProps> = (props) => {
+export const NewGroupModal: React.FC<NewGroupModalProps> = (props) => {
   const [open, onOpenChange] = useControllableState({
     prop: props.open,
     defaultProp: false,
@@ -37,9 +37,9 @@ export const AddConversationModal: React.FC<AddConversationModalProps> = (props)
       {props.children && <Dialog.Trigger asChild>{props.children}</Dialog.Trigger>}
       <Dialog.Content className="sm:max-w-[425px]">
         <Dialog.Header>
-          <Dialog.Title>New conversation</Dialog.Title>
+          <Dialog.Title>New group</Dialog.Title>
           <Dialog.Description>
-            Select users to start a conversation
+            Select users to start a groups
           </Dialog.Description>
         </Dialog.Header>
         <div>
@@ -52,11 +52,7 @@ export const AddConversationModal: React.FC<AddConversationModalProps> = (props)
                 Clear
               </button>
             </div>
-          ) : (
-            <div className="text-muted-foreground">
-              Select users to start a conversation
-            </div>
-          )}
+          ) : null}
         </div>
         <div className="px-1 grow overflow-y-auto max-h-[50vh]">
           {users.map((u) => {
@@ -92,7 +88,7 @@ export const AddConversationModal: React.FC<AddConversationModalProps> = (props)
         </div>
         <Dialog.Footer>
           <Button disabled={selectedUsers.length === 0} className='w-full' onClick={handleAction}>
-            Create {selectedUsers.length > 1 ? 'Group' : 'Conversation'}
+            Create Group
           </Button>
         </Dialog.Footer>
       </Dialog.Content>
@@ -100,4 +96,4 @@ export const AddConversationModal: React.FC<AddConversationModalProps> = (props)
   )
 }
 
-export default AddConversationModal
+export default NewGroupModal
