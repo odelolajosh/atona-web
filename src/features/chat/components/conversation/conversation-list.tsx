@@ -133,6 +133,10 @@ export const ConversationList = ({ className }: { className?: string }) => {
                 <div className="text-muted-foreground text-sm px-4 py-2">
                   Results from your conversations
                 </div>
+              ) : (!q && filteredConversations.length === 0) ? (
+                <div className="text-muted-foreground text-base px-4 py-2">
+                  No conversations yet.
+                </div>
               ) : null}
               <div className="flex flex-col gap-1">
                 {filteredConversations.map((c) => <Conversation key={c.id} conversation={c} />)}
