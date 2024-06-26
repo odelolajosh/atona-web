@@ -27,7 +27,7 @@ const getMe = async () => {
 }
 
 const getUsers = async () => {
-  const response = await axios.get('/users/');
+  const response = await axios.get('/users');
   return response.data.users as ChatAPI.User[];
 }
 
