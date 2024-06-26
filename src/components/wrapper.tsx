@@ -4,6 +4,9 @@ import { cn } from "@/lib/utils"
 import { useWs } from "@/providers/ws"
 import { NaeroIcon } from "./icons/naero"
 import { Logo } from "./icons/logo"
+import { DropdownMenu } from "./ui/dropdown-menu"
+import { useLogout, useUser } from "@/lib/auth"
+import { UserAvatar } from "@/features/auth/components/user-avatar"
 
 /******** Navigation ********/
 const nav = [
@@ -42,6 +45,8 @@ const nav = [
 
 export default function Wrapper({ children }: { children: React.ReactNode }) {
   const ws = useWs("Wrapper");
+  const { data: user } = useUser();
+  const logout = useLogout();
 
   return (
     <div className={cn("w-full h-dvh max-w-screen font-clash bg-background")}>
@@ -67,7 +72,7 @@ export default function Wrapper({ children }: { children: React.ReactNode }) {
             ))}
           </ul>
         </div>
-        <div className='flex py-2 '>
+        <div className='flex py-2'>
           {/* {status !== 'CONNECTED' ? <div className='mx-4'>
             <label htmlFor="com" className="block text-sm font-medium text-white">
               Port
@@ -127,6 +132,19 @@ export default function Wrapper({ children }: { children: React.ReactNode }) {
               <span>Connect</span>
             </div>
           )} */}
+
+          <DropdownMenu>
+            <DropdownMenu.Trigger asChild>
+              <div>
+                <UserAvatar name={user?.username} src={user?.avatarUrl} />
+              </div>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content>
+              <DropdownMenu.Label>My Account</DropdownMenu.Label>
+              <DropdownMenu.Separator />
+              <DropdownMenu.Item onSelect={logout.mutate}>Logout</DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu>
         </div>
       </nav>
       <div className='w-full h-[calc(100dvh-4rem)] overflow-hidden'>

@@ -172,6 +172,7 @@ export const ConversationList = ({ className }: { className?: string }) => {
                 {presence === UserStatus.Available ? "Online" : "Offline"}
               </span>
             </div>
+
             {/* Floating button */}
             <NewGroupModal>
               <Button className="gap-2" size="lg">

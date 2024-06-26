@@ -26,8 +26,8 @@
   --card: 220deg 6% 10%;
   --card-foreground: var(--foreground);
 
-  --popover: 0deg 0% 100%;
-  --popover-foreground: 222.2deg 47.4% 11.2%;
+  --popover: 220deg 6% 10%;
+  --popover-foreground: var(--foreground);
 
   --border: 220deg 6% 19%;
 
@@ -39,8 +39,8 @@
   --secondary: 193deg 98% 74%;
   --secondary-foreground: 210deg 13% 13%;
 
-  --accent: 193deg 100% 88%;
-  --accent-foreground: 215deg 44% 8%;
+  --accent: 225deg 6% 14%;
+  --accent-foreground: var(--foreground);
 
   --destructive: 348deg 75% 59%;
   --destructive-foreground: 210deg 40% 98%;

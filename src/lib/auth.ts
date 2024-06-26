@@ -20,13 +20,9 @@ const LOCAL_JWT_KEY = 'atona-jwt_key';
 export const useToken = () => {
   const [jwt, setJwt] = useLocalStorage(LOCAL_JWT_KEY, '');
 
-  const authenticateClient = useCallback(
-    (token: string) => {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      setJwt(token);
-    },
-    [setJwt]
-  );
+  const authenticateClient = useCallback((token: string) => {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  }, []);
 
   useEffect(() => {
     if (jwt && !axios.defaults.headers.common['Authorization']) {
@@ -37,8 +33,9 @@ export const useToken = () => {
   const authenticate = useCallback(
     (response: UserResponse) => {
       authenticateClient(response.authToken);
+      setJwt(response.authToken);
     },
-    [authenticateClient]
+    [authenticateClient, setJwt]
   );
 
   const logout = useCallback(() => {
@@ -118,6 +115,7 @@ const useRegister = (
 };
 
 const useLogout = (options?: UseMutationOptions<unknown, Error, unknown>) => {
+  const { logout } = useToken();
   const queryClient = useQueryClient();
 
   const setUser = useCallback(
@@ -129,6 +127,7 @@ const useLogout = (options?: UseMutationOptions<unknown, Error, unknown>) => {
     mutationFn: () => Promise.resolve(null),
     ...options,
     onSuccess: (...args) => {
+      logout();
       setUser(null);
       options?.onSuccess?.(...args);
     },
