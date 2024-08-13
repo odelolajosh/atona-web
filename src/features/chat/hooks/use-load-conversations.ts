@@ -44,6 +44,7 @@ export const useLoadConversation = (consumerName: string) => {
         addUser(newUser)
       })
 
+      console.log(conversations)
       conversations.forEach((conversation: ChatAPI.Conversation) => {
         const participants = conversation.users.map((u) => {
           return new Participant({ id: u.userId })

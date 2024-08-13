@@ -128,12 +128,13 @@ export class ChatService implements IChatService {
    * Creates a new conversation
    * @param userIds an array of user Ids to add to a conversation
    */
-  createConversation(userIds: string[] = []) {
+  createConversation(userIds: string[] = [], name?: string) {
     if (userIds.length === 0) return;
     this.ws?.send(JSON.stringify({
       type: "on_join",
       payload: {
-        users: userIds
+        users: userIds,
+        name,
       }
     }))
   }
