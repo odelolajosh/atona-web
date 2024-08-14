@@ -72,11 +72,11 @@ export class ChatService implements IChatService {
 
     this.userId = userId
     this.ws = new SturdyWebSocket(url, {
-      connectTimeout: 1000,
+      connectTimeout: 5000,
       debug: true,
       minReconnectDelay: 1000,
       maxReconnectDelay: 10000,
-      maxReconnectAttempts: 5
+      maxReconnectAttempts: 5,
     })
 
     this.ws.onopen = () => {
@@ -150,6 +150,12 @@ export class ChatService implements IChatService {
     }))
 
     return message;
+  }
+
+  ping() {
+    this.ws?.send(JSON.stringify({
+      type: "on_ping"
+    }))
   }
 
   sendTyping({
