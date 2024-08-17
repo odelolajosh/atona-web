@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import SturdyWebSocket from "@/lib/ws";
-import { ChatEvent, ChatEventType as BaseChatEventType, ConnectionState, ConnectionStateChangedEvent, IChatService, IStorage, MessageContentType, MessageDirection, MessageEvent, MessageStatus, SendMessageServiceParams, SendTypingServiceParams, UpdateState, Conversation, Participant } from "@chatscope/use-chat";
+import { ChatEvent, ChatEventType as BaseChatEventType, ConnectionState, ConnectionStateChangedEvent, IChatService, IStorage, MessageContentType, MessageDirection, MessageEvent, MessageStatus, SendMessageServiceParams, SendTypingServiceParams, UpdateState, Conversation, Participant, User, Presence, UserStatus } from "@chatscope/use-chat";
 import { ChatEventHandler, ChatEventType, ConversationJoinedEvent } from "./events";
 import { ConversationData, UserData } from "../types";
 import { ChatAPI } from "./types";
@@ -100,6 +100,7 @@ export class ChatService implements IChatService {
     this.ws.onmessage = (event) => {
       if (!event.data) return
       const data = JSON.parse(event.data)
+      console.log("Naerochat", "Received message", data)
       this.dispatchEventOfType(data.type, data.payload)
     }
 
@@ -130,6 +131,7 @@ export class ChatService implements IChatService {
    */
   createConversation(userIds: string[] = [], name?: string) {
     if (userIds.length === 0) return;
+    console.log("Naerochat", "Creating conversation with", userIds)
     this.ws?.send(JSON.stringify({
       type: "on_join",
       payload: {
@@ -253,6 +255,21 @@ export class ChatService implements IChatService {
   private handleRoomCreated(payload: { room: ChatAPI.Room, roomId: string }) {
     if (!payload.room) return
     const users = payload.room.users ?? [];
+
+    users.forEach((user: ChatAPI.User) => {
+      if (this.storage?.getUser(user.userId)) return
+      const newUser = new User({
+        id: user.userId,
+        presence: new Presence({
+          status: user.online ? UserStatus.Available : UserStatus.Away
+        }),
+        username: user.name,
+        avatar: user.avatarUrl,
+        data: {}
+      })
+      this.storage?.addUser(newUser)
+    })
+
     const participants = users.map((user: ChatAPI.User) => new Participant({ id: user.userId }))
 
     const conversation = new Conversation<ConversationData>({
