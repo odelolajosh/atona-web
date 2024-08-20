@@ -174,11 +174,11 @@ export const ConversationList = ({ className }: { className?: string }) => {
             </div>
 
             {/* Floating button */}
-            <NewGroupModal>
+            {/* <NewGroupModal>
               <Button className="gap-2" size="lg">
                 <Pencil2Icon /> New group
               </Button>
-            </NewGroupModal>
+            </NewGroupModal> */}
           </div>
         </>
       )}
