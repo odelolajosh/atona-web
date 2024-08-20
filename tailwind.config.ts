@@ -74,7 +74,7 @@ export default {
     fontFamily: {
       display: ["Clash", "sans-serif"],
       sans: [
-        '"Inter var", sans-serif',
+        '"Epilogue", sans-serif',
         {
           fontVariationSettings: '"slnt" 0',
         },
