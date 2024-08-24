@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import SturdyWebSocket from "@/lib/ws";
-import { ChatEvent, ChatEventType as BaseChatEventType, ConnectionState, ConnectionStateChangedEvent, IChatService, IStorage, MessageContentType, MessageDirection, MessageEvent, MessageStatus, SendMessageServiceParams, SendTypingServiceParams, UpdateState, Conversation, Participant, User, Presence, UserStatus } from "@chatscope/use-chat";
+import { ChatEvent, ChatEventType as BaseChatEventType, ConnectionState, ConnectionStateChangedEvent, IChatService, IStorage, MessageContentType, MessageDirection, MessageEvent, MessageStatus, SendMessageServiceParams, SendTypingServiceParams, UpdateState, Conversation, Participant, User, Presence, UserStatus, ChatMessage } from "@chatscope/use-chat";
 import { ChatEventHandler, ChatEventType, ConversationJoinedEvent } from "./events";
 import { ConversationData, UserData } from "../types";
 import { ChatAPI } from "./types";
 import { wsUrl } from "./const";
+import { luid } from "@/lib/utils";
 
 type EventHandlers = {
   onMessage: Array<ChatEventHandler<
@@ -39,10 +40,11 @@ type EventHandlers = {
 };
 
 export class ChatService implements IChatService {
-  storage?: IStorage<ConversationData, UserData>;
+  storage: IStorage<ConversationData, UserData>;
   updateState: UpdateState;
   ws?: SturdyWebSocket;
   userId?: string;
+  unacknowledgedMessages: Map<string, ChatMessage<MessageContentType>>;
 
   eventHandlers: EventHandlers = {
     onMessage: [],
@@ -57,11 +59,13 @@ export class ChatService implements IChatService {
   constructor(storage: IStorage<ConversationData, UserData>, update: UpdateState) {
     this.storage = storage;
     this.updateState = update;
+    this.unacknowledgedMessages = new Map();
   }
 
   /**
    * Establishes connection with the websocket
    * @param userId authenticates websocket connection
+   * @param token authenticates websocket connection
    */
   connect(userId: string) {
     if (this.ws && this.userId === userId) {
@@ -82,7 +86,11 @@ export class ChatService implements IChatService {
     this.ws.onopen = () => {
       console.info("Naerochat", "Connection is up")
       this.ws?.send(JSON.stringify({
+        id: luid(),
         type: "on_connect",
+        payload: {
+          userId,
+        }
       }))
       this.emit("connectionStateChanged", new ConnectionStateChangedEvent(ConnectionState.Connected))
     }
@@ -100,7 +108,7 @@ export class ChatService implements IChatService {
     this.ws.onmessage = (event) => {
       if (!event.data) return
       const data = JSON.parse(event.data)
-      console.log("Naerochat", "Received message", data)
+      // console.log("Naerochat", "Received message", data)
       this.dispatchEventOfType(data.type, data.payload)
     }
 
@@ -131,7 +139,6 @@ export class ChatService implements IChatService {
    */
   createConversation(userIds: string[] = [], name?: string) {
     if (userIds.length === 0) return;
-    console.log("Naerochat", "Creating conversation with", userIds)
     this.ws?.send(JSON.stringify({
       type: "on_join",
       payload: {
@@ -142,8 +149,11 @@ export class ChatService implements IChatService {
   }
 
   sendMessage({ message, conversationId }: SendMessageServiceParams) {
+    if (!this.ws) return
+    this.unacknowledgedMessages.set(message.id, message)
     this.ws?.send(JSON.stringify({
       type: "on_message",
+      id: message.id,
       payload: {
         body: message.content?.content,
         content_type: String(message.contentType),
@@ -244,6 +254,10 @@ export class ChatService implements IChatService {
         this.handleIncomingMessage(payload)
         break
       }
+      case "ack_on_message": {
+        this.handleMessageMessageAcknowledgement(payload)
+        break
+      }
     }
   }
 
@@ -257,7 +271,8 @@ export class ChatService implements IChatService {
     const users = payload.room.users ?? [];
 
     users.forEach((user: ChatAPI.User) => {
-      if (this.storage?.getUser(user.userId)) return
+      const [userInStorage] = this.storage.getUser(user.userId)
+      if (userInStorage) return
       const newUser = new User({
         id: user.userId,
         presence: new Presence({
@@ -293,12 +308,19 @@ export class ChatService implements IChatService {
         },
         contentType: MessageContentType.TextHtml,
         direction: MessageDirection.Incoming,
-        senderId: payload.from.uuid,
+        senderId: payload.from_id,
         status: MessageStatus.Sent,
         createdTime: payload.created_at
       },
-      conversationId: payload.to.uuid,
+      conversationId: payload.to_id
     })
     this.emit("message", event)
+  }
+
+  private handleMessageMessageAcknowledgement(id: string) {
+    const message = this.unacknowledgedMessages.get(id)
+    if (!message) return
+    message.status = MessageStatus.Sent
+    this.updateState()
   }
 }

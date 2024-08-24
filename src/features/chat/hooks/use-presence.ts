@@ -8,7 +8,6 @@ const usePresence = () => {
 
   useEffect(() => {
     const onConnectionStateChanged = (event: ConnectionStateChangedEvent) => {
-      console.log('use-presence.tsx: ConnectionStateChangedEvent', event)
       if (event.status === ConnectionState.Connected) {
         setPresence(UserStatus.Available)
       } else {

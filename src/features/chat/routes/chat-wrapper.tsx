@@ -10,7 +10,9 @@ import { __DEV__ } from '../lib/const';
 import { UploadProvider } from '../components/uploader/uploader';
 import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useChatUser } from '../hooks/use-chat-api';
+import { useToken, useUser } from '@/lib/auth';
+import { Spinner } from '@/components/icons/spinner';
+import chatAPI from '../lib/api';
 
 // Storage needs to generate id for messages and groups
 const messageIdGenerator = () => uuid();
@@ -40,28 +42,39 @@ const variables = {
 } as const
 
 const AuthenticatedChat = ({ children }: { children: React.ReactNode }) => {
-  const { data, status } = useChatUser();
+  const { data, status } = useUser();
   const { setCurrentUser } = useChat()
+  useToken(chatAPI.client);
 
   useEffect(() => {
     if (data && status === "success") {
       const currentUser = new User({
-        id: data.userId,
+        id: data.id,
         presence: new Presence({ status: UserStatus.Available }),
-        username: data.name,
+        username: data.username,
         data: {}
       })
       setCurrentUser(currentUser)
     }
-  }, [data, status, setCurrentUser])
+  }, [data, setCurrentUser, status])
 
   if (status === "pending") {
-    return <div>Loading...</div>
-  } else if (status === "error") {
-    return <div>Error</div>
-  } else {
-    return <>{children}</>
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Spinner />
+      </div>
+    )
   }
+
+  if (status === "error") {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p>Failed to load user data</p>
+      </div>
+    )
+  }
+
+  return <>{children}</>
 }
 
 const ChatWrapper = () => (

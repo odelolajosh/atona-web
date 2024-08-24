@@ -1,19 +1,22 @@
-import { Conversation as TConversation, User, UserStatus } from "@chatscope/use-chat"
+import { Conversation as TConversation, UserStatus } from "@chatscope/use-chat"
 import { useChat } from "../../hooks/use-chat"
-import { ConversationData, UserData } from "../../types"
+import { ConversationData } from "../../types"
 import { cn } from "@/lib/utils"
 import { ChatAvatar } from "../chat-avatar"
 import { getConversationMeta, useConversation } from "../../hooks/use-conversation"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Spinner } from "@/components/icons/spinner"
 import { Input } from "@/components/ui/input"
 import { usePresence } from "../../hooks/use-presence"
 import { useChatState } from "../../lib/provider"
 import { useUser } from "@/lib/auth"
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { JoinConversationModal } from "./join-conversation-modal"
 import { useModal } from "@/lib/hooks/use-modal"
+import { useDebouncedCallback } from 'use-debounce';
+import { useChatSearch } from "../../hooks/use-chat-api"
+import { Cross2Icon } from "@radix-ui/react-icons"
 
 type ConversationProps = {
   conversation: TConversation<ConversationData>
@@ -40,15 +43,24 @@ const Conversation = ({ conversation: c }: ConversationProps) => {
   )
 }
 
-const UserConversation = ({ user }: { user: User<UserData> }) => {
-  const { activeConversation, service } = useChat()
-  const { username: name, avatar } = user
+const SearchItem = ({ user }: { user: { id: string, name: string, avatar?: string } }) => {
+  const { currentUser, activeConversation, service, conversations } = useChat()
   const { openModal, modal, modalProps } = useModal<'new-conversation'>();
+  const navigate = useNavigate()
 
   const handleClick = () => {
-    service.createConversation([user.id])
-    openModal('new-conversation', user.id)
-    // navigate(`/chat/${user.id}`)
+    // We don't want to open a conversation with ourselves, except we want to add that feature
+    if (user.id === currentUser?.id) return
+    // TODO: can be optimized
+    // check if there is already a conversation with this user
+    const existingConversation = conversations.find(c => c.data?.type === "dm" && c.participants.some(p => p.id === user.id))
+    if (existingConversation) {
+      navigate(`/chat/${existingConversation.id}`)
+    } else {
+      service.createConversation([user.id])
+      openModal('new-conversation', user.id)
+      // navigate(`/chat/${user.id}`)
+    }
   }
 
   return (
@@ -59,9 +71,9 @@ const UserConversation = ({ user }: { user: User<UserData> }) => {
           "bg-muted hover:bg-muted text-muted-foreground hover:text-muted-foreground": activeConversation?.id === user.id
         }
       )} onClick={handleClick}>
-        <ChatAvatar src={avatar} name={name} className="w-10 h-10 rounded-full" />
+        <ChatAvatar src={user.avatar} name={user.name} className="w-10 h-10 rounded-full" />
         <div className="flex-1">
-          <div className="text-white font-medium">{name}</div>
+          <div className="text-white font-medium">{user.name}</div>
         </div>
       </div>
       {(modal?.type === 'new-conversation' && modal?.data) ? (
@@ -73,27 +85,27 @@ const UserConversation = ({ user }: { user: User<UserData> }) => {
 
 export const ConversationList = ({ className }: { className?: string }) => {
   const { data: user } = useUser()
-  const { conversations, users, getUser, currentUser } = useChat()
+  const { conversations, getUser, currentUser } = useChat()
   const { conversationsStatus } = useChatState("ConversationList")
   const presence = usePresence()
+  const searchRef = useRef<HTMLInputElement>(null)
 
   const [q, setQ] = useState("");
 
-  const [filteredConversations, filteredUsers] = useMemo(() => {
-    if (q === "") {
-      return [conversations, []]
+  const { data: searchResult, status: searchStatus } = useChatSearch(q);
+
+  const filteredConversations = useMemo(() => {
+    if (q === "" || !currentUser) {
+      return conversations
     }
 
     const query = q.toLowerCase()
-
-
-    if (!currentUser) return [[], []]
 
     const filteredConversations: TConversation<ConversationData>[] = []
     const dms: string[] = []
 
     conversations.forEach((c) => {
-      const { name } = getConversationMeta(c, currentUser?.id, getUser)
+      const { name } = getConversationMeta(c, currentUser.id, getUser)
       if (c.data?.type === "dm") {
         const otherUser = c.participants.find((p) => p.id !== currentUser.id)
         if (!otherUser) return
@@ -104,19 +116,31 @@ export const ConversationList = ({ className }: { className?: string }) => {
       }
     })
 
-    const filteredUsers = users.filter((u) => {
-      if (u.id === currentUser.id) return false
-      if (dms.includes(u.id)) return false
-      return u.username.toLowerCase().includes(query)
-    })
+    return filteredConversations
+  }, [q, conversations, currentUser, getUser])
 
-    return [filteredConversations, filteredUsers]
-  }, [q, conversations, users, currentUser, getUser])
+  const handleSearch = useDebouncedCallback((term) => {
+    setQ(term)
+  }, 300)
+
+  const clearSearch = () => {
+    if (searchRef.current) {
+      searchRef.current.value = ""
+      setQ("")
+    }
+  }
 
   return (
     <div className={cn("w-full flex flex-col relative", className)}>
       <div className="py-4 px-6">
-        <Input type="text" placeholder="Search..." autoComplete="off" value={q} onChange={(e) => setQ(e.target.value)} />
+        <div className="relative">
+          <Input ref={searchRef} type="text" placeholder="Search..." autoComplete="off" onChange={(e) => handleSearch(e.target.value)} />
+          {q && (
+            <span className="absolute top-1/2 right-3 transform -translate-y-1/2">
+              <Cross2Icon className="w-4 h-4 text-muted-foreground" onClick={clearSearch} />
+            </span>
+          )}
+        </div>
       </div>
       {conversationsStatus === "loading" ? (
         <div className="flex justify-center items-center h-64">
@@ -128,7 +152,7 @@ export const ConversationList = ({ className }: { className?: string }) => {
             <div className="space-y-2">
               {(q && filteredConversations.length > 0) ? (
                 <div className="text-muted-foreground text-sm px-4 py-2">
-                  Results from your conversations
+                  From your conversations
                 </div>
               ) : (!q && filteredConversations.length === 0) ? (
                 <div className="text-muted-foreground text-base px-4 py-2">
@@ -140,22 +164,33 @@ export const ConversationList = ({ className }: { className?: string }) => {
               </div>
             </div>
             <div className="space-y-2">
-              {(q && filteredUsers.length > 0) ? (
-                <div className="text-muted-foreground text-sm px-4 py-2">
-                  Results from naerospace
-                </div>
-              ) : null}
-              <div className="flex flex-col gap-1">
-                {filteredUsers.map((u) => <UserConversation key={u.id} user={u} />)}
-              </div>
+              {q && (
+                <>
+                  {searchStatus?.length > 0 && (
+                    <div className="text-muted-foreground text-sm px-4 py-2">
+                      From naerospace
+                    </div>
+                  )}
+                  {searchStatus === "pending" ? (
+                    <div className="flex justify-center items-center h-10">
+                      <Spinner />
+                    </div>
+                  ) : searchResult?.length === 0 ? (
+                    <div className="text-muted-foreground text-sm px-4 py-2">
+                      No results found for <span className="font-medium">{q}</span>
+                    </div>
+                  ) : searchResult?.map((user) => <SearchItem key={user.id} user={user} />)}
+                </>
+              )}
+
             </div>
-            <div className="space-y-2">
-              {(q && filteredUsers.length === 0 && filteredConversations.length === 0) ? (
+            {/* <div className="space-y-2">
+              {(q && filteredConversations.length === 0) ? (
                 <div className="text-muted-foreground text-sm px-4 py-2">
                   No results found for <span className="font-medium">{q}</span>
                 </div>
               ) : null}
-            </div>
+            </div> */}
           </div>
           <div className="p-2 flex gap-2 justify-between items-center">
             <div className="flex flex-col gap-px items-center">
@@ -178,7 +213,8 @@ export const ConversationList = ({ className }: { className?: string }) => {
             </NewGroupModal> */}
           </div>
         </>
-      )}
-    </div>
+      )
+      }
+    </div >
   )
 }

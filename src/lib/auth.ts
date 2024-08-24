@@ -17,18 +17,18 @@ const userKey = ['authenticated-user'];
 
 const LOCAL_JWT_KEY = 'atona-jwt_key';
 
-export const useToken = () => {
+export const useToken = (client: typeof axios = axios) => {
   const [jwt, setJwt] = useLocalStorage(LOCAL_JWT_KEY, '');
 
   const authenticateClient = useCallback((token: string) => {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-  }, []);
+    client.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  }, [client.defaults.headers.common]);
 
   useEffect(() => {
-    if (jwt && !axios.defaults.headers.common['Authorization']) {
+    if (jwt && !client.defaults.headers.common['Authorization']) {
       authenticateClient(jwt);
     }
-  }, [jwt, authenticateClient]);
+  }, [jwt, authenticateClient, client.defaults.headers.common]);
 
   const authenticate = useCallback(
     (response: UserResponse) => {
@@ -39,9 +39,9 @@ export const useToken = () => {
   );
 
   const logout = useCallback(() => {
-    axios.defaults.headers.common['Authorization'] = '';
+    client.defaults.headers.common['Authorization'] = '';
     setJwt('');
-  }, [setJwt]);
+  }, [client.defaults.headers.common, setJwt]);
 
   return {
     token: jwt,

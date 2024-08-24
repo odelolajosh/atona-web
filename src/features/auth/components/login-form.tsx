@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Spinner } from "@/components/icons/spinner"
+import { AxiosError } from "axios"
+import { ErrorResponse } from "@/types/error"
 
 const formSchema = z.object({
   email: z.string().email({
@@ -31,7 +33,21 @@ export const LoginForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     loginMutation.mutate(values, {
-      onSuccess
+      onSuccess,
+      onError: (error) => {
+        const data = (error as AxiosError<ErrorResponse>)?.response?.data
+        if (data?.message === "Invalid credentials") {
+          form.setError("email", {
+            type: "manual",
+            message: "Invalid email or password.",
+          })
+        } else {
+          form.setError("root", {
+            type: "manual",
+            message: "An error occurred. Please try again later.",
+          })
+        }
+      }
     })
   }
 
@@ -39,7 +55,7 @@ export const LoginForm = ({ onSuccess }: { onSuccess: () => void }) => {
     <Card className="max-w-[500px] mx-auto bg-card/90">
       <Card.Header className="space-y-px">
         <Card.Title className="scroll-m-20 text-3xl font-extrabold tracking-tight">Login</Card.Title>
-        <Card.Description className="text-lg text-muted-foreground">Please enter your email to continue</Card.Description>
+        <Card.Description className="text-muted-foreground">Please enter your email to continue</Card.Description>
       </Card.Header>
       <Card.Content>
         <Form {...form}>
@@ -71,6 +87,11 @@ export const LoginForm = ({ onSuccess }: { onSuccess: () => void }) => {
                   </Form.Item>
                 )}
               />
+              {form.formState.errors.root && (
+                <p className="text-[0.8rem] font-medium text-destructive">
+                  {form.formState.errors.root.message}
+                </p>
+              )}
             </div>
             <Button type="submit" size="lg" disabled={loginMutation.isPending}>
               Login
@@ -80,7 +101,7 @@ export const LoginForm = ({ onSuccess }: { onSuccess: () => void }) => {
                 </div>
               )}
             </Button>
-            <div className="mt-6 flex flex-col gap-4">
+            <div className="mt-6 flex flex-col gap-4 text-sm">
               <span>
                 <span className="text-gray-300">New to Naerospace?</span>{' '}
                 <NavLink to="/register" className="text-secondary">Create an account</NavLink>

@@ -50,7 +50,7 @@ export namespace ChatAPI {
       avatarUrl: string;
       online: boolean;
     };
-    from_id: number;
+    from_id: string;
     to: {
       id: number;
       uuid: string;

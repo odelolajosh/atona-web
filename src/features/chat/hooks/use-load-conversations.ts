@@ -8,7 +8,7 @@ import { ConversationData } from "../types";
 import { useChat } from "./use-chat";
 
 export const useLoadConversation = (consumerName: string) => {
-  const { currentUser, addUser, addConversation, removeAllUsers, removeAllConversations } = useChat()
+  const { currentUser, addUser, getUser, addConversation, removeAllUsers, removeAllConversations } = useChat()
   const { conversationsStatus, setConversationsStatus } = useChatState(consumerName)
 
   const loadConversation = useCallback(async (userId: string) => {
@@ -18,34 +18,30 @@ export const useLoadConversation = (consumerName: string) => {
 
     setConversationsStatus("loading")
     try {
-      const result = await Promise.all([
-        chatAPI.getUsers(),
-        chatAPI.getConversations(userId)
-      ])
+      const conversations = await chatAPI.getConversations(userId)
 
-      if (!result[0] || !result[1]) return
+      if (!conversations) {
+        return
+      }
 
-      const [users, conversations] = result;
-
-      // remove all existing users
       removeAllUsers()
       removeAllConversations()
 
-      users.forEach((user) => {
-        const newUser = new User({
-          id: user.userId,
-          presence: new Presence({
-            status: user.online ? UserStatus.Available : UserStatus.Away
-          }),
-          username: user.name,
-          avatar: user.avatarUrl,
-          data: {}
-        })
-        addUser(newUser)
-      })
-
-      console.log(conversations)
       conversations.forEach((conversation: ChatAPI.Conversation) => {
+
+        conversation.users.forEach((u) => {
+          if (u.userId === currentUser?.id || getUser(u.userId)) return
+          addUser(new User({
+            id: u.userId,
+            presence: new Presence({
+              status: u.online ? UserStatus.Available : UserStatus.Away
+            }),
+            username: u.name,
+            avatar: u.avatarUrl,
+            data: {}
+          }))
+        })
+
         const participants = conversation.users.map((u) => {
           return new Participant({ id: u.userId })
         })
@@ -66,7 +62,7 @@ export const useLoadConversation = (consumerName: string) => {
       console.error("Failed to load conversation", err)
       setConversationsStatus("error")
     }
-  }, [addConversation, addUser, removeAllConversations, removeAllUsers, conversationsStatus, setConversationsStatus])
+  }, [conversationsStatus, setConversationsStatus, removeAllUsers, removeAllConversations, addConversation, currentUser?.id, getUser, addUser])
 
   useEffect(() => {
     if (!currentUser) return;

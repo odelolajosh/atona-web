@@ -12,7 +12,7 @@ const ErrorFallback = () => (
     className="text-destructive w-screen h-screen flex flex-col justify-center items-center"
     role="alert"
   >
-    <h2 className="scroll-m-20 pb-2 text-3xl font-medium tracking-tight">Network error :( </h2>
+    <h2 className="scroll-m-20 pb-2 text-3xl font-medium tracking-tight">Connected to the internet? :) </h2>
     <Button className="mt-4" onClick={() => window.location.assign(window.location.origin)}>
       Refresh
     </Button>

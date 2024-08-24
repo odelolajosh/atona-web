@@ -49,13 +49,13 @@ export default function Wrapper({ children }: { children: React.ReactNode }) {
   const logout = useLogout();
 
   return (
-    <div className={cn("w-full h-dvh max-w-screen font-clash bg-background")}>
+    <div className={cn("w-full h-dvh max-w-screen bg-background")}>
       <nav role='list' className={cn('flex items-center content-center justify-between w-full h-16 px-4 border-b border-border', {
         "bg-success/[0.05]": ws.status === 'CONNECTED',
         "bg-warning/[0.05]": ws.status === 'CONNECTING'
       })}>
         <div className='flex items-center content-center gap-4 h-full'>
-          <NaeroIcon className='flex items-center content-center w-20 md:w-24 py-1' />
+          <Logo />
           <ul className='flex h-full gap-1 sm:gap-2 py-1'>
             {nav.map((item, index) => (
               <li key={index}>
@@ -159,7 +159,7 @@ export function MiniWrapper({ children }: { children: React.ReactNode }) {
     <div className={cn("relative w-full h-screen max-w-screen")}>
       <nav role='list' className={cn('flex items-center content-center justify-between w-full h-16 px-4')}>
         <div className='flex items-center content-center h-full gap-2'>
-          <Logo text />
+          <Logo showText />
         </div>
       </nav>
       <div className='w-full h-[calc(100vh-4rem)] overflow-hidden'>

@@ -35,8 +35,8 @@ const useLoadMessages = (consumerName: string) => {
       messages.forEach((message) => {
         const chatMessage = new ChatMessage({
           id: message.uuid,
-          direction: message.from.userId === currentUser!.id ? MessageDirection.Outgoing : MessageDirection.Incoming,
-          senderId: message.from.userId,
+          direction: message.from_id === currentUser!.id ? MessageDirection.Outgoing : MessageDirection.Incoming,
+          senderId: message.from_id,
           content: {
             content: message.body,
           },

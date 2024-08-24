@@ -1,14 +1,16 @@
 import { useQuery } from "@tanstack/react-query"
 import chatAPI from "../lib/api"
-import { useToken } from "@/lib/auth"
+import { queryClient } from "@/lib/react-query";
 
-export const useChatUser = () => {
-  const { token } = useToken()
+export const useChatSearch = (q?: string) => {
   return useQuery({
-    queryKey: ['chat-user'],
-    queryFn: async () => {
-      chatAPI.authenticate(token)
-      return chatAPI.getMe()
-    }
+    queryKey: ['chat-search', q],
+    queryFn: () => {
+      const cache = queryClient.getQueryData(['chat-search', q])
+      if (cache) return cache as ReturnType<typeof chatAPI.getSearchResults>
+
+      return chatAPI.getSearchResults(q!)
+    },
+    enabled: !!q
   })
 }

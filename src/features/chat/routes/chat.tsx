@@ -7,14 +7,12 @@ import { useChat } from "../hooks/use-chat";
 import { Outlet, useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useLoadConversation } from "../hooks/use-load-conversations";
-import { usePersistChatService } from "../hooks/use-chat-service";
 
 export const Chat = () => {
   const { conversationId } = useParams();
   const { currentUser, setCurrentUser, service, addConversation } = useChat()
   
   useLoadConversation("Chat")
-  usePersistChatService()
 
   useEffect(() => {
     if (!currentUser) return
