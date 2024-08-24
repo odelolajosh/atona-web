@@ -53,7 +53,7 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(({ child
   }, [])
 
   const mount = useCallback(() => {
-    scrollToEnd("smooth")
+    scrollToEnd("auto")
 
     const list = containerRef.current!
     const snapshot = snapshotRef.current!
