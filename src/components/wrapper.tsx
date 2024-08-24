@@ -2,7 +2,6 @@ import { GlobeEuropeAfricaIcon, ChatBubbleLeftEllipsisIcon, VideoCameraIcon } fr
 import { NavLink } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { useWs } from "@/providers/ws"
-import { NaeroIcon } from "./icons/naero"
 import { Logo } from "./icons/logo"
 import { DropdownMenu } from "./ui/dropdown-menu"
 import { useLogout, useUser } from "@/lib/auth"
