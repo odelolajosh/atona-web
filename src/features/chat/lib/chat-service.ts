@@ -72,7 +72,7 @@ export class ChatService implements IChatService {
       return;
     }
 
-    const url = `${wsUrl}/${userId}`;
+    const url = `${wsUrl}`;
 
     this.userId = userId
     this.ws = new SturdyWebSocket(url, {
@@ -109,7 +109,7 @@ export class ChatService implements IChatService {
       if (!event.data) return
       const data = JSON.parse(event.data)
       // console.log("Naerochat", "Received message", data)
-      this.dispatchEventOfType(data.type, data.payload)
+      this.dispatchEventOfType(data.id, data.type, data.payload)
     }
 
     this.ws.onclose = () => {
@@ -158,6 +158,7 @@ export class ChatService implements IChatService {
         body: message.content?.content,
         content_type: String(message.contentType),
         to_id: conversationId,
+        from_id: message.senderId,
       }
     }))
 
@@ -240,7 +241,7 @@ export class ChatService implements IChatService {
    * @param payload
    * @private
    */
-  private dispatchEventOfType(type: string, payload: any) {
+  private dispatchEventOfType(id: string, type: string, payload: any) {
     switch (type) {
       case "connected": {
         this.handleConnection()
@@ -255,7 +256,7 @@ export class ChatService implements IChatService {
         break
       }
       case "ack_on_message": {
-        this.handleMessageMessageAcknowledgement(payload)
+        this.handleMessageMessageAcknowledgement(id)
         break
       }
     }

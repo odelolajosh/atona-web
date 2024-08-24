@@ -56,7 +56,7 @@ const SearchItem = ({ user }: { user: { id: string, name: string, avatar?: strin
     if (existingConversation) {
       navigate(`/chat/${existingConversation.id}`)
     } else {
-      service.createConversation([user.id])
+      service.createConversation([currentUser!.id, user.id])
       openModal('new-conversation', user.id)
       // navigate(`/chat/${user.id}`)
     }
@@ -199,7 +199,7 @@ export const ConversationList = ({ className }: { className?: string }) => {
             })}></span>
           </span>
           <span className="text-muted-foreground text-sm">
-            {currentUser?.presence.status === UserStatus.Available ? "Online" : "Offline"}
+            {currentUser?.presence.status === UserStatus.Available ? "online" : "offline"}
           </span>
         </div>
 
