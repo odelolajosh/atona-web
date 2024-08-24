@@ -166,7 +166,7 @@ export const ConversationList = ({ className }: { className?: string }) => {
             <div className="space-y-2">
               {q && (
                 <>
-                  {searchStatus?.length > 0 && (
+                  {searchResult && searchResult?.length > 0 && (
                     <div className="text-muted-foreground text-sm px-4 py-2">
                       From naerospace
                     </div>
