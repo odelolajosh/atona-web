@@ -66,7 +66,7 @@ export const Room = () => {
       contentType: MessageContentType.TextHtml,
       senderId: currentUser!.id,
       direction: MessageDirection.Outgoing,
-      status: MessageStatus.Sent
+      status: MessageStatus.Pending
     });
 
     sendMessage({

@@ -194,6 +194,7 @@ export const Messages: React.FC<MessagesProps> = ({ messages }) => {
                   payload: m.content,
                   direction: m.direction,
                   updatedAt: m.createdTime,
+                  status: m.status
                 }} position={index} />
               )
             })}

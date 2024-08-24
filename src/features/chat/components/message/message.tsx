@@ -1,4 +1,4 @@
-import { GalleryItem, MessageContent, MessageContentType, MessageDirection, useChat } from "@chatscope/use-chat"
+import { GalleryItem, MessageContent, MessageContentType, MessageDirection, MessageStatus, useChat } from "@chatscope/use-chat"
 import { PropsWithChildren, useMemo, useState } from "react"
 import { MessageHtmlContent } from "./message-html-content"
 import { cn } from "@/lib/utils"
@@ -6,12 +6,14 @@ import { formatDate } from "../../lib/utils"
 import { MessageGalleryContent } from "./message-gallery-content"
 import { ChatAvatar } from "../chat-avatar"
 import { MessageContextMenu } from "./message-context-menu"
+import { CheckIcon } from "@radix-ui/react-icons"
 
 type MessageProps<T extends MessageContentType> = {
   model: {
     senderId: string,
     type: MessageContentType,
     payload: MessageContent<T>,
+    status: MessageStatus,
     direction: MessageDirection,
     updatedAt: Date,
   },
@@ -23,6 +25,7 @@ export const Message = <T extends MessageContentType>({
     type = MessageContentType.TextMarkdown,
     payload,
     direction,
+    status,
     senderId,
     updatedAt
   },
@@ -101,8 +104,15 @@ export const Message = <T extends MessageContentType>({
             {messageJsx}
           </div>
           {/* Footer */}
-          <div>
-            <div className="text-xs text-muted-foreground text-right -mt-3">{formatDate(updatedAt)}</div>
+          <div className="flex gap-px justify-end items-center -mt-2 -mr-2">
+            <div className="text-xs text-muted-foreground text-right">{formatDate(updatedAt)}</div>
+            {direction === MessageDirection.Outgoing && (
+              <span className={cn("text-muted-foreground", {
+                "text-accent-foreground": status === MessageStatus.Sent,
+              })}>
+                <CheckIcon />
+              </span>
+            )}
           </div>
         </div>
       </div>
