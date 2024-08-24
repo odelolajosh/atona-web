@@ -50,7 +50,7 @@ const AuthenticatedChat = ({ children }: { children: React.ReactNode }) => {
     if (data && status === "success") {
       const currentUser = new User({
         id: data.id,
-        presence: new Presence({ status: UserStatus.Available }),
+        presence: new Presence({ status: UserStatus.Away }),
         username: data.username,
         data: {}
       })

@@ -7,7 +7,6 @@ import { getConversationMeta, useConversation } from "../../hooks/use-conversati
 import { Link, useNavigate } from "react-router-dom"
 import { Spinner } from "@/components/icons/spinner"
 import { Input } from "@/components/ui/input"
-import { usePresence } from "../../hooks/use-presence"
 import { useChatState } from "../../lib/provider"
 import { useUser } from "@/lib/auth"
 import { useMemo, useRef, useState } from "react"
@@ -87,7 +86,6 @@ export const ConversationList = ({ className }: { className?: string }) => {
   const { data: user } = useUser()
   const { conversations, getUser, currentUser } = useChat()
   const { conversationsStatus } = useChatState("ConversationList")
-  const presence = usePresence()
   const searchRef = useRef<HTMLInputElement>(null)
 
   const [q, setQ] = useState("");
@@ -147,74 +145,71 @@ export const ConversationList = ({ className }: { className?: string }) => {
           <Spinner />
         </div>
       ) : (
-        <>
-          <div className="flex-1 overflow-y-auto flex flex-col gap-1 px-2" style={{ scrollbarWidth: "none" }}>
-            <div className="space-y-2">
-              {(q && filteredConversations.length > 0) ? (
-                <div className="text-muted-foreground text-sm px-4 py-2">
-                  From your conversations
-                </div>
-              ) : (!q && filteredConversations.length === 0) ? (
-                <div className="text-muted-foreground text-base px-4 py-2">
-                  No conversations yet.
-                </div>
-              ) : null}
-              <div className="flex flex-col gap-1">
-                {filteredConversations.map((c) => <Conversation key={c.id} conversation={c} />)}
+        <div className="flex-1 overflow-y-auto flex flex-col gap-1 px-2" style={{ scrollbarWidth: "none" }}>
+          <div className="space-y-2">
+            {(q && filteredConversations.length > 0) ? (
+              <div className="text-muted-foreground text-sm px-4 py-2">
+                From your conversations
               </div>
+            ) : (!q && filteredConversations.length === 0) ? (
+              <div className="text-muted-foreground text-base px-4 py-2">
+                No conversations yet.
+              </div>
+            ) : null}
+            <div className="flex flex-col gap-1">
+              {filteredConversations.map((c) => <Conversation key={c.id} conversation={c} />)}
             </div>
-            <div className="space-y-2">
-              {q && (
-                <>
-                  {searchResult && searchResult?.length > 0 && (
-                    <div className="text-muted-foreground text-sm px-4 py-2">
-                      From naerospace
-                    </div>
-                  )}
-                  {searchStatus === "pending" ? (
-                    <div className="flex justify-center items-center h-10">
-                      <Spinner />
-                    </div>
-                  ) : searchResult?.length === 0 ? (
-                    <div className="text-muted-foreground text-sm px-4 py-2">
-                      No results found for <span className="font-medium">{q}</span>
-                    </div>
-                  ) : searchResult?.map((user) => <SearchItem key={user.id} user={user} />)}
-                </>
-              )}
+          </div>
+          <div className="space-y-2">
+            {q && (
+              <>
+                {searchResult && searchResult?.length > 0 && (
+                  <div className="text-muted-foreground text-sm px-4 py-2">
+                    From naerospace
+                  </div>
+                )}
+                {searchStatus === "pending" ? (
+                  <div className="flex justify-center items-center h-10">
+                    <Spinner />
+                  </div>
+                ) : searchResult?.length === 0 ? (
+                  <div className="text-muted-foreground text-sm px-4 py-2">
+                    No results found for <span className="font-medium">{q}</span>
+                  </div>
+                ) : searchResult?.map((user) => <SearchItem key={user.id} user={user} />)}
+              </>
+            )}
 
-            </div>
-            {/* <div className="space-y-2">
+          </div>
+          {/* <div className="space-y-2">
               {(q && filteredConversations.length === 0) ? (
                 <div className="text-muted-foreground text-sm px-4 py-2">
                   No results found for <span className="font-medium">{q}</span>
                 </div>
               ) : null}
             </div> */}
-          </div>
-          <div className="p-2 flex gap-2 justify-between items-center">
-            <div className="flex flex-col gap-px items-center">
-              <span className="relative">
-                <ChatAvatar name={user?.username} src={user?.avatarUrl} />
-                <span className={cn("absolute bottom-0 right-0 rounded-full w-3 h-3 bg-orange-500", {
-                  "bg-green-500": presence === UserStatus.Available,
-                })}></span>
-              </span>
-              <span className="text-muted-foreground text-sm">
-                {presence === UserStatus.Available ? "Online" : "Offline"}
-              </span>
-            </div>
+        </div>
+      )}
+      <div className="p-2 mt-auto flex gap-2 justify-between items-center">
+        <div className="flex flex-col gap-px items-center">
+          <span className="relative">
+            <ChatAvatar name={user?.username} src={user?.avatarUrl} />
+            <span className={cn("absolute bottom-0 right-0 rounded-full w-3 h-3 bg-orange-500", {
+              "bg-green-500": currentUser?.presence.status === UserStatus.Available,
+            })}></span>
+          </span>
+          <span className="text-muted-foreground text-sm">
+            {currentUser?.presence.status === UserStatus.Available ? "Online" : "Offline"}
+          </span>
+        </div>
 
-            {/* Floating button */}
-            {/* <NewGroupModal>
-              <Button className="gap-2" size="lg">
-                <Pencil2Icon /> New group
-              </Button>
-            </NewGroupModal> */}
-          </div>
-        </>
-      )
-      }
+        {/* Floating button */}
+        {/* <NewGroupModal>
+          <Button className="gap-2" size="lg">
+            <Pencil2Icon /> New group
+          </Button>
+        </NewGroupModal> */}
+      </div>
     </div >
   )
 }

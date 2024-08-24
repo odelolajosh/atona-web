@@ -10,7 +10,7 @@ import { useLoadConversation } from "../hooks/use-load-conversations";
 
 export const Chat = () => {
   const { conversationId } = useParams();
-  const { currentUser, setCurrentUser, service, addConversation } = useChat()
+  const { currentUser, setCurrentUser, service, addConversation, updateState } = useChat()
   
   useLoadConversation("Chat")
 
@@ -21,6 +21,7 @@ export const Chat = () => {
       currentUser.presence = new Presence({
         status: event.status === ConnectionState.Connected ? UserStatus.Available : UserStatus.Away
       })
+      updateState()
     }
 
     const onConversationJoined = (event: ConversationJoinedEvent) => {
@@ -36,7 +37,7 @@ export const Chat = () => {
       service.off("connectionStateChanged", onConnectionStateChanged)
       service.off("conversationJoined", onConversationJoined)
     }
-  }, [addConversation, currentUser, service, setCurrentUser])
+  }, [addConversation, currentUser, service, setCurrentUser, updateState])
 
   return (
     <div className="flex h-full">
