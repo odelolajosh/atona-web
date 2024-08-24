@@ -1,4 +1,4 @@
-import { ChatMessage, ConnectionState, ConnectionStateChangedEvent, MessageContentType, MessageDirection, MessageStatus } from "@chatscope/use-chat"
+import { ChatMessage, MessageContentType, MessageDirection, MessageStatus } from "@chatscope/use-chat"
 import { useCallback, useEffect, useMemo, useRef } from "react"
 import { __DEV__ } from "../lib/const"
 import chatAPI from "../lib/api"
@@ -9,7 +9,7 @@ const MAX_TRY_COUNT = 1
 
 const useLoadMessages = (consumerName: string) => {
   const tryCount = useRef(0)
-  const { addMessage, activeConversation, removeMessagesFromConversation, currentUser, service } = useChat()
+  const { addMessage, activeConversation, removeMessagesFromConversation, currentUser } = useChat()
   const { getConversationMessagesStatus, setConversationMessagesStatus } = useChatState(consumerName)
 
   const status = useMemo(() => {
@@ -78,19 +78,20 @@ const useLoadMessages = (consumerName: string) => {
     tryLoadingMessages(true)
   }, [tryLoadingMessages])
 
-  useEffect(() => {
-    const onConnectionStateChanged = (event: ConnectionStateChangedEvent) => {
-      if (event.status === ConnectionState.Connected) {
-        retryLoading()
-      }
-    }
+  // TODO: Do we need this? I just added it because I thought it would be useful
+  // useEffect(() => {
+  //   const onConnectionStateChanged = (event: ConnectionStateChangedEvent) => {
+  //     if (event.status === ConnectionState.Connected) {
+  //       retryLoading()
+  //     }
+  //   }
 
-    service.on("connectionStateChanged", onConnectionStateChanged)
+  //   service.on("connectionStateChanged", onConnectionStateChanged)
 
-    return () => {
-      service.off("connectionStateChanged", onConnectionStateChanged)
-    }
-  }, [retryLoading, service])
+  //   return () => {
+  //     service.off("connectionStateChanged", onConnectionStateChanged)
+  //   }
+  // }, [retryLoading, service])
 
   return { status, retry: retryLoading }
 }
