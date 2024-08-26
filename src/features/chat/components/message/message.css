@@ -10,3 +10,7 @@
 .naero-message.html ul {
   @apply list-disc;
 }
+
+.naero-message.html * {
+  @apply !bg-transparent !text-base !font-sans !text-foreground;
+}

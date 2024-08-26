@@ -3,7 +3,7 @@
 }
 
 .naero-editor .ql-container {
-  @apply h-full !font-sans !text-base;
+  @apply h-full !font-sans !text-base !bg-transparent !text-foreground;
 }
 
 .naero-editor .ql-editor {
