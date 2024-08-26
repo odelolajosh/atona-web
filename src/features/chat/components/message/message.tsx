@@ -6,7 +6,7 @@ import { formatDate } from "../../lib/utils"
 import { MessageGalleryContent } from "./message-gallery-content"
 import { ChatAvatar } from "../chat-avatar"
 import { MessageContextMenu } from "./message-context-menu"
-import { CheckIcon } from "@radix-ui/react-icons"
+import { CheckIcon, ClockIcon } from "@radix-ui/react-icons"
 
 type MessageProps<T extends MessageContentType> = {
   model: {
@@ -108,9 +108,10 @@ export const Message = <T extends MessageContentType>({
             <div className="text-xs text-muted-foreground text-right">{formatDate(updatedAt)}</div>
             {direction === MessageDirection.Outgoing && (
               <span className={cn("text-muted-foreground", {
-                "text-accent-foreground": status === MessageStatus.Sent,
+                "text-accent-foreground": status === MessageStatus.Seen,
               })}>
-                <CheckIcon />
+                {(status === MessageStatus.Sent || status === MessageStatus.Seen) && <CheckIcon className="w-4 h-4" />}
+                {status === MessageStatus.Pending && <ClockIcon className="w-4 h-4" />}
               </span>
             )}
           </div>
