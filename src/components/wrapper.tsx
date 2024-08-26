@@ -59,13 +59,13 @@ export default function Wrapper({ children }: { children: React.ReactNode }) {
             {nav.map((item, index) => (
               <li key={index}>
                 <NavLink className={({ isActive }) => cn(
-                  "inline-flex flex-col h-14 items-center justify-center rounded-md bg-background px-3 sm:px-4 text-sm font-medium transition-colors hover:bg-muted/50 focus:bg-muted focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-muted/50",
+                  "inline-flex flex-col h-14 items-center justify-center rounded-md bg-background px-4 text-sm font-medium transition-colors hover:bg-muted/50 focus:bg-muted focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-muted/50",
                   {
                     "bg-muted/50 hover:bg-muted/30": isActive,
                   }
                 )} to={item.path}>
                   <item.icon className='w-6 h-6 md:w-8 md:h-8 mx-auto' />
-                  <span className='text-xs'>{item.name}</span>
+                  <span className='text-xs hidden sm:block'>{item.name}</span>
                 </NavLink>
               </li>
             ))}
