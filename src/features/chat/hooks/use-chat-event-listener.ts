@@ -8,7 +8,7 @@ const useChatEventListener = <T extends ChatEventType, E extends ChatEvent<T>>(e
 
   useEffect(() => {
     const handler = (event: E) => {
-      console.log('usse-chat-event-listener.tsx:', event, event)
+      console.log('use-chat-event-listener.tsx:', event, event)
       callback(event)
     }
     

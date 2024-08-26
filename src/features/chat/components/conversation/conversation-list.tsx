@@ -7,7 +7,7 @@ import { getConversationMeta, useConversation } from "../../hooks/use-conversati
 import { Link, useNavigate } from "react-router-dom"
 import { Spinner } from "@/components/icons/spinner"
 import { Input } from "@/components/ui/input"
-import { useChatState } from "../../lib/provider"
+import { useSecondaryChat } from "../../lib/provider"
 import { useUser } from "@/lib/auth"
 import { useMemo, useRef, useState } from "react"
 import { Slot } from "@radix-ui/react-slot"
@@ -15,7 +15,9 @@ import { JoinConversationModal } from "./join-conversation-modal"
 import { useModal } from "@/lib/hooks/use-modal"
 import { useDebouncedCallback } from 'use-debounce';
 import { useChatSearch } from "../../hooks/use-chat-api"
-import { Cross2Icon } from "@radix-ui/react-icons"
+import { Cross2Icon, Pencil2Icon } from "@radix-ui/react-icons"
+import { createTemporaryConversation } from "../../lib/actions"
+import { Button } from "@/components/ui/button"
 
 type ConversationProps = {
   conversation: TConversation<ConversationData>
@@ -42,25 +44,15 @@ const Conversation = ({ conversation: c }: ConversationProps) => {
   )
 }
 
-const SearchItem = ({ user }: { user: { id: string, name: string, avatar?: string } }) => {
-  const { currentUser, activeConversation, service, conversations } = useChat()
-  const { openModal, modal, modalProps } = useModal<'new-conversation'>();
-  const navigate = useNavigate()
+type SearchUser = {
+  id: string
+  name: string
+  avatar?: string
+}
 
-  const handleClick = () => {
-    // We don't want to open a conversation with ourselves, except we want to add that feature
-    if (user.id === currentUser?.id) return
-    // TODO: can be optimized
-    // check if there is already a conversation with this user
-    const existingConversation = conversations.find(c => c.data?.type === "dm" && c.participants.some(p => p.id === user.id))
-    if (existingConversation) {
-      navigate(`/chat/${existingConversation.id}`)
-    } else {
-      service.createConversation([currentUser!.id, user.id])
-      openModal('new-conversation', user.id)
-      // navigate(`/chat/${user.id}`)
-    }
-  }
+const SearchItem = ({ user, onSelect }: { user: SearchUser, onSelect: (user: SearchUser) => void }) => {
+  const { activeConversation } = useChat()
+  const { modal, modalProps } = useModal<'new-conversation'>();
 
   return (
     <>
@@ -69,7 +61,7 @@ const SearchItem = ({ user }: { user: { id: string, name: string, avatar?: strin
         {
           "bg-muted hover:bg-muted text-muted-foreground hover:text-muted-foreground": activeConversation?.id === user.id
         }
-      )} onClick={handleClick}>
+      )} onClick={() => onSelect(user)}>
         <ChatAvatar src={user.avatar} name={user.name} className="w-10 h-10 rounded-full" />
         <div className="flex-1">
           <div className="text-white font-medium">{user.name}</div>
@@ -84,13 +76,15 @@ const SearchItem = ({ user }: { user: { id: string, name: string, avatar?: strin
 
 export const ConversationList = ({ className }: { className?: string }) => {
   const { data: user } = useUser()
-  const { conversations, getUser, currentUser } = useChat()
-  const { conversationsStatus } = useChatState("ConversationList")
+  const { conversations, getUser, currentUser, addUser, addConversation } = useChat()
+  const { conversationsStatus } = useSecondaryChat("ConversationList")
   const searchRef = useRef<HTMLInputElement>(null)
 
   const [q, setQ] = useState("");
 
   const { data: searchResult, status: searchStatus } = useChatSearch(q);
+
+  const navigate = useNavigate()
 
   const filteredConversations = useMemo(() => {
     if (q === "" || !currentUser) {
@@ -127,6 +121,32 @@ export const ConversationList = ({ className }: { className?: string }) => {
       setQ("")
     }
   }
+
+  const handleUserSelect = (targetUser: SearchUser) => {
+    // We don't want to open a conversation with ourselves, except we want to add that feature
+    if (targetUser.id === currentUser?.id) return
+    // TODO: can be optimized
+    // check if there is already a conversation with this user
+    const existingConversation = conversations.find(c => c.data?.type === "dm" && c.participants.some(p => p.id === targetUser.id))
+    if (existingConversation) {
+      navigate(`/chat/${existingConversation.id}`)
+    } else {
+      // create a new conversation
+      // save the temporary conversation id with the user id as key in session storage
+      // so that when the conversation is created, we can redirect to the conversation
+
+      const [temporaryConversation, user] = createTemporaryConversation(currentUser!.id, targetUser)
+      addConversation(temporaryConversation)
+      addUser(user)
+      navigate(`/chat/${temporaryConversation.id}`)
+
+      // service.createTemporaryConversation([currentUser!.id, user.id])
+      // openModal('new-conversation', user.id)
+      // navigate(`/chat/${user.id}`)
+    }
+    clearSearch()
+  }
+
 
   return (
     <div className={cn("w-full flex flex-col relative", className)}>
@@ -176,7 +196,7 @@ export const ConversationList = ({ className }: { className?: string }) => {
                   <div className="text-muted-foreground text-sm px-4 py-2">
                     No results found for <span className="font-medium">{q}</span>
                   </div>
-                ) : searchResult?.map((user) => <SearchItem key={user.id} user={user} />)}
+                ) : searchResult?.map((user) => <SearchItem key={user.id} user={user} onSelect={handleUserSelect} />)}
               </>
             )}
 
@@ -209,6 +229,9 @@ export const ConversationList = ({ className }: { className?: string }) => {
             <Pencil2Icon /> New group
           </Button>
         </NewGroupModal> */}
+        <Button className="gap-2" size="lg" onClick={() => searchRef.current?.focus()}>
+          <Pencil2Icon width={20} height={20} />
+        </Button>
       </div>
     </div >
   )

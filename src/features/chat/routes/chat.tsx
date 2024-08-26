@@ -4,14 +4,15 @@ import { ConnectionState, ConnectionStateChangedEvent, Presence, UserStatus } fr
 import { useEffect } from "react";
 import { ConversationJoinedEvent } from "../lib/events";
 import { useChat } from "../hooks/use-chat";
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useLoadConversation } from "../hooks/use-load-conversations";
 
 export const Chat = () => {
   const { conversationId } = useParams();
-  const { currentUser, setCurrentUser, service, addConversation, updateState } = useChat()
-  
+  const { currentUser, setCurrentUser, service, addConversation, updateState, getConversation, activeConversation, setActiveConversation, removeConversation } = useChat()
+  const navigate = useNavigate()
+
   useLoadConversation("Chat")
 
   useEffect(() => {
@@ -25,6 +26,21 @@ export const Chat = () => {
     }
 
     const onConversationJoined = (event: ConversationJoinedEvent) => {
+      // handle temporary conversations here
+      // if this conversation is dm and it exists as temporary conversation
+      // remove it from temporary conversations
+
+      if (event.conversation.data?.type === "dm") {
+        const otherUser = event.conversation.participants.find((p) => p.id !== currentUser.id)
+        const temporaryConversation = getConversation(`t_${otherUser?.id}`)
+        if (temporaryConversation) {
+          if (activeConversation?.id === temporaryConversation.id) {
+            navigate(`/chat/${event.conversation.id}`, { replace: true })
+            setActiveConversation(event.conversation.id)
+          }
+          removeConversation(temporaryConversation.id, true) // true, clear messages too
+        }
+      }
       addConversation(event.conversation)
     }
 
@@ -37,7 +53,7 @@ export const Chat = () => {
       service.off("connectionStateChanged", onConnectionStateChanged)
       service.off("conversationJoined", onConversationJoined)
     }
-  }, [addConversation, currentUser, service, setCurrentUser, updateState])
+  }, [activeConversation?.id, addConversation, currentUser, getConversation, navigate, removeConversation, service, setActiveConversation, setCurrentUser, updateState])
 
   return (
     <div className="flex h-full">

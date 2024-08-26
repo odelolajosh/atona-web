@@ -9,7 +9,7 @@ import {
 } from '@tanstack/react-query';
 import { User, UserResponse } from '@/features/auth/types';
 import { LoginCredentialsDTO, RegisterCredentialsDTO, getMe, loginWithEmailAndPassword, registerWithEmailAndPassword } from '@/features/auth';
-import { useLocalStorage } from './hooks/use-local-storage';
+import { useLocalStorage } from './hooks/use-storage';
 import { axios } from './axios';
 import { AxiosError } from 'axios';
 

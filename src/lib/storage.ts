@@ -1,21 +1,42 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const prefix = 'atona_';
 
-export const storage = {
-  get(key: string) {
-    const value = localStorage.getItem(prefix + key);
+export const localStorage = {
+  get(key: string, defaultValue?: any) {
+    const value = window.localStorage.getItem(prefix + key);
     if (value) {
       return JSON.parse(value);
     }
-    return null;
+    return defaultValue;
   },
   set(key: string, value: any) {
     value = value === undefined ? "" : JSON.stringify(value);
-    localStorage.setItem(prefix + key, value);
+    window.localStorage.setItem(prefix + key, value);
   },
   remove(key: string) {
-    localStorage.removeItem(prefix + key);
+    window.localStorage.removeItem(prefix + key);
   },
   clear() {
-    localStorage.clear();
+    window.localStorage.clear();
+  },
+};
+
+export const sessionStorage = {
+  get(key: string, defaultValue?: any) {
+    const value = window.sessionStorage.getItem(prefix + key);
+    if (value) {
+      return JSON.parse(value);
+    }
+    return defaultValue;
+  },
+  set(key: string, value: any) {
+    value = value === undefined ? "" : JSON.stringify(value);
+    window.sessionStorage.setItem(prefix + key, value);
+  },
+  remove(key: string) {
+    window.sessionStorage.removeItem(prefix + key);
+  },
+  clear() {
+    window.sessionStorage.clear();
   },
 };

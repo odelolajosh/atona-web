@@ -2,7 +2,7 @@ import { ChatMessage, MessageContentType, MessageDirection, MessageStatus } from
 import { useCallback, useEffect, useMemo, useRef } from "react"
 import { __DEV__ } from "../lib/const"
 import chatAPI from "../lib/api"
-import { useChatState } from "../lib/provider";
+import { useSecondaryChat } from "../lib/provider";
 import { useChat } from "./use-chat";
 
 const MAX_TRY_COUNT = 1
@@ -10,7 +10,7 @@ const MAX_TRY_COUNT = 1
 const useLoadMessages = (consumerName: string) => {
   const tryCount = useRef(0)
   const { addMessage, activeConversation, removeMessagesFromConversation, currentUser } = useChat()
-  const { getConversationMessagesStatus, setConversationMessagesStatus } = useChatState(consumerName)
+  const { getConversationMessagesStatus, setConversationMessagesStatus } = useSecondaryChat(consumerName)
 
   const status = useMemo(() => {
     if (!activeConversation) return 'idle';
@@ -20,7 +20,8 @@ const useLoadMessages = (consumerName: string) => {
   const loadInitialMessages = useCallback(async () => {
     if (!activeConversation) return;
 
-    if (__DEV__) {
+    // I think this is self-explanatory
+    if (__DEV__ || activeConversation.data?.temporary) {
       setConversationMessagesStatus(activeConversation.id, 'success');
       return;
     }

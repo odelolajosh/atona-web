@@ -7,7 +7,7 @@ settings:
 dependencies:
   '@chatscope/use-chat':
     specifier: github:odelolajosh/use-chat#dist
-    version: github.com/odelolajosh/use-chat/0943a8c5212b998809ccd79bab2343503f3d7835(react@18.2.0)
+    version: github.com/odelolajosh/use-chat/949fe056c15830d72fb6faaf786d33e8900776e0(react@18.2.0)
   '@heroicons/react':
     specifier: ^2.0.18
     version: 2.1.1(react@18.2.0)
@@ -3617,9 +3617,9 @@ packages:
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
-  github.com/odelolajosh/use-chat/0943a8c5212b998809ccd79bab2343503f3d7835(react@18.2.0):
-    resolution: {tarball: https://codeload.github.com/odelolajosh/use-chat/tar.gz/0943a8c5212b998809ccd79bab2343503f3d7835}
-    id: github.com/odelolajosh/use-chat/0943a8c5212b998809ccd79bab2343503f3d7835
+  github.com/odelolajosh/use-chat/949fe056c15830d72fb6faaf786d33e8900776e0(react@18.2.0):
+    resolution: {tarball: https://codeload.github.com/odelolajosh/use-chat/tar.gz/949fe056c15830d72fb6faaf786d33e8900776e0}
+    id: github.com/odelolajosh/use-chat/949fe056c15830d72fb6faaf786d33e8900776e0
     name: '@chatscope/use-chat'
     version: 3.1.2
     peerDependencies:

@@ -11,6 +11,7 @@ export interface ConversationData {
   readonly type?: 'dm' | 'group'
   readonly name: string
   preflight?: 'idle' | 'success' | 'error' | 'loading'
+  temporary?: boolean
 }
 
 export interface IMessage {

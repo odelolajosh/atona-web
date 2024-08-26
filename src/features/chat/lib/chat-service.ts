@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import SturdyWebSocket from "@/lib/ws";
-import { ChatEvent, ChatEventType as BaseChatEventType, ConnectionState, ConnectionStateChangedEvent, IChatService, IStorage, MessageContentType, MessageDirection, MessageEvent, MessageStatus, SendMessageServiceParams, SendTypingServiceParams, UpdateState, Conversation, Participant, User, Presence, UserStatus, ChatMessage } from "@chatscope/use-chat";
+import { ChatEvent, ChatEventType as BaseChatEventType, ConnectionState, ConnectionStateChangedEvent, IChatService, IStorage, MessageContentType, MessageDirection, MessageEvent, MessageStatus, SendMessageServiceParams, SendTypingServiceParams, UpdateState, Conversation, Participant, User, Presence, UserStatus, ChatMessage, UserPresenceChangedEvent } from "@chatscope/use-chat";
 import { ChatEventHandler, ChatEventType, ConversationJoinedEvent } from "./events";
 import { ConversationData, UserData } from "../types";
 import { ChatAPI } from "./types";
@@ -72,7 +72,7 @@ export class ChatService implements IChatService {
       return;
     }
 
-    const url = `${wsUrl}`;
+    const url = `${wsUrl}/${userId}`
 
     this.userId = userId
     this.ws = new SturdyWebSocket(url, {
@@ -82,6 +82,8 @@ export class ChatService implements IChatService {
       maxReconnectDelay: 10000,
       maxReconnectAttempts: 5,
     })
+
+    console.info("Naerochat", "Connecting to", url)
 
     this.ws.onopen = () => {
       console.info("Naerochat", "Connection is up")
@@ -108,7 +110,7 @@ export class ChatService implements IChatService {
     this.ws.onmessage = (event) => {
       if (!event.data) return
       const data = JSON.parse(event.data)
-      // console.log("Naerochat", "Received message", data)
+      console.log("Naerochat", "Received message", data)
       this.dispatchEventOfType(data.id, data.type, data.payload)
     }
 
@@ -123,17 +125,6 @@ export class ChatService implements IChatService {
   }
 
   /**
-   * Join a conversation
-   * @param conversationId 
-   */
-  joinConversation(conversationId: string) {
-    this.ws?.send(JSON.stringify({
-      type: "on_join",
-      payload: conversationId
-    }))
-  }
-
-  /**
    * Creates a new conversation
    * @param userIds an array of user Ids to add to a conversation
    */
@@ -141,6 +132,7 @@ export class ChatService implements IChatService {
     if (userIds.length === 0) return;
     this.ws?.send(JSON.stringify({
       type: "on_join",
+      id: luid(),
       payload: {
         users: userIds,
         name,
@@ -148,9 +140,46 @@ export class ChatService implements IChatService {
     }))
   }
 
+  /**
+   * Creates a new DM conversation
+   * @param userIds an array of user Ids to add to a conversation
+   * @param message the initial message to send to the conversation
+   */
+  createDmConversation(userIds: string[] = [], message: string) {
+    if (userIds.length === 0) return;
+    this.ws?.send(JSON.stringify({
+      type: "on_dm",
+      id: luid(),
+      payload: {
+        users: userIds,
+        initial_message: message
+      }
+    }))
+  }
+
+  /**
+   * Creates a new group conversation
+   * @param userIds an array of user Ids to add to a conversation
+   * @param name the name of the group
+   */
+  createGroupConversation(userIds: string[] = [], name: string) {
+    if (userIds.length === 0) return;
+    this.ws?.send(JSON.stringify({
+      type: "on_group",
+      id: luid(),
+      payload: {
+        users: userIds,
+        name
+      }
+    }))
+  }
+
   sendMessage({ message, conversationId }: SendMessageServiceParams) {
     if (!this.ws) return
     this.unacknowledgedMessages.set(message.id, message)
+
+    const otherUserId = conversationId.startsWith("t_") ? conversationId.split("_")[1] : conversationId
+
     this.ws?.send(JSON.stringify({
       type: "on_message",
       id: message.id,
@@ -159,6 +188,9 @@ export class ChatService implements IChatService {
         content_type: String(message.contentType),
         to_id: conversationId,
         from_id: message.senderId,
+        // Compulsoty for initial messages, we need to send the users in the conversation
+        initial: conversationId.startsWith("t_"),
+        users: [message.senderId, otherUserId]
       }
     }))
 
@@ -256,35 +288,33 @@ export class ChatService implements IChatService {
         break
       }
       case "ack_on_message": {
-        this.handleMessageMessageAcknowledgement(id)
+        this.handleMessageAcknowledgement(id)
         break
       }
     }
   }
 
   private handleConnection() {
-    const event = new ConnectionStateChangedEvent(ConnectionState.Connected)
-    this.emit("connectionStateChanged", event)
+    const connectionStateChangeEvent = new ConnectionStateChangedEvent(ConnectionState.Connected)
+    this.emit("connectionStateChanged", connectionStateChangeEvent)
+
+    if (this.userId) {
+      const userPresenceChangedEvent = new UserPresenceChangedEvent({
+        userId: this.userId,
+        presence: new Presence({
+          status: UserStatus.Available
+        })
+      })
+
+      this.emit("userPresenceChanged", userPresenceChangedEvent)
+    }
   }
 
   private handleRoomCreated(payload: { room: ChatAPI.Room, roomId: string }) {
     if (!payload.room) return
     const users = payload.room.users ?? [];
 
-    users.forEach((user: ChatAPI.User) => {
-      const [userInStorage] = this.storage.getUser(user.userId)
-      if (userInStorage) return
-      const newUser = new User({
-        id: user.userId,
-        presence: new Presence({
-          status: user.online ? UserStatus.Available : UserStatus.Away
-        }),
-        username: user.name,
-        avatar: user.avatarUrl,
-        data: {}
-      })
-      this.storage?.addUser(newUser)
-    })
+    this.addAllUsers(users)
 
     const participants = users.map((user: ChatAPI.User) => new Participant({ id: user.userId }))
 
@@ -296,6 +326,7 @@ export class ChatService implements IChatService {
         type: payload.room.chatRoomType === 0 ? "dm" : "group",
       }
     })
+
     const event = new ConversationJoinedEvent(conversation)
     this.emit("conversationJoined", event)
   }
@@ -318,10 +349,26 @@ export class ChatService implements IChatService {
     this.emit("message", event)
   }
 
-  private handleMessageMessageAcknowledgement(id: string) {
+  private handleMessageAcknowledgement(id: string) {
     const message = this.unacknowledgedMessages.get(id)
     if (!message) return
     message.status = MessageStatus.Sent
     this.updateState()
+  }
+
+  private addAllUsers(users: ChatAPI.User[]) {
+    users.forEach((user) => {
+      // the storage already prevents duplicates id
+      const newUser = new User({
+        id: user.userId,
+        presence: new Presence({
+          status: user.online ? UserStatus.Available : UserStatus.Away
+        }),
+        username: user.name,
+        avatar: user.avatarUrl,
+        data: {}
+      })
+      this.storage?.addUser(newUser)
+    })
   }
 }

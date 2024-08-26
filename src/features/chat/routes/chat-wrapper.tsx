@@ -4,7 +4,7 @@ import { AutoDraft, BasicStorage, ChatProvider, ChatProviderConfig, ChatServiceF
 import { ChatService } from '../lib/chat-service';
 import { ConversationData } from '../types';
 import { seedStorage } from '../mock';
-import { ChatStateProvider } from '../lib/provider';
+import { SecondaryChatProvider } from '../lib/provider';
 import { useChat } from '../hooks/use-chat';
 import { __DEV__ } from '../lib/const';
 import { UploadProvider } from '../components/uploader/uploader';
@@ -43,20 +43,21 @@ const variables = {
 
 const AuthenticatedChat = ({ children }: { children: React.ReactNode }) => {
   const { data, status } = useUser();
-  const { setCurrentUser } = useChat()
+  const { addUser, setCurrentUser, getUser } = useChat()
   useToken(chatAPI.client);
 
   useEffect(() => {
     if (data && status === "success") {
       const currentUser = new User({
         id: data.id,
-        presence: new Presence({ status: UserStatus.Away }),
+        presence: new Presence({ status: UserStatus.Unavailable }),
         username: data.username,
         data: {}
       })
+      addUser(currentUser)
       setCurrentUser(currentUser)
     }
-  }, [data, setCurrentUser, status])
+  }, [addUser, data, getUser, setCurrentUser, status])
 
   if (status === "pending") {
     return (
@@ -79,7 +80,7 @@ const AuthenticatedChat = ({ children }: { children: React.ReactNode }) => {
 
 const ChatWrapper = () => (
   <ChatProvider serviceFactory={serviceFactory} storage={chatStorage} config={chatConfig}>
-    <ChatStateProvider>
+    <SecondaryChatProvider>
       <UploadProvider>
         <main className="h-full" style={variables as React.CSSProperties}>
           <Helmet>
@@ -90,7 +91,7 @@ const ChatWrapper = () => (
           </AuthenticatedChat>
         </main>
       </UploadProvider>
-    </ChatStateProvider>
+    </SecondaryChatProvider>
   </ChatProvider>
 )
 
