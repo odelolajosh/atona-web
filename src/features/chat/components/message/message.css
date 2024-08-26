@@ -1,0 +1,12 @@
+/* Editor specifics */
+.naero-message.html ol, ul {
+  @apply ml-6 list-inside;
+}
+
+.naero-message.html ol {
+  @apply list-decimal;
+}
+
+.naero-message.html ul {
+  @apply list-disc;
+}

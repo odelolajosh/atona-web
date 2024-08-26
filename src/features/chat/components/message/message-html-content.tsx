@@ -4,6 +4,6 @@ type MessageHtmlContentProps = {
 
 export const MessageHtmlContent: React.FC<MessageHtmlContentProps> = ({ html }) => {
   return (
-    <div dangerouslySetInnerHTML={{ __html: html }}></div>
+    <div className="naero-message html" dangerouslySetInnerHTML={{ __html: html }}></div>
   )
 }

@@ -8,7 +8,6 @@ import { Progress } from "@/components/icons/spinner"
 import { useUploaderPreview, useUploaderPreviewItem } from ".."
 import { FILE_STATES } from "@rpldy/shared"
 import { Button } from "@/components/ui/button"
-import { Editor } from "./editor"
 
 type MessageInputProps = {
   value?: string
@@ -85,7 +84,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({ value: _value, place
         </div>
         {/* Content Editable */}
         <div className="w-full h-full">
-          <Editor ref={editableRef} className="w-full h-full min-h-14 max-h-48 overflow-y-auto p-4 px-16 outline-none bg-transparent text-white content-editable-ph" placeholder={placeholder} value={value} onChange={handleChange} onKeyPress={handleKeyPress} />
+          <ContentEditable ref={editableRef} className="w-full h-full min-h-14 max-h-48 overflow-y-auto p-4 px-16 outline-none bg-transparent text-white content-editable-ph" placeholder={placeholder} value={value} onChange={handleChange} onKeyPress={handleKeyPress} />
         </div>
         {/* Send Button */}
         <div className="absolute right-0 bottom-0 p-1 flex justify-center align-center gap-2">

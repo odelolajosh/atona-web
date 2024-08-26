@@ -1,0 +1,33 @@
+.naero-editor {
+  @apply w-full h-full;
+}
+
+.naero-editor .ql-container {
+  @apply h-full !font-sans !text-base;
+}
+
+.naero-editor .ql-editor {
+  @apply min-h-14 max-h-48 p-4 pl-14 pr-16 outline-none bg-transparent text-foreground rounded-2xl;
+}
+
+.naero-editor .ql-editor::placeholder {
+  @apply text-muted-foreground;
+}
+
+.naero-editor .ql-container.ql-snow {
+  @apply outline-none border-none;
+}
+
+
+/* Editor specifics */
+.naero-editor .ql-editor ol, .naero-editor .ql-editor ul {
+  @apply pl-6;
+}
+
+.naero-editor .ql-editor ol {
+  @apply list-decimal;
+}
+
+.naero-editor .ql-editor ul {
+  @apply list-disc;
+}

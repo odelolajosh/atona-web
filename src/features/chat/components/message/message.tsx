@@ -7,6 +7,7 @@ import { MessageGalleryContent } from "./message-gallery-content"
 import { ChatAvatar } from "../chat-avatar"
 import { MessageContextMenu } from "./message-context-menu"
 import { CheckIcon, ClockIcon } from "@radix-ui/react-icons"
+import "./message.css"
 
 type MessageProps<T extends MessageContentType> = {
   model: {
