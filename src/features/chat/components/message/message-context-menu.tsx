@@ -7,14 +7,14 @@ type MessageContextMenuProps = {
   onDelete?: () => void
 } & ContextMenuPrimitive.ContextMenuProps
 
-export const MessageContextMenu = ({ onCopy, onDelete, onEdit, children, ...props }: MessageContextMenuProps) => {
+export const MessageContextMenu = ({ onCopy, children, ...props }: MessageContextMenuProps) => {
   return (
     <ContextMenu {...props}>
       <ContextMenu.Trigger asChild>{children}</ContextMenu.Trigger>
       <ContextMenu.Content>
         <ContextMenu.Item onSelect={onCopy}>Copy</ContextMenu.Item>
-        <ContextMenu.Item onSelect={onEdit}>Edit</ContextMenu.Item>
-        <ContextMenu.Item onSelect={onDelete}>Delete</ContextMenu.Item>
+        {/* <ContextMenu.Item onSelect={onEdit}>Edit</ContextMenu.Item>
+        <ContextMenu.Item onSelect={onDelete}>Delete</ContextMenu.Item> */}
       </ContextMenu.Content>
     </ContextMenu>
   )

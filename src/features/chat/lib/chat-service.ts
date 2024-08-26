@@ -4,7 +4,7 @@ import { ChatEvent, ChatEventType as BaseChatEventType, ConnectionState, Connect
 import { ChatEventHandler, ChatEventType, ConversationJoinedEvent } from "./events";
 import { ConversationData, UserData } from "../types";
 import { ChatAPI } from "./types";
-import { wsUrl } from "./const";
+import { __DEV__, wsUrl } from "./const";
 import { luid } from "@/lib/utils";
 
 type EventHandlers = {
@@ -110,7 +110,9 @@ export class ChatService implements IChatService {
     this.ws.onmessage = (event) => {
       if (!event.data) return
       const data = JSON.parse(event.data)
-      console.log("Naerochat", "Received message", data)
+      if (__DEV__) {
+        console.log("Naerochat", "Received message", data)
+      }
       this.dispatchEventOfType(data.id, data.type, data.payload)
     }
 

@@ -3,10 +3,8 @@ import { uuid } from '@/lib/utils';
 import { AutoDraft, BasicStorage, ChatProvider, ChatProviderConfig, ChatServiceFactory, Presence, User, UserStatus } from '@chatscope/use-chat';
 import { ChatService } from '../lib/chat-service';
 import { ConversationData } from '../types';
-import { seedStorage } from '../mock';
 import { SecondaryChatProvider } from '../lib/provider';
 import { useChat } from '../hooks/use-chat';
-import { __DEV__ } from '../lib/const';
 import { UploadProvider } from '../components/uploader/uploader';
 import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
@@ -25,9 +23,9 @@ const serviceFactory: ChatServiceFactory<ChatService> = (storage, updateState) =
 
 const chatStorage = new BasicStorage<ConversationData>({ groupIdGenerator, messageIdGenerator });
 
-if (__DEV__) {
-  seedStorage(chatStorage);
-}
+// if (__DEV__) {
+//   seedStorage(chatStorage);
+// }
 
 const chatConfig: ChatProviderConfig = {
   typingThrottleTime: 250,
