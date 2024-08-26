@@ -18,6 +18,7 @@ import { useChatSearch } from "../../hooks/use-chat-api"
 import { Cross2Icon, Pencil2Icon } from "@radix-ui/react-icons"
 import { createTemporaryConversation } from "../../lib/actions"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
 type ConversationProps = {
   conversation: TConversation<ConversationData>
@@ -39,6 +40,9 @@ const Conversation = ({ conversation: c }: ConversationProps) => {
         <div className="flex-1">
           <div className="text-white font-medium">{name}</div>
         </div>
+        {(c.unreadCounter !== null && c.unreadCounter > 0) && (
+          <Badge variant="destructive">{c.unreadCounter}</Badge>
+        )}
       </Link>
     </Slot>
   )
