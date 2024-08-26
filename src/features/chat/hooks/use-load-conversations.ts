@@ -2,7 +2,6 @@ import { useCallback, useEffect } from "react";
 import { useSecondaryChat } from "../lib/provider";
 import { Conversation, Participant, Presence, User, UserStatus } from "@chatscope/use-chat";
 import chatAPI from "../lib/api";
-import { __DEV__ } from "../lib/const";
 import { ChatAPI } from "../lib/types";
 import { ConversationData } from "../types";
 import { useChat } from "./use-chat";
@@ -12,8 +11,6 @@ export const useLoadConversation = (consumerName: string) => {
   const { conversationsStatus, setConversationsStatus } = useSecondaryChat(consumerName)
 
   const loadConversation = useCallback(async (userId: string) => {
-    if (__DEV__) return;
-
     if (conversationsStatus !== "idle") return;
 
     setConversationsStatus("loading")

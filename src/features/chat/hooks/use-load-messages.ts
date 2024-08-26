@@ -1,6 +1,5 @@
 import { ChatMessage, MessageContentType, MessageDirection, MessageStatus } from "@chatscope/use-chat"
 import { useCallback, useEffect, useMemo, useRef } from "react"
-import { __DEV__ } from "../lib/const"
 import chatAPI from "../lib/api"
 import { useSecondaryChat } from "../lib/provider";
 import { useChat } from "./use-chat";
@@ -21,7 +20,7 @@ const useLoadMessages = (consumerName: string) => {
     if (!activeConversation) return;
 
     // I think this is self-explanatory
-    if (__DEV__ || activeConversation.data?.temporary) {
+    if (activeConversation.data?.temporary) {
       setConversationMessagesStatus(activeConversation.id, 'success');
       return;
     }
