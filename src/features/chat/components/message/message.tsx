@@ -4,6 +4,7 @@ import { MessageHtmlContent } from "./message-html-content"
 import { cn } from "@/lib/utils"
 import { formatDate } from "../../lib/utils"
 import { MessageGalleryContent } from "./message-gallery-content"
+import { MessageMarkdownContent } from "./message-markdown-content"
 import { ChatAvatar } from "../chat-avatar"
 import { MessageContextMenu } from "./message-context-menu"
 import { CheckIcon, ClockIcon } from "@radix-ui/react-icons"
@@ -63,6 +64,7 @@ export const Message = <T extends MessageContentType>({
   const messageJsx = useMemo(() => {
     switch (type) {
       case MessageContentType.TextMarkdown:
+        return <MessageMarkdownContent markdown={payload.content as string} />
       case MessageContentType.TextHtml:
         return <MessageHtmlContent html={payload.content as string} />
       case MessageContentType.Gallery:

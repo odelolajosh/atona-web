@@ -1,16 +1,20 @@
 /* Editor specifics */
-.naero-message.html ol, ul {
-  @apply ml-6 list-inside;
+.naero-message ol, .naero-message ul {
+  @apply ml-3 list-inside;
 }
 
-.naero-message.html ol {
+.naero-message ol {
   @apply list-decimal;
 }
 
-.naero-message.html ul {
+.naero-message ul {
   @apply list-disc;
 }
 
-.naero-message.html * {
-  @apply !bg-transparent !text-base !font-sans !text-foreground;
+.naero-message * {
+  @apply bg-transparent text-base font-sans text-foreground break-words;
+}
+
+.naero-message a {
+  @apply text-teal-500 hover:underline;
 }

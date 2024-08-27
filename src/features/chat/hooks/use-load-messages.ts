@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef } from "react"
 import chatAPI from "../lib/api"
 import { useSecondaryChat } from "../lib/provider";
 import { useChat } from "./use-chat";
+import { safeParseInt } from "../lib/utils";
 
 const MAX_TRY_COUNT = 1
 
@@ -40,7 +41,7 @@ const useLoadMessages = (consumerName: string) => {
           content: {
             content: message.body,
           },
-          contentType: MessageContentType.TextHtml,
+          contentType: safeParseInt(message.content_type, MessageContentType.TextHtml),
           status: MessageStatus.Sent,
           createdTime: new Date(message.created_at),
         });

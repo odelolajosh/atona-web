@@ -1,14 +1,12 @@
-import React, { useCallback, useEffect, useRef } from "react"
-import { ContentEditable } from "./content-editable"
+import React, { useCallback, useEffect } from "react"
 import { cn } from "@/lib/utils"
-import { useControllableState } from "@/lib/hooks/use-state"
 import { DocumentIcon, PaperAirplaneIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline"
 import { UploadButton } from "../uploader/uploader"
 import { Progress } from "@/components/icons/spinner"
 import { useUploaderPreview, useUploaderPreviewItem } from ".."
 import { FILE_STATES } from "@rpldy/shared"
 import { Button } from "@/components/ui/button"
-import { Editor } from "./editor"
+import { MessageTextarea } from "./message-textarea"
 
 type MessageInputProps = {
   value?: string
@@ -16,61 +14,31 @@ type MessageInputProps = {
   placeholder?: string
   className?: string
   conversationId: string
-  onChange?: (innerHTML: string, textContent?: string | null, innerText?: string) => void
-  onSend?: (innerHTML: string, textContent?: string | null, innerText?: string, childNodes?: NodeListOf<ChildNode>) => void
+  onChange?: (text: string) => void
+  onSend?: (text: string) => void
 }
 
-export const MessageInput: React.FC<MessageInputProps> = ({ value: _value, placeholder, className, conversationId, onChange, onSend }) => {
-  const editableRef = useRef<HTMLDivElement>(null)
-  const [value, setValue] = useControllableState({
-    prop: _value,
-    defaultProp: "",
-    onChange
-  })
 
+export const MessageInput: React.FC<MessageInputProps> = ({ value, placeholder, className, conversationId, onChange, onSend }) => {
   const { isUploading } = useUploaderPreview(conversationId);
 
-  const getContent = () => {
-    const contentEditable = editableRef.current
-    return [
-      contentEditable?.textContent,
-      contentEditable?.innerText,
-      contentEditable?.cloneNode(true).childNodes,
-    ];
-  }
-
-  const handleChange = (innerHTML: string) => {
-    setValue(innerHTML)
-    const textContent = editableRef.current?.textContent
-    const innerText = editableRef.current?.innerText
-    onChange?.(innerHTML, textContent, innerText)
-  }
-
   const handleSend = useCallback(() => {
-    if (isUploading) return
-    if (value && value.length > 0) {
-      // Clear input in uncontrolled mode
-      if (value === undefined) {
-        setValue("")
-      }
+    if (isUploading || !value) return
 
-      // trim value of html whitespace and newlines
-      const trimmedValue = value.replace(/<br\s*\/?>/gi, "").trim()
+    const content = value.replace(/<br\s*\/?>/gi, "").trim()
 
-      const [textContent, innerText, childNodes] = getContent()
-      onSend?.(trimmedValue, textContent as string, innerText as string, childNodes as NodeListOf<ChildNode>)
+    if (content) {
+      onSend?.(content)
     }
-  }, [isUploading, value, setValue, onSend])
+  }, [isUploading, onSend, value])
 
-  const handleKeyPress = (evt: React.KeyboardEvent<HTMLDivElement>) => {
-    if (
-      evt.key === "Enter" &&
-      evt.shiftKey === false
-    ) {
-      evt.preventDefault();
-      handleSend();
+  const handleKeyDown = useCallback((ev: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (ev.key === "Enter" && !ev.shiftKey) {
+      ev.preventDefault()
+      handleSend()
     }
-  };
+  }, [handleSend])
+
 
   return (
     <div className="flex flex-col gap-2 w-full max-w-2xl p-2">
@@ -84,9 +52,13 @@ export const MessageInput: React.FC<MessageInputProps> = ({ value: _value, place
           </UploadButton>
         </div>
         {/* Content Editable */}
-        <div className="w-full h-full">
-          <Editor ref={editableRef} className="w-full h-full min-h-14 max-h-48 overflow-y-auto p-4 px-16 outline-none bg-transparent text-white content-editable-ph" placeholder={placeholder} value={value} onChange={handleChange} onKeyPress={handleKeyPress} />
-        </div>
+        <MessageTextarea
+          value={value}
+          onChange={(ev) => onChange?.(ev.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          className="w-full h-14 max-h-48 p-4 pl-14 pr-16 outline-none bg-transparent text-white"
+        />
         {/* Send Button */}
         <div className="absolute right-0 bottom-0 p-1 flex justify-center align-center gap-2">
           <Button className="p-3 pl-4 h-auto hover:bg-success rounded-2xl" onClick={handleSend}>
