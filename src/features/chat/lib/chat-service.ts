@@ -77,10 +77,9 @@ export class ChatService implements IChatService {
     this.userId = userId
     this.ws = new SturdyWebSocket(url, {
       connectTimeout: 5000,
-      debug: true,
+      debug: __DEV__ ?? false,
       minReconnectDelay: 1000,
       maxReconnectDelay: 10000,
-      maxReconnectAttempts: 5,
     })
 
     console.info("Naerochat", "Connecting to", url)
