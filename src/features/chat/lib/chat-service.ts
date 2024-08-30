@@ -82,7 +82,11 @@ export class ChatService implements IChatService {
       maxReconnectDelay: 10000,
     })
 
-    console.info("Naerochat", "Connecting to", url)
+    if (__DEV__) {
+      console.info("Naerochat", "Connecting to", url)
+    } else {
+      console.info("Naerochat connecting...")
+    }
 
     this.ws.onopen = () => {
       console.info("Naerochat", "Connection is up")
