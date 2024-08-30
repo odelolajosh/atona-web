@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { ConversationHeader, Lobby, MessageInput, MessageList, MessageListRef, Messages, useUploaderStore } from "."
+import { ConversationHeader, Lobby, MessageInput, Messages, useUploaderStore } from "."
 import { useChat } from "../hooks/use-chat"
 import { ChatMessage, MessageContentType, MessageDirection, MessageStatus } from "@chatscope/use-chat";
 import { Spinner } from "@/components/icons/spinner";
@@ -7,6 +7,7 @@ import { Outlet, useParams } from "react-router-dom";
 import { useLoadMessages } from "../hooks/use-load-messages";
 import { Button } from "@/components/ui/button";
 import { createMessageContent } from "../lib/actions";
+import { MessageList, MessageListRef } from "./message-list";
 
 export const Room = () => {
   const { conversationId } = useParams() as { conversationId: string };
@@ -19,6 +20,10 @@ export const Room = () => {
   useEffect(() => {
     if (!conversationId) return;
     setActiveConversation(conversationId);
+    // This will prevent the smooth scroll to bottom when the conversation changes
+    // TODO: This should be handled by the MessageList component - pass in conversationId as a prop
+    // TODO: Store the scroll position in the conversation state
+    messageListRef.current?.resetScroll();
   }, [conversationId, setActiveConversation])
 
   const handleChange = (value: string) => {
@@ -58,7 +63,7 @@ export const Room = () => {
       <ConversationHeader />
       <hr className="w-full border-t border-border" />
       {loadMessages.status === 'success' ? (
-        <MessageList className="w-full flex-1 py-4 message--font" ref={messageListRef}>
+        <MessageList className="w-full flex-1" contentClassName="py-4" ref={messageListRef}>
           <Messages messages={currentMessages} />
         </MessageList>
       ) : loadMessages.status === 'error' ? (

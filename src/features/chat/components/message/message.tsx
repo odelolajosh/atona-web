@@ -9,6 +9,7 @@ import { ChatAvatar } from "../chat-avatar"
 import { MessageContextMenu } from "./message-context-menu"
 import { CheckIcon, ClockIcon } from "@radix-ui/react-icons"
 import "./message.css"
+import { prefix } from "../../lib/const"
 
 type MessageProps<T extends MessageContentType> = {
   model: {
@@ -94,7 +95,7 @@ export const Message = <T extends MessageContentType>({
 
   return (
     <MessageContextMenu onOpenChange={onOpenContextMenu} onCopy={handleCopyMessage} onEdit={handleEditMessage} onDelete={handleDeleteMessage}>
-      <div className={containerClass}>
+      <div className={containerClass} {...{ [`data-${prefix}-message`]: "" }}>
         <div className={messageClass}>
           {/* Header */}
           {(position === 0 && direction === MessageDirection.Incoming) && (
@@ -142,7 +143,7 @@ export const MessageGroup: React.FC<MessageGroupProps> = ({
   }, [getUser, senderId])
 
   return (
-    <section className={cn("relative", "message--group")}>
+    <section {...{ [`data-${prefix}-message-group`]: "" }} className={cn("relative", "message--group")}>
       {/* Avatar */}
       <ChatAvatar className={cn(
         "absolute top-px",
