@@ -30,7 +30,7 @@ export const NewGroupModal: React.FC<NewGroupModalProps> = (props) => {
     },
   })
 
-  const { users, currentUser, service } = useChat();
+  const { users, currentUser, service } = useChat("NewGroupModal")
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
   const handleSelection = (userId: string) => {

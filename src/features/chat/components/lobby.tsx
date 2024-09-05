@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useChat } from "../hooks/use-chat";
 
 export const Lobby = () => {
-  const { setActiveConversation } = useChat()
+  const { setActiveConversation } = useChat("Lobby")
 
   useEffect(() => {
     setActiveConversation(null as unknown as string)

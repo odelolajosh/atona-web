@@ -1,4 +1,4 @@
-import { GalleryItem, MessageContent, MessageContentType, MessageDirection, MessageStatus, useChat } from "@chatscope/use-chat"
+import { GalleryItem, MessageContent, MessageContentType, MessageDirection, MessageStatus } from "@chatscope/use-chat"
 import { PropsWithChildren, useMemo, useState } from "react"
 import { MessageHtmlContent } from "./message-html-content"
 import { cn } from "@/lib/utils"
@@ -10,6 +10,7 @@ import { MessageContextMenu } from "./message-context-menu"
 import { CheckIcon, ClockIcon } from "@radix-ui/react-icons"
 import "./message.css"
 import { prefix } from "../../lib/const"
+import { useChat } from "../../hooks/use-chat"
 
 type MessageProps<T extends MessageContentType> = {
   model: {
@@ -37,7 +38,7 @@ export const Message = <T extends MessageContentType>({
   type; // to avoid unused variable warning
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
 
-  const { getUser } = useChat()
+  const { getUser } = useChat("Message")
 
   const user = useMemo(() => {
     const user = getUser(senderId)
@@ -114,7 +115,8 @@ export const Message = <T extends MessageContentType>({
               <span className={cn("text-muted-foreground", {
                 "text-accent-foreground": status === MessageStatus.Seen,
               })}>
-                {(status === MessageStatus.Sent || status === MessageStatus.Seen) && <CheckIcon className="w-4 h-4" />}
+                {status === MessageStatus.Sent && <CheckIcon className="w-4 h-4" />}
+                {status === MessageStatus.Seen && <CheckIcon className="w-4 h-4" />}
                 {status === MessageStatus.Pending && <ClockIcon className="w-4 h-4" />}
               </span>
             )}
@@ -135,7 +137,7 @@ export const MessageGroup: React.FC<MessageGroupProps> = ({
   children,
   senderId
 }) => {
-  const { getUser } = useChat()
+  const { getUser } = useChat("MessageGroup")
 
   const user = useMemo(() => {
     const user = getUser(senderId)

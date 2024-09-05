@@ -25,8 +25,8 @@ type ConversationProps = {
 }
 
 const Conversation = ({ conversation: c }: ConversationProps) => {
-  const { activeConversation } = useChat()
-  const { name, avatar } = useConversation(c.id)
+  const { activeConversation } = useChat("Conversation")
+  const { name, avatar } = useConversation("Conversation", c.id)
 
   return (
     <Slot className={cn(
@@ -55,7 +55,7 @@ type SearchUser = {
 }
 
 const SearchItem = ({ user, onSelect }: { user: SearchUser, onSelect: (user: SearchUser) => void }) => {
-  const { activeConversation } = useChat()
+  const { activeConversation } = useChat("SearchItem")
   const { modal, modalProps } = useModal<'new-conversation'>();
 
   return (
@@ -80,7 +80,7 @@ const SearchItem = ({ user, onSelect }: { user: SearchUser, onSelect: (user: Sea
 
 export const ConversationList = ({ className }: { className?: string }) => {
   const { data: user } = useUser()
-  const { conversations, getUser, currentUser, addUser, addConversation } = useChat()
+  const { conversations, getUser, currentUser, addUser, addConversation } = useChat("ConversationList")
   const { conversationsStatus } = useSecondaryChat("ConversationList")
   const searchRef = useRef<HTMLInputElement>(null)
 

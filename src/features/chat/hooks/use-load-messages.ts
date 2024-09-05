@@ -1,7 +1,6 @@
 import { ChatMessage, MessageContentType, MessageDirection, MessageStatus } from "@chatscope/use-chat"
 import { useCallback, useEffect, useMemo, useRef } from "react"
 import chatAPI from "../lib/api"
-import { useSecondaryChat } from "../lib/provider";
 import { useChat } from "./use-chat";
 import { safeParseInt } from "../lib/utils";
 
@@ -9,8 +8,14 @@ const MAX_TRY_COUNT = 1
 
 const useLoadMessages = (consumerName: string) => {
   const tryCount = useRef(0)
-  const { addMessage, activeConversation, removeMessagesFromConversation, currentUser } = useChat()
-  const { getConversationMessagesStatus, setConversationMessagesStatus } = useSecondaryChat(consumerName)
+  const {
+    addMessage,
+    activeConversation,
+    removeMessagesFromConversation,
+    currentUser,
+    getConversationMessagesStatus,
+    setConversationMessagesStatus,
+  } = useChat(consumerName)
 
   const status = useMemo(() => {
     if (!activeConversation) return 'idle';
@@ -42,7 +47,7 @@ const useLoadMessages = (consumerName: string) => {
             content: message.body,
           },
           contentType: safeParseInt(message.content_type, MessageContentType.TextHtml),
-          status: MessageStatus.Sent,
+          status: message.read_state == 1 ? MessageStatus.Seen : MessageStatus.Sent,
           createdTime: new Date(message.created_at),
         });
         addMessage(chatMessage, activeConversation.id, false);

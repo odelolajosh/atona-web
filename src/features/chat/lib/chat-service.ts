@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import SturdyWebSocket from "@/lib/ws";
 import { ChatEvent, ChatEventType as BaseChatEventType, ConnectionState, ConnectionStateChangedEvent, IChatService, IStorage, MessageContentType, MessageDirection, MessageEvent, MessageStatus, SendMessageServiceParams, SendTypingServiceParams, UpdateState, Conversation, Participant, User, Presence, UserStatus, ChatMessage, UserPresenceChangedEvent } from "@chatscope/use-chat";
-import { ChatEventHandler, ChatEventType, ConversationJoinedEvent } from "./events";
+import { ChatEventHandler, ChatEventType, ConversationJoinedEvent, MessageReadEvent } from "./events";
 import { ConversationData, UserData } from "../types";
 import { ChatAPI } from "./types";
 import { __DEV__, wsUrl } from "./const";
@@ -36,6 +36,10 @@ type EventHandlers = {
     "conversationJoined",
     ChatEvent<"conversationJoined">
   >>;
+  onMessageRead: Array<ChatEventHandler<
+    "messageRead",
+    ChatEvent<"messageRead">
+  >>;
   [key: string]: Array<any>;
 };
 
@@ -44,7 +48,8 @@ export class ChatService implements IChatService {
   updateState: UpdateState;
   ws?: SturdyWebSocket;
   userId?: string;
-  unacknowledgedMessages: Map<string, ChatMessage<MessageContentType>>;
+  // TODO: move this to chat storage -- Including the unread messages
+  unsentMessages: Map<string, ChatMessage<MessageContentType>>;
 
   eventHandlers: EventHandlers = {
     onMessage: [],
@@ -54,12 +59,13 @@ export class ChatService implements IChatService {
     onUserPresenceChanged: [],
     onUserTyping: [],
     onConversationJoined: [],
+    onMessageRead: [],
   };
 
   constructor(storage: IStorage<ConversationData, UserData>, update: UpdateState) {
     this.storage = storage;
     this.updateState = update;
-    this.unacknowledgedMessages = new Map();
+    this.unsentMessages = new Map();
   }
 
   /**
@@ -145,43 +151,9 @@ export class ChatService implements IChatService {
     }))
   }
 
-  /**
-   * Creates a new DM conversation
-   * @param userIds an array of user Ids to add to a conversation
-   * @param message the initial message to send to the conversation
-   */
-  createDmConversation(userIds: string[] = [], message: string) {
-    if (userIds.length === 0) return;
-    this.ws?.send(JSON.stringify({
-      type: "on_dm",
-      id: luid(),
-      payload: {
-        users: userIds,
-        initial_message: message
-      }
-    }))
-  }
-
-  /**
-   * Creates a new group conversation
-   * @param userIds an array of user Ids to add to a conversation
-   * @param name the name of the group
-   */
-  createGroupConversation(userIds: string[] = [], name: string) {
-    if (userIds.length === 0) return;
-    this.ws?.send(JSON.stringify({
-      type: "on_group",
-      id: luid(),
-      payload: {
-        users: userIds,
-        name
-      }
-    }))
-  }
-
   sendMessage({ message, conversationId }: SendMessageServiceParams) {
     if (!this.ws) return
-    this.unacknowledgedMessages.set(message.id, message)
+    this.unsentMessages.set(message.id, message)
 
     const otherUserId = conversationId.startsWith("t_") ? conversationId.split("_")[1] : conversationId
 
@@ -200,12 +172,6 @@ export class ChatService implements IChatService {
     }))
 
     return message;
-  }
-
-  ping() {
-    this.ws?.send(JSON.stringify({
-      type: "on_ping"
-    }))
   }
 
   sendTyping({
@@ -230,6 +196,24 @@ export class ChatService implements IChatService {
     });
 
     window.dispatchEvent(typingEvent);
+  }
+
+  sendReadReceipt({ messageIds, conversationId }: { messageIds: string[]; conversationId: string }) {
+    this.ws?.send(JSON.stringify({
+      type: "on_read",
+      id: luid(),
+      payload: {
+        message_ids: messageIds,
+        to_id: conversationId,
+        from_id: this.userId,
+      }
+    }))
+  }
+
+  ping() {
+    this.ws?.send(JSON.stringify({
+      type: "on_ping"
+    }))
   }
 
   on<T extends ChatEventType, H extends ChatEvent<T>>(
@@ -293,7 +277,11 @@ export class ChatService implements IChatService {
         break
       }
       case "ack_on_message": {
-        this.handleMessageAcknowledgement(id)
+        this.handleMessageSent(id)
+        break
+      }
+      case "message_read": {
+        this.handleMessageRead(payload)
         break
       }
     }
@@ -347,18 +335,28 @@ export class ChatService implements IChatService {
         direction: MessageDirection.Incoming,
         senderId: payload.from_id,
         status: MessageStatus.Sent,
-        createdTime: payload.created_at
+        createdTime: new Date(payload.created_at),
       },
       conversationId: payload.to_id
     })
     this.emit("message", event)
   }
 
-  private handleMessageAcknowledgement(id: string) {
-    const message = this.unacknowledgedMessages.get(id)
+  private handleMessageSent(id: string) {
+    const message = this.unsentMessages.get(id)
     if (!message) return
     message.status = MessageStatus.Sent
     this.updateState()
+  }
+
+  private handleMessageRead(payload: any) {
+    if (!payload || !payload.to_id) return
+
+    const conversationId = payload.to_id
+    const [conversation] = this.storage.getConversation(conversationId)
+    if (!conversation) return
+    const event = new MessageReadEvent(conversation)
+    this.emit("messageRead", event)
   }
 
   private addAllUsers(users: ChatAPI.User[]) {

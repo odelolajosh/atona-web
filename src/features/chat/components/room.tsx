@@ -11,7 +11,7 @@ import { MessageList, MessageListRef } from "./message-list";
 
 export const Room = () => {
   const { conversationId } = useParams() as { conversationId: string };
-  const { activeConversation, setActiveConversation, sendMessage, currentUser, currentMessage, setCurrentMessage, currentMessages } = useChat();
+  const { activeConversation, setActiveConversation, sendMessage, currentUser, currentMessage, setCurrentMessage, currentMessages } = useChat("Room");
   const { clearConversationUploads, getUploadedItems } = useUploaderStore("Room");
   const messageListRef = useRef<MessageListRef>(null);
 

@@ -34,7 +34,7 @@ export const UploadProvider: FC<PropsWithChildren> = ({ children }) => {
 }
 
 export const Uploader = ({ children }: { children: React.ReactNode }) => {
-  const { activeConversation } = useChat();
+  const { activeConversation } = useChat("Uploader");
   const uploaderStore = useUploaderStore("Uploader");
 
   useBatchAddListener((batch: Batch) => {

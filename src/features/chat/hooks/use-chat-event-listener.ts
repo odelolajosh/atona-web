@@ -4,13 +4,13 @@ import { ChatEventHandler, ChatEventType } from "../lib/events";
 import { ChatEvent } from "@chatscope/use-chat";
 import { __DEV__ } from "../lib/const";
 
-const useChatEventListener = <T extends ChatEventType, E extends ChatEvent<T>>(event: T, callback: ChatEventHandler<T, E>) => {
-  const { service } = useChat();
+const useChatEventListener = <T extends ChatEventType, E extends ChatEvent<T>>(consumerName: string, event: T, callback: ChatEventHandler<T, E>) => {
+  const { service } = useChat(`${consumerName}:useChatEventListener`)
 
   useEffect(() => {
     const handler = (event: E) => {
       if (__DEV__) {
-        console.log('use-chat-event-listener.tsx:', event, event)
+        console.log('use-chat-event-listener.tsx:', event)
       }
       callback(event)
     }

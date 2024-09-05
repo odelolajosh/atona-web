@@ -7,8 +7,8 @@ import { Cross2Icon } from "@radix-ui/react-icons"
 import { useNavigate } from "react-router-dom"
 
 export const ConversationHeader = () => {
-  const { activeConversation } = useChat()
-  const { name, avatar } = useConversation(activeConversation?.id || "")
+  const { activeConversation } = useChat("ConversationHeader")
+  const { name, avatar } = useConversation("ConversationHeader", activeConversation?.id || "")
   const navigate = useNavigate()
 
   return (

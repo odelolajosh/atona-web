@@ -6,8 +6,8 @@ import { __DEV__ } from "../lib/const";
 /**
  * A hook that continuously sustains a WebSocket connection by ping/pong messages
  */
-export const usePersistChatService = () => {
-  const { service } = useChat()
+export const usePersistChatService = (consumerName: string) => {
+  const { service } = useChat(`${consumerName}:usePersistChatService`)
   const pingInterval = useRef<NodeJS.Timeout>()
 
   useEffect(() => {

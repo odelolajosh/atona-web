@@ -61,6 +61,7 @@ export namespace ChatAPI {
       updated_at: string;
     };
     to_id: number;
+    read_state: 0 | 1;
     created_at: string;
     updated_at: string;
   }

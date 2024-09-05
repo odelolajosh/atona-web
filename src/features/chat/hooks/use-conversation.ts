@@ -27,8 +27,8 @@ export const getConversationMeta = (conversation: Conversation<ConversationData>
   }
 }
 
-export const useConversation = (conversationId: string) => {
-  const { getConversation, getUser, currentUser } = useChat()
+export const useConversation = (consumerName: string, conversationId: string) => {
+  const { getConversation, getUser, currentUser } = useChat(`${consumerName}:useConversation`)
 
   return useMemo(() => {
     const c = getConversation(conversationId)

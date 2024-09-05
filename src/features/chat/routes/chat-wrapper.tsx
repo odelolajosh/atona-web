@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import { uuid } from '@/lib/utils';
-import { AutoDraft, BasicStorage, ChatProvider, ChatProviderConfig, ChatServiceFactory, Presence, User, UserStatus } from '@chatscope/use-chat';
+import { AutoDraft, ChatProvider, ChatProviderConfig, ChatServiceFactory, Presence, User, UserStatus } from '@chatscope/use-chat';
 import { ChatService } from '../lib/chat-service';
 import { ConversationData } from '../types';
 import { SecondaryChatProvider } from '../lib/provider';
@@ -11,6 +11,7 @@ import { Helmet } from 'react-helmet-async';
 import { useToken, useUser } from '@/lib/auth';
 import { Spinner } from '@/components/icons/spinner';
 import chatAPI from '../lib/api';
+import { ChatStorage } from '../lib/chat-storage';
 
 // Storage needs to generate id for messages and groups
 const messageIdGenerator = () => uuid();
@@ -21,7 +22,7 @@ const serviceFactory: ChatServiceFactory<ChatService> = (storage, updateState) =
   return new ChatService(storage, updateState);
 };
 
-const chatStorage = new BasicStorage<ConversationData>({ groupIdGenerator, messageIdGenerator });
+const chatStorage = new ChatStorage<ConversationData>({ groupIdGenerator, messageIdGenerator });
 
 // if (__DEV__) {
 //   seedStorage(chatStorage);
@@ -41,7 +42,7 @@ const variables = {
 
 const AuthenticatedChat = ({ children }: { children: React.ReactNode }) => {
   const { data, status } = useUser();
-  const { addUser, setCurrentUser, getUser } = useChat()
+  const { addUser, setCurrentUser, getUser } = useChat("AuthenticatedChat");
   useToken(chatAPI.client);
 
   useEffect(() => {

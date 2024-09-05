@@ -98,8 +98,8 @@ const MessageListInner = forwardRef<MessageListRef, MessageListProps>(({
   }, []);
 
   return (
-    <div {...props} ref={containerRef} className={cn("relative overflow-y-scroll", className)}>
-      <div ref={contentRef} {...{ [`data-${prefix}-message-list`]: "" }} className={cn("relative overflow-y-auto overflow-x-hidden overscroll-none", contentClassName)}>
+    <div {...props} ref={containerRef} className={cn("relative overflow-y-auto", "naero-chat-container", className)}>
+      <div ref={contentRef} {...{ [`data-${prefix}-message-list`]: "" }} className={cn("overscroll-none", contentClassName)}>
         {children}
       </div>
       {!isAtBottom && (

@@ -30,7 +30,7 @@ export const JoinConversationModal: React.FC<JoinConversationModalProps> = (prop
     }
   }, [navigate, onOpenChange, props.to])
 
-  useChatEventListener("conversationJoined", onConversationJoined)
+  useChatEventListener("JoinConversationModal", "conversationJoined", onConversationJoined)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
