@@ -25,7 +25,6 @@ const requestNotificationPermission = async () => {
 const showLocalNotification = (title: string, body: string, data?: object) => {
   if (!swRegistration) return;
 
-  console.log('showLocalNotification', window.location.origin);
   const options = {
     body,
     icon: '/naero.png',
