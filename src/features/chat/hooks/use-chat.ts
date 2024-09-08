@@ -1,7 +1,7 @@
 import { useChat as _useChat, ChatMessage, Conversation, ConversationId, MessageContentType, SendMessageParams } from "@chatscope/use-chat";
 import { ConversationData, UserData } from "../types";
 import { ChatService } from "../lib/chat-service";
-import { useSecondaryChat } from "../lib/provider";
+import { useSecondaryChat } from "../lib/secondary-chat";
 import { useCallback } from "react";
 import { useLocalStorage } from "@/lib/hooks/use-storage";
 

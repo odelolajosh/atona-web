@@ -7,7 +7,6 @@ import { getConversationMeta, useConversation } from "../../hooks/use-conversati
 import { Link, useNavigate } from "react-router-dom"
 import { Spinner } from "@/components/icons/spinner"
 import { Input } from "@/components/ui/input"
-import { useSecondaryChat } from "../../lib/provider"
 import { useUser } from "@/lib/auth"
 import { useMemo, useRef, useState } from "react"
 import { Slot } from "@radix-ui/react-slot"
@@ -80,8 +79,7 @@ const SearchItem = ({ user, onSelect }: { user: SearchUser, onSelect: (user: Sea
 
 export const ConversationList = ({ className }: { className?: string }) => {
   const { data: user } = useUser()
-  const { conversations, getUser, currentUser, addUser, addConversation } = useChat("ConversationList")
-  const { conversationsStatus } = useSecondaryChat("ConversationList")
+  const { conversations, getUser, currentUser, addUser, addConversation, conversationsStatus } = useChat("ConversationList")
   const searchRef = useRef<HTMLInputElement>(null)
 
   const [q, setQ] = useState("");
