@@ -1,6 +1,6 @@
 import "../chat.css";
 import { ConversationList } from "@/features/chat/components";
-import { ConnectionState, ConnectionStateChangedEvent, Presence, UserStatus } from "@chatscope/use-chat";
+import { ConnectionState, ConnectionStateChangedEvent, MessageEvent, Presence, UserStatus } from "@chatscope/use-chat";
 import { useEffect } from "react";
 import { ConversationJoinedEvent, MessageReadEvent } from "../lib/events";
 import { useChat } from "../hooks/use-chat";
@@ -8,10 +8,11 @@ import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useLoadConversation } from "../hooks/use-load-conversations";
 import { useChatEventListener } from "../hooks/use-chat-event-listener";
+import { showLocalNotification } from "@/lib/service";
 
 export const Chat = () => {
   const { conversationId } = useParams();
-  const { currentUser, service, addConversation, updateState, getConversation, activeConversation, setActiveConversation, removeConversation, readUnreadMessages } = useChat("Chat");
+  const { currentUser, service, addConversation, updateState, getConversation, activeConversation, setActiveConversation, removeConversation, readUnreadMessages, getUser } = useChat("Chat");
   const navigate = useNavigate()
 
   useLoadConversation("Chat")
@@ -46,6 +47,26 @@ export const Chat = () => {
 
   useChatEventListener("Chat", "messageRead", (event: MessageReadEvent) => {
     readUnreadMessages(event.conversation.id)
+  });
+
+  useChatEventListener("Chat", "message", (event: MessageEvent) => {
+    // open notification if conversation is not active
+    if (event.conversationId !== activeConversation?.id) {
+      const conversation = getConversation(event.conversationId)
+      if (!conversation) return
+
+      const otherParticipant = conversation.participants.find((p) => p.id !== currentUser?.id)
+      if (!otherParticipant) return
+
+      const otherUser = getUser(otherParticipant.id)
+      if (!otherUser) return
+
+      showLocalNotification(
+        "New Message", 
+        `${otherUser.username} sent you a message`,
+        { redirectUrl: `/chat/${event.conversationId}` }
+      )
+    }
   });
 
   useEffect(() => {
