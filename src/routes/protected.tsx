@@ -7,6 +7,7 @@ import missionRoutes from "@/features/mission/routes";
 import chatRoutes from "@/features/chat/routes";
 import vsRoutes from "@/features/vs/routes";
 import { ErrorFallback, LoadingFallback } from "./views";
+import { ChatProvider } from "@/features/chat";
 
 const Protected = ({ children }: { children: React.ReactNode }) => {
   const { pathname, search } = useLocation();
@@ -22,9 +23,11 @@ const Protected = ({ children }: { children: React.ReactNode }) => {
 
 const App = () => {
   return (
-    <Suspense fallback={<LoadingFallback />}>
-      <Outlet />
-    </Suspense>
+    <ChatProvider>
+      <Suspense fallback={<LoadingFallback />}>
+        <Outlet />
+      </Suspense>
+    </ChatProvider>
   );
 };
 

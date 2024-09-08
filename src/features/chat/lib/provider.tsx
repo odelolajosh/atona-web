@@ -1,86 +1,78 @@
-/* eslint-disable react-refresh/only-export-components */
-import { createContext } from "@/lib/context";
-import { ChatMessage, MessageContentType, MessageDirection, MessageStatus } from "@chatscope/use-chat";
-import { PropsWithChildren, useCallback, useMemo, useState } from "react";
-
-export type LoadingStatus = "idle" | "loading" | "success" | "error"
-
-type SecondaryChatContextValue = {
-  // Conversation loading states
-  conversationsStatus: LoadingStatus;
-  setConversationsStatus: (status: LoadingStatus) => void;
-  getConversationMessagesStatus: (conversationId: string) => LoadingStatus;
-  setConversationMessagesStatus: (conversationId: string, status: LoadingStatus) => void;
-  // Unread messages
-  addUnreadMessage: (conversationId: string, message: ChatMessage<MessageContentType>) => void;
-  getUnreadMessages: (conversationId: string) => ChatMessage<MessageContentType>[];
-  readUnreadMessages: (conversationId: string) => void;
-}
-
-const [useSecondaryChat, SecondaryChatManager] = createContext<SecondaryChatContextValue>("SecondaryChatManager");
-
-const SecondaryChatProvider = ({ children }: PropsWithChildren) => {
-  const [conversationsStatus, setConversationsStatus] = useState<LoadingStatus>("idle");
-  const [conversationMessagesStatus, _setConversationMessagesStatus] = useState<Record<string, LoadingStatus>>({});
+import { uuid } from '@/lib/utils';
+import { AutoDraft, ChatProvider as BaseChatProvider, ChatProviderConfig, ChatServiceFactory, Presence, User, UserStatus } from '@chatscope/use-chat';
+import { ChatService } from './chat-service';
+import { ConversationData } from '../types';
+import { SecondaryChatProvider } from './secondary-chat';
+import { useChat } from '../hooks/use-chat';
+import { PropsWithChildren, useEffect } from 'react';
+import { useToken, useUser } from '@/lib/auth';
+import chatAPI from './api';
+import { ChatStorage } from './chat-storage';
 
 
-  const [unreadMessages, setUnreadMessages] = useState<Record<string, ChatMessage<MessageContentType>[]>>({})
-
-  const getConversationMessagesStatus = useCallback((conversationId: string) => {
-    return conversationMessagesStatus[conversationId] ?? "idle"
-  }, [conversationMessagesStatus])
-
-  const setConversationMessagesStatus = useCallback((conversationId: string, status: LoadingStatus) => {
-    _setConversationMessagesStatus((prev) => ({
-      ...prev,
-      [conversationId]: status
-    }))
-  }, [])
-
-  const addUnreadMessage = useCallback((conversationId: string, message: ChatMessage<MessageContentType>) => {
-    if (message.direction === MessageDirection.Outgoing && message.status !== MessageStatus.Seen) {
-      setUnreadMessages((prev) => ({
-        ...prev,
-        [conversationId]: [...(prev[conversationId] ?? []), message]
-      }))
-    }
-  }, [])
-
-  const getUnreadMessages = useCallback((conversationId: string) => {
-    return unreadMessages[conversationId] ?? []
-  }, [unreadMessages])
-
-  const clearUnreadMessages = useCallback((conversationId: string) => {
-    setUnreadMessages((prev) => ({
-      ...prev,
-      [conversationId]: []
-    }))
-  }, [])
-
-  const readUnreadMessages = useCallback((conversationId: string) => {
-    const messages = getUnreadMessages(conversationId)
-    if (messages.length === 0) return;
-    messages.forEach((message) => {
-      message.status = MessageStatus.Seen
+// Register the service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js')
+    .then(registration => {
+      console.log('ServiceWorker registered with scope:', registration.scope);
+    })
+    .catch(err => {
+      console.log('ServiceWorker registration failed:', err);
     });
-    clearUnreadMessages(conversationId)
-  }, [clearUnreadMessages, getUnreadMessages])
-
-  const values = useMemo(() => ({
-    conversationsStatus,
-    setConversationsStatus,
-    getConversationMessagesStatus,
-    setConversationMessagesStatus,
-    addUnreadMessage,
-    getUnreadMessages,
-    readUnreadMessages,
-  }), [addUnreadMessage, conversationsStatus, getConversationMessagesStatus, getUnreadMessages, readUnreadMessages, setConversationMessagesStatus])
-
-  return (
-    <SecondaryChatManager {...values}>
-      {children}
-    </SecondaryChatManager>
-  )
 }
 
-export { useSecondaryChat, SecondaryChatProvider }
+
+// Storage needs to generate id for messages and groups
+const messageIdGenerator = () => uuid();
+const groupIdGenerator = () => uuid();
+
+// Create serviceFactory
+const serviceFactory: ChatServiceFactory<ChatService> = (storage, updateState) => {
+  return new ChatService(storage, updateState);
+};
+
+const chatStorage = new ChatStorage<ConversationData>({ groupIdGenerator, messageIdGenerator });
+
+// if (__DEV__) {
+//   seedStorage(chatStorage);
+// }
+
+const chatConfig: ChatProviderConfig = {
+  typingThrottleTime: 250,
+  typingDebounceTime: 900,
+  debounceTyping: true,
+  autoDraft: AutoDraft.Save | AutoDraft.Restore
+}
+
+const ChatAuthenticator = ({ children }: { children: React.ReactNode }) => {
+  const { data, status } = useUser();
+  const { addUser, setCurrentUser, getUser } = useChat("AuthenticatedChat");
+  useToken(chatAPI.client);
+
+  useEffect(() => {
+    if (data && status === "success") {
+      const currentUser = new User({
+        id: data.id,
+        presence: new Presence({ status: UserStatus.Unavailable }),
+        username: data.username,
+        data: {}
+      })
+      addUser(currentUser)
+      setCurrentUser(currentUser)
+    }
+  }, [addUser, data, getUser, setCurrentUser, status])
+
+  return <>{children}</>
+}
+
+const ChatProvider = ({ children }: PropsWithChildren) => (
+  <BaseChatProvider serviceFactory={serviceFactory} storage={chatStorage} config={chatConfig}>
+    <SecondaryChatProvider>
+      <ChatAuthenticator>
+        {children}
+      </ChatAuthenticator>
+    </SecondaryChatProvider>
+  </BaseChatProvider>
+)
+
+export { ChatProvider }
